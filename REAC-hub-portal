@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REAC Hub Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050a14;
+    --bg2: #080f1e;
+    --panel: rgba(10,20,40,0.85);
+    --border: rgba(0,180,255,0.15);
+    --border-glow: rgba(0,200,255,0.4);
+    --accent: #00c8ff;
+    --accent2: #0066ff;
+    --accent3: #00ff9d;
+    --danger: #ff3b6b;
+    --warn: #ffb800;
+    --text: #e0eeff;
+    --muted: #5a7a99;
+    --card: rgba(0,30,60,0.6);
+    --rank-gold: #ffd700;
+    --rank-silver: #c0c0c0;
+    --rank-bronze: #cd7f32;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── BACKGROUND ─── */
+  .bg-grid {
+    position: fixed; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(rgba(0,200,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,200,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+  .bg-glow {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(0,100,255,0.12) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 30% at 80% 80%, rgba(0,200,255,0.06) 0%, transparent 60%);
+  }
+
+  /* ─── PAGES ─── */
+  .page { display: none; position: relative; z-index: 1; min-height: 100vh; }
+  .page.active { display: flex; }
+
+  /* ─── AUTH PAGES ─── */
+  #page-login, #page-signup, #page-forgot, #page-otp {
+    align-items: center; justify-content: center; padding: 20px;
+  }
+
+  .auth-box {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 48px 44px;
+    width: 100%;
+    max-width: 440px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 60px rgba(0,100,255,0.1), 0 0 0 1px rgba(0,200,255,0.05);
+    animation: fadeUp 0.5s ease;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .auth-logo {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+  .auth-logo .logo-text {
+    font-family: 'Orbitron', monospace;
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: 4px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .auth-logo .logo-sub {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .auth-logo .logo-icon {
+    width: 56px; height: 56px;
+    margin: 0 auto 12px;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 0 30px rgba(0,150,255,0.4);
+  }
+
+  .auth-title { font-family: 'Orbitron', monospace; font-size: 16px; font-weight: 700; margin-bottom: 6px; color: var(--accent); letter-spacing: 1px; }
+  .auth-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 28px; line-height: 1.5; }
+
+  .field { margin-bottom: 18px; }
+  .field label { display: block; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .field input {
+    width: 100%;
+    background: rgba(0,20,50,0.6);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  .field input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0,200,255,0.1);
+  }
+  .field input::placeholder { color: var(--muted); }
+
+  .btn {
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Orbitron', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 4px;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(0,100,255,0.3);
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(0,150,255,0.4); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--border);
+    margin-top: 10px;
+  }
+  .btn-ghost:hover { border-color: var(--accent); background: rgba(0,200,255,0.05); }
+
+  .auth-link { text-align: center; margin-top: 20px; font-size: 13px; color: var(--muted); }
+  .auth-link a { color: var(--accent); cursor: pointer; text-decoration: none; transition: color 0.2s; }
+  .auth-link a:hover { color: var(--accent3); }
+
+  .error-msg { background: rgba(255,59,107,0.1); border: 1px solid rgba(255,59,107,0.3); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--danger); margin-bottom: 16px; display: none; }
+  .success-msg { background: rgba(0,255,157,0.1); border: 1px solid rgba(0,255,157,0.3); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--accent3); margin-bottom: 16px; display: none; }
+
+  /* OTP boxes */
+  .otp-inputs { display: flex; gap: 10px; justify-content: center; margin-bottom: 24px; }
+  .otp-inputs input {
+    width: 52px; height: 60px;
+    text-align: center;
+    font-family: 'Orbitron', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    border-radius: 10px;
+  }
+
+  /* ─── DASHBOARD LAYOUT ─── */
+  #page-dashboard { flex-direction: column; }
+
+  /* NAV */
+  .nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(5,10,20,0.9);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(20px);
+    padding: 0 32px;
+    height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-brand {
+    font-family: 'Orbitron', monospace;
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .nav-right { display: flex; align-items: center; gap: 20px; }
+  .nav-user { font-size: 13px; color: var(--muted); }
+  .nav-user span { color: var(--accent); font-weight: 600; }
+  .nav-badge {
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    color: #fff;
+    font-size: 10px;
+    font-family: 'Orbitron', monospace;
+    letter-spacing: 1px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 700;
+  }
+  .btn-logout {
+    background: rgba(255,59,107,0.1);
+    border: 1px solid rgba(255,59,107,0.3);
+    color: var(--danger);
+    padding: 6px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+  }
+  .btn-logout:hover { background: rgba(255,59,107,0.2); }
+
+  /* MAIN CONTENT */
+  .dash-body { padding: 32px; max-width: 1400px; margin: 0 auto; width: 100%; }
+
+  /* SECTION HEADER */
+  .section-header { margin-bottom: 28px; }
+  .section-header h1 {
+    font-family: 'Orbitron', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .section-header p { font-size: 13px; color: var(--muted); }
+
+  /* STAT CARDS */
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 28px; }
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .stat-card:hover { border-color: var(--border-glow); transform: translateY(-2px); }
+  .stat-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    opacity: 0.6;
+  }
+  .stat-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  .stat-value { font-family: 'Orbitron', monospace; font-size: 28px; font-weight: 700; color: var(--text); }
+  .stat-value.green { color: var(--accent3); }
+  .stat-value.blue { color: var(--accent); }
+  .stat-value.gold { color: var(--rank-gold); }
+  .stat-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .stat-icon { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 32px; opacity: 0.12; }
+
+  /* PANEL */
+  .panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  .panel-header {
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .panel-header h2 { font-family: 'Orbitron', monospace; font-size: 13px; font-weight: 700; letter-spacing: 1px; color: var(--accent); }
+  .panel-body { padding: 24px; }
+
+  /* MONTH TABS */
+  .month-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+  .month-tab {
+    padding: 7px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: 'Orbitron', monospace;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    transition: all 0.2s;
+  }
+  .month-tab:hover { border-color: var(--accent); color: var(--accent); }
+  .month-tab.active { background: linear-gradient(135deg, var(--accent2), var(--accent)); color: #fff; border-color: transparent; }
+  .month-tab.no-data { opacity: 0.4; cursor: default; }
+
+  /* SCORE TABLE */
+  .score-table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+  }
+  td {
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(0,180,255,0.06);
+    color: var(--text);
+    white-space: nowrap;
+  }
+  tr:hover td { background: rgba(0,150,255,0.04); }
+  tr:last-child td { border-bottom: none; }
+
+  .rank-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .rank-1 { background: rgba(255,215,0,0.15); color: var(--rank-gold); border: 1px solid rgba(255,215,0,0.4); }
+  .rank-2 { background: rgba(192,192,192,0.1); color: var(--rank-silver); border: 1px solid rgba(192,192,192,0.3); }
+  .rank-3 { background: rgba(205,127,50,0.1); color: var(--rank-bronze); border: 1px solid rgba(205,127,50,0.3); }
+  .rank-other { background: rgba(0,150,255,0.05); color: var(--muted); border: 1px solid var(--border); }
+
+  .score-bar-wrap { display: flex; align-items: center; gap: 10px; }
+  .score-bar { flex: 1; height: 6px; background: rgba(0,50,100,0.5); border-radius: 3px; overflow: hidden; min-width: 80px; }
+  .score-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--accent2), var(--accent3)); transition: width 0.8s ease; }
+  .score-bar-fill.warn { background: linear-gradient(90deg, var(--warn), #ff8c00); }
+  .score-bar-fill.danger { background: linear-gradient(90deg, var(--danger), #ff6b35); }
+  .score-val { font-family: 'Orbitron', monospace; font-size: 12px; font-weight: 700; min-width: 52px; }
+
+  .attrite-badge { font-size: 10px; color: var(--danger); background: rgba(255,59,107,0.1); border: 1px solid rgba(255,59,107,0.2); padding: 2px 8px; border-radius: 4px; letter-spacing: 1px; text-transform: uppercase; }
+  .team-chip { font-size: 11px; background: rgba(0,100,255,0.12); color: var(--accent); border: 1px solid rgba(0,150,255,0.2); padding: 2px 8px; border-radius: 4px; }
+
+  /* TEAM SELECTOR */
+  .team-select-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+  .team-btn {
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .team-btn:hover, .team-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(0,200,255,0.06); }
+
+  /* LOADING */
+  .loading-overlay {
+    position: fixed; inset: 0; z-index: 1000;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 20px;
+  }
+  .loading-text { font-family: 'Orbitron', monospace; font-size: 13px; letter-spacing: 3px; color: var(--muted); animation: pulse 1.5s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+  .spinner { width: 48px; height: 48px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* SEARCH */
+  .search-input {
+    background: rgba(0,20,50,0.5);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 9px 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    outline: none;
+    width: 240px;
+    transition: border-color 0.2s;
+  }
+  .search-input:focus { border-color: var(--accent); }
+  .search-input::placeholder { color: var(--muted); }
+
+  /* OVERVIEW GRID (Admin) */
+  .team-overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 28px; }
+  .team-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .team-card:hover { border-color: var(--border-glow); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,100,255,0.1); }
+  .team-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .team-card-name { font-family: 'Orbitron', monospace; font-size: 12px; font-weight: 700; color: var(--accent); }
+  .team-card-count { font-size: 11px; color: var(--muted); }
+  .team-metric { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .team-metric-label { font-size: 11px; color: var(--muted); }
+  .team-metric-val { font-family: 'Orbitron', monospace; font-size: 13px; font-weight: 700; color: var(--accent3); }
+
+  /* PROFILE BANNER (agent) */
+  .profile-banner {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    display: flex; align-items: center; gap: 28px;
+    position: relative; overflow: hidden;
+  }
+  .profile-banner::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), var(--accent3), transparent);
+  }
+  .profile-avatar {
+    width: 64px; height: 64px;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Orbitron', monospace;
+    font-size: 22px;
+    font-weight: 900;
+    color: #fff;
+    flex-shrink: 0;
+    box-shadow: 0 0 20px rgba(0,150,255,0.3);
+  }
+  .profile-info { flex: 1; }
+  .profile-name { font-family: 'Orbitron', monospace; font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .profile-email { font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+  .profile-emp { font-size: 12px; color: var(--accent); font-family: 'Orbitron', monospace; letter-spacing: 1px; }
+
+  /* NO DATA */
+  .no-data { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 14px; }
+  .no-data .icon { font-size: 40px; margin-bottom: 12px; opacity: 0.4; }
+
+  /* RESPONSIVE */
+  @media (max-width: 700px) {
+    .dash-body { padding: 16px; }
+    .nav { padding: 0 16px; }
+    .auth-box { padding: 32px 24px; }
+    .profile-banner { flex-direction: column; text-align: center; }
+    .stat-row { grid-template-columns: 1fr 1fr; }
+  }
+
+  .hidden { display: none !important; }
+  .spinner-inline { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 6px; }
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loading">
+  <div style="text-align:center">
+    <div style="font-family:'Orbitron',monospace;font-size:22px;font-weight:900;background:linear-gradient(135deg,#00c8ff,#0066ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:4px;margin-bottom:8px">REAC HUB</div>
+    <div style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:32px">PERFORMANCE PORTAL</div>
+  </div>
+  <div class="spinner"></div>
+  <div class="loading-text">INITIALIZING SYSTEM</div>
+</div>
+
+<!-- ═══════════════════════ LOGIN PAGE ═══════════════════════ -->
+<div class="page" id="page-login">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="logo-icon">⚡</div>
+      <div class="logo-text">REAC HUB</div>
+      <div class="logo-sub">Performance Portal</div>
+    </div>
+    <div class="auth-title">SIGN IN</div>
+    <div class="auth-subtitle">Access your performance dashboard</div>
+    <div class="error-msg" id="login-error"></div>
+    <div class="field">
+      <label>Email Address</label>
+      <input type="email" id="login-email" placeholder="your@reacrevenuesolutions.com" autocomplete="email">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="login-pass" placeholder="Enter your password" autocomplete="current-password">
+    </div>
+    <button class="btn btn-primary" onclick="doLogin()">
+      <span id="login-btn-text">SIGN IN</span>
+    </button>
+    <div class="auth-link" style="margin-top:14px">
+      <a onclick="showPage('page-forgot')">Forgot Password?</a>
+    </div>
+    <div class="auth-link">
+      Don't have an account? <a onclick="showPage('page-signup')">Sign Up</a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ SIGN UP PAGE ═══════════════════════ -->
+<div class="page" id="page-signup">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="logo-icon">✦</div>
+      <div class="logo-text">REAC HUB</div>
+      <div class="logo-sub">Create Account</div>
+    </div>
+    <div class="auth-title">CREATE ACCOUNT</div>
+    <div class="auth-subtitle">Your email must be registered in the system</div>
+    <div class="error-msg" id="signup-error"></div>
+    <div class="success-msg" id="signup-success"></div>
+    <div class="field">
+      <label>Email Address</label>
+      <input type="email" id="signup-email" placeholder="your@reacrevenuesolutions.com">
+    </div>
+    <div class="field">
+      <label>Create Password</label>
+      <input type="password" id="signup-pass" placeholder="Min. 8 characters">
+    </div>
+    <div class="field">
+      <label>Confirm Password</label>
+      <input type="password" id="signup-pass2" placeholder="Repeat your password">
+    </div>
+    <button class="btn btn-primary" onclick="doSignup()">
+      <span id="signup-btn-text">CREATE ACCOUNT</span>
+    </button>
+    <div class="auth-link">
+      Already have an account? <a onclick="showPage('page-login')">Sign In</a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ FORGOT PASSWORD PAGE ═══════════════════════ -->
+<div class="page" id="page-forgot">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="logo-icon">🔑</div>
+      <div class="logo-text">REAC HUB</div>
+      <div class="logo-sub">Password Recovery</div>
+    </div>
+    <div class="auth-title">FORGOT PASSWORD</div>
+    <div class="auth-subtitle">We'll send a one-time code to your registered email</div>
+    <div class="error-msg" id="forgot-error"></div>
+    <div class="success-msg" id="forgot-success"></div>
+    <div class="field">
+      <label>Email Address</label>
+      <input type="email" id="forgot-email" placeholder="your@reacrevenuesolutions.com">
+    </div>
+    <button class="btn btn-primary" onclick="doForgot()">
+      <span id="forgot-btn-text">SEND OTP CODE</span>
+    </button>
+    <button class="btn btn-ghost" onclick="showPage('page-login')">BACK TO SIGN IN</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════ OTP PAGE ═══════════════════════ -->
+<div class="page" id="page-otp">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="logo-icon">📧</div>
+      <div class="logo-text">REAC HUB</div>
+      <div class="logo-sub">Verification</div>
+    </div>
+    <div class="auth-title">ENTER OTP</div>
+    <div class="auth-subtitle" id="otp-subtitle">Enter the 6-digit code sent to your email</div>
+    <div class="error-msg" id="otp-error"></div>
+    <div class="otp-inputs">
+      <input type="text" maxlength="1" class="otp-box" id="otp0" oninput="otpMove(0)">
+      <input type="text" maxlength="1" class="otp-box" id="otp1" oninput="otpMove(1)">
+      <input type="text" maxlength="1" class="otp-box" id="otp2" oninput="otpMove(2)">
+      <input type="text" maxlength="1" class="otp-box" id="otp3" oninput="otpMove(3)">
+      <input type="text" maxlength="1" class="otp-box" id="otp4" oninput="otpMove(4)">
+      <input type="text" maxlength="1" class="otp-box" id="otp5" oninput="otpMove(5)">
+    </div>
+
+    <div id="new-pass-fields" class="hidden">
+      <div class="field">
+        <label>New Password</label>
+        <input type="password" id="new-pass" placeholder="Min. 8 characters">
+      </div>
+      <div class="field">
+        <label>Confirm New Password</label>
+        <input type="password" id="new-pass2" placeholder="Repeat new password">
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="doVerifyOtp()">
+      <span id="otp-btn-text">VERIFY CODE</span>
+    </button>
+    <button class="btn btn-ghost" onclick="showPage('page-forgot')">RESEND CODE</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════ DASHBOARD ═══════════════════════ -->
+<div class="page" id="page-dashboard" style="flex-direction:column">
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-brand">⚡ REAC HUB</div>
+    <div class="nav-right">
+      <div class="nav-user">Welcome, <span id="nav-username">User</span></div>
+      <div class="nav-badge" id="nav-role-badge">AGENT</div>
+      <button class="btn-logout" onclick="doLogout()">LOG OUT</button>
+    </div>
+  </nav>
+
+  <!-- AGENT VIEW -->
+  <div id="view-agent" class="dash-body hidden">
+    <div class="profile-banner" id="agent-profile-banner">
+      <div class="profile-avatar" id="agent-avatar">?</div>
+      <div class="profile-info">
+        <div class="profile-name" id="agent-name-display">Loading...</div>
+        <div class="profile-email" id="agent-email-display"></div>
+        <div class="profile-emp" id="agent-emp-display"></div>
+      </div>
+    </div>
+
+    <div class="stat-row" id="agent-stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Best Overall Score</div>
+        <div class="stat-value green" id="agent-best-score">—</div>
+        <div class="stat-sub" id="agent-best-month">—</div>
+        <div class="stat-icon">🏆</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Best Rank Achieved</div>
+        <div class="stat-value gold" id="agent-best-rank">—</div>
+        <div class="stat-sub" id="agent-best-rank-month">—</div>
+        <div class="stat-icon">🥇</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Avg Attendance</div>
+        <div class="stat-value blue" id="agent-avg-att">—</div>
+        <div class="stat-sub">All active months</div>
+        <div class="stat-icon">📅</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Avg QA Score</div>
+        <div class="stat-value blue" id="agent-avg-qa">—</div>
+        <div class="stat-sub">All active months</div>
+        <div class="stat-icon">✅</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2>MONTHLY PERFORMANCE SCORES</h2>
+      </div>
+      <div class="panel-body">
+        <div class="month-tabs" id="agent-month-tabs"></div>
+        <div id="agent-month-content"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN VIEW -->
+  <div id="view-admin" class="dash-body hidden">
+    <div class="section-header">
+      <h1>COMMAND CENTER</h1>
+      <p>Full team performance overview — all agents across all months</p>
+    </div>
+
+    <div class="stat-row" id="admin-stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Active Agents</div>
+        <div class="stat-value blue" id="admin-total-agents">—</div>
+        <div class="stat-icon">👥</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Teams</div>
+        <div class="stat-value blue" id="admin-total-teams">4</div>
+        <div class="stat-icon">🏢</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Latest Month Avg</div>
+        <div class="stat-value green" id="admin-latest-avg">—</div>
+        <div class="stat-sub" id="admin-latest-month-label">—</div>
+        <div class="stat-icon">📊</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Top Performer</div>
+        <div class="stat-value" style="font-size:14px;margin-top:4px" id="admin-top-agent">—</div>
+        <div class="stat-sub" id="admin-top-agent-score">—</div>
+        <div class="stat-icon">⭐</div>
+      </div>
+    </div>
+
+    <!-- Team Cards -->
+    <div class="panel">
+      <div class="panel-header"><h2>TEAM OVERVIEW</h2></div>
+      <div class="panel-body">
+        <div class="team-overview-grid" id="admin-team-cards"></div>
+      </div>
+    </div>
+
+    <!-- All Agents Table -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2>ALL AGENTS</h2>
+        <div style="display:flex;gap:10px;align-items:center">
+          <input class="search-input" id="admin-search" placeholder="Search agent..." oninput="filterAdminTable()">
+        </div>
+      </div>
+      <div class="panel-body" style="padding:0">
+        <div style="padding:16px 20px;border-bottom:1px solid var(--border)">
+          <div class="month-tabs" id="admin-month-tabs"></div>
+        </div>
+        <div class="score-table-wrap">
+          <table id="admin-table">
+            <thead><tr id="admin-table-head"></tr></thead>
+            <tbody id="admin-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TEAMLEAD VIEW -->
+  <div id="view-teamlead" class="dash-body hidden">
+    <div class="section-header">
+      <h1>TEAM DASHBOARD</h1>
+      <p id="tl-subtitle">Your team's performance overview</p>
+    </div>
+
+    <div class="stat-row" id="tl-stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Team Members</div>
+        <div class="stat-value blue" id="tl-member-count">—</div>
+        <div class="stat-icon">👥</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Team Avg Overall</div>
+        <div class="stat-value green" id="tl-avg-overall">—</div>
+        <div class="stat-sub" id="tl-avg-month">Latest month</div>
+        <div class="stat-icon">📈</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Team Avg TPS</div>
+        <div class="stat-value blue" id="tl-avg-tps">—</div>
+        <div class="stat-sub">Latest month</div>
+        <div class="stat-icon">📞</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Team Top Rank</div>
+        <div class="stat-value gold" id="tl-top-rank">—</div>
+        <div class="stat-sub" id="tl-top-name">—</div>
+        <div class="stat-icon">🥇</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2>TEAM SCORES</h2>
+      </div>
+      <div class="panel-body">
+        <div class="month-tabs" id="tl-month-tabs"></div>
+        <div class="score-table-wrap">
+          <table id="tl-table">
+            <thead><tr id="tl-table-head"></tr></thead>
+            <tbody id="tl-table-body"></tbody>
+          </table>
+        </div>
+        <!-- Team Average Row -->
+        <div class="panel" style="margin-top:20px;margin-bottom:0">
+          <div class="panel-header"><h2>TEAM AVERAGE — CURRENT VIEW</h2></div>
+          <div class="panel-body" id="tl-avg-panel"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page-dashboard -->
+
+<script>
+// ══════════════════════════════════════════════════════════
+//  CONFIG — UPDATE THIS BEFORE DEPLOYING
+// ══════════════════════════════════════════════════════════
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzbXYjQTWHpSNXb2d1ZaDc3GZwcgmFIzprd05teeWgt13OZo4Bc-KYarDFzsJaEuejzPA/exec'; // <-- Replace after deploying Apps Script
+const SHEET_ID = '13t7zgokHi_7c7UM2bEVvPCmMs55q62GcVRB66ytd4Fw';
+
+// ══════════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════════
+let currentUser = null;
+let allAgents = [];
+let managementUsers = [];
+let pendingOtpEmail = '';
+let pendingOtpCode = '';
+let otpMode = 'forgot'; // 'signup' or 'forgot'
+
+// ══════════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════════
+window.addEventListener('load', async () => {
+  // Check saved session
+  const saved = sessionStorage.getItem('reac_user');
+  if (saved) {
+    currentUser = JSON.parse(saved);
+    await loadDashboard();
+  } else {
+    hideLoading();
+    showPage('page-login');
+  }
+});
+
+function hideLoading() {
+  document.getElementById('loading').style.display = 'none';
+}
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  // Clear errors
+  document.querySelectorAll('.error-msg, .success-msg').forEach(el => el.style.display = 'none');
+}
+
+function showError(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg; el.style.display = 'block';
+}
+function showSuccess(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg; el.style.display = 'block';
+}
+
+// ══════════════════════════════════════════════════════════
+//  API CALLS (to Google Apps Script)
+// ══════════════════════════════════════════════════════════
+async function gasCall(action, params = {}) {
+  const url = new URL(GAS_URL);
+  url.searchParams.set('action', action);
+  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+  const resp = await fetch(url.toString());
+  return await resp.json();
+}
+
+async function gasPost(action, data = {}) {
+  const resp = await fetch(GAS_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action, ...data })
+  });
+  return await resp.json();
+}
+
+// ══════════════════════════════════════════════════════════
+//  AUTH: LOGIN
+// ══════════════════════════════════════════════════════════
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim().toLowerCase();
+  const pass = document.getElementById('login-pass').value;
+  if (!email || !pass) { showError('login-error', 'Please enter email and password.'); return; }
+
+  const btn = document.getElementById('login-btn-text');
+  btn.innerHTML = '<span class="spinner-inline"></span>SIGNING IN...';
+
+  try {
+    const res = await gasCall('login', { email, password: pass });
+    if (res.success) {
+      currentUser = res.user;
+      sessionStorage.setItem('reac_user', JSON.stringify(currentUser));
+      await loadDashboard();
+    } else {
+      showError('login-error', res.message || 'Invalid email or password.');
+    }
+  } catch(e) {
+    showError('login-error', 'Connection error. Please try again.');
+  }
+  btn.textContent = 'SIGN IN';
+}
+
+// ══════════════════════════════════════════════════════════
+//  AUTH: SIGN UP
+// ══════════════════════════════════════════════════════════
+async function doSignup() {
+  const email = document.getElementById('signup-email').value.trim().toLowerCase();
+  const pass = document.getElementById('signup-pass').value;
+  const pass2 = document.getElementById('signup-pass2').value;
+
+  if (!email || !pass || !pass2) { showError('signup-error', 'All fields are required.'); return; }
+  if (pass.length < 8) { showError('signup-error', 'Password must be at least 8 characters.'); return; }
+  if (pass !== pass2) { showError('signup-error', 'Passwords do not match.'); return; }
+
+  const btn = document.getElementById('signup-btn-text');
+  btn.innerHTML = '<span class="spinner-inline"></span>CHECKING...';
+
+  try {
+    const res = await gasCall('checkEmail', { email });
+    if (!res.exists) {
+      showError('signup-error', 'Your email is not registered in the system. Contact your administrator.');
+      btn.textContent = 'CREATE ACCOUNT'; return;
+    }
+    if (res.hasPassword) {
+      showError('signup-error', 'An account already exists for this email. Please sign in.');
+      btn.textContent = 'CREATE ACCOUNT'; return;
+    }
+
+    // Send OTP for sign up
+    pendingOtpEmail = email;
+    otpMode = 'signup';
+    window._signupPass = pass;
+
+    btn.innerHTML = '<span class="spinner-inline"></span>SENDING OTP...';
+    const otpRes = await gasCall('sendOtp', { email });
+    if (otpRes.success) {
+      pendingOtpCode = otpRes.otp; // server returns masked; we verify on server
+      document.getElementById('otp-subtitle').textContent = `Enter the 6-digit code sent to ${email}`;
+      document.getElementById('new-pass-fields').classList.add('hidden');
+      showPage('page-otp');
+    } else {
+      showError('signup-error', 'Failed to send OTP. Try again.');
+    }
+  } catch(e) {
+    showError('signup-error', 'Connection error. Please try again.');
+  }
+  btn.textContent = 'CREATE ACCOUNT';
+}
+
+// ══════════════════════════════════════════════════════════
+//  AUTH: FORGOT PASSWORD
+// ══════════════════════════════════════════════════════════
+async function doForgot() {
+  const email = document.getElementById('forgot-email').value.trim().toLowerCase();
+  if (!email) { showError('forgot-error', 'Please enter your email address.'); return; }
+
+  const btn = document.getElementById('forgot-btn-text');
+  btn.innerHTML = '<span class="spinner-inline"></span>SENDING...';
+
+  try {
+    const res = await gasCall('checkEmail', { email });
+    if (!res.exists) {
+      showError('forgot-error', 'Email not found in the system.');
+      btn.textContent = 'SEND OTP CODE'; return;
+    }
+
+    const otpRes = await gasCall('sendOtp', { email });
+    if (otpRes.success) {
+      pendingOtpEmail = email;
+      otpMode = 'forgot';
+      document.getElementById('otp-subtitle').textContent = `Enter the 6-digit code sent to ${email}`;
+      document.getElementById('new-pass-fields').classList.remove('hidden');
+      showPage('page-otp');
+      showSuccess('forgot-success', 'OTP sent! Check your email.');
+    } else {
+      showError('forgot-error', 'Failed to send OTP. Try again.');
+    }
+  } catch(e) {
+    showError('forgot-error', 'Connection error.');
+  }
+  btn.textContent = 'SEND OTP CODE';
+}
+
+// ══════════════════════════════════════════════════════════
+//  OTP INPUT
+// ══════════════════════════════════════════════════════════
+function otpMove(i) {
+  const val = document.getElementById('otp' + i).value;
+  if (val && i < 5) document.getElementById('otp' + (i+1)).focus();
+}
+
+function getOtpValue() {
+  return [0,1,2,3,4,5].map(i => document.getElementById('otp'+i).value).join('');
+}
+
+async function doVerifyOtp() {
+  const code = getOtpValue();
+  if (code.length < 6) { showError('otp-error', 'Please enter all 6 digits.'); return; }
+
+  const btn = document.getElementById('otp-btn-text');
+  btn.innerHTML = '<span class="spinner-inline"></span>VERIFYING...';
+
+  try {
+    if (otpMode === 'forgot') {
+      const newPass = document.getElementById('new-pass').value;
+      const newPass2 = document.getElementById('new-pass2').value;
+      if (!newPass || newPass.length < 8) { showError('otp-error', 'Password must be at least 8 characters.'); btn.textContent = 'VERIFY CODE'; return; }
+      if (newPass !== newPass2) { showError('otp-error', 'Passwords do not match.'); btn.textContent = 'VERIFY CODE'; return; }
+
+      const res = await gasPost('verifyOtpAndSetPassword', { email: pendingOtpEmail, otp: code, password: newPass });
+      if (res.success) {
+        showPage('page-login');
+        setTimeout(() => showSuccess('login-error', 'Password updated! Sign in with your new password.'), 100);
+      } else {
+        showError('otp-error', res.message || 'Invalid or expired OTP.');
+      }
+    } else {
+      // signup mode
+      const res = await gasPost('verifyOtpAndSetPassword', { email: pendingOtpEmail, otp: code, password: window._signupPass });
+      if (res.success) {
+        showPage('page-login');
+        setTimeout(() => showSuccess('login-error', 'Account created! You can now sign in.'), 100);
+      } else {
+        showError('otp-error', res.message || 'Invalid or expired OTP.');
+      }
+    }
+  } catch(e) {
+    showError('otp-error', 'Connection error. Please try again.');
+  }
+  btn.textContent = 'VERIFY CODE';
+}
+
+// ══════════════════════════════════════════════════════════
+//  LOGOUT
+// ══════════════════════════════════════════════════════════
+function doLogout() {
+  currentUser = null;
+  sessionStorage.removeItem('reac_user');
+  showPage('page-login');
+}
+
+// ══════════════════════════════════════════════════════════
+//  DASHBOARD LOAD
+// ══════════════════════════════════════════════════════════
+async function loadDashboard() {
+  document.getElementById('loading').style.display = 'flex';
+  try {
+    // Fetch all data
+    const res = await gasCall('getData');
+    allAgents = res.agents || [];
+    managementUsers = res.management || [];
+  } catch(e) {
+    allAgents = []; managementUsers = [];
+  }
+
+  hideLoading();
+  showPage('page-dashboard');
+
+  const role = currentUser.role;
+  document.getElementById('nav-username').textContent = currentUser.name.split(',')[0].split(' ').pop() || currentUser.name;
+  document.getElementById('nav-role-badge').textContent = role.toUpperCase();
+
+  document.getElementById('view-agent').classList.add('hidden');
+  document.getElementById('view-admin').classList.add('hidden');
+  document.getElementById('view-teamlead').classList.add('hidden');
+
+  if (role === 'admin') {
+    document.getElementById('view-admin').classList.remove('hidden');
+    renderAdminView();
+  } else if (role === 'teamlead') {
+    document.getElementById('view-teamlead').classList.remove('hidden');
+    renderTeamLeadView();
+  } else {
+    document.getElementById('view-agent').classList.remove('hidden');
+    renderAgentView();
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+//  DATA HELPERS
+// ══════════════════════════════════════════════════════════
+function getMonths(agents) {
+  if (!agents.length) return [];
+  return agents[0].months ? agents[0].months.map(m => m.label) : [];
+}
+
+function pct(val) {
+  if (val === null || val === undefined || val === '' || isNaN(parseFloat(val))) return null;
+  const n = parseFloat(String(val).replace('%',''));
+  return n;
+}
+
+function fmtPct(val) {
+  const n = pct(val);
+  if (n === null) return '—';
+  return n.toFixed(2) + '%';
+}
+
+function colorClass(val) {
+  const n = pct(val);
+  if (n === null) return '';
+  if (n >= 90) return 'green';
+  if (n >= 75) return 'blue';
+  if (n >= 60) return '';
+  return 'danger';
+}
+
+function scoreBarHTML(val) {
+  const n = pct(val);
+  if (n === null) return '<span style="color:var(--muted)">—</span>';
+  const cls = n >= 90 ? '' : n >= 75 ? '' : n >= 60 ? 'warn' : 'danger';
+  return `<div class="score-bar-wrap">
+    <div class="score-bar"><div class="score-bar-fill ${cls}" style="width:${Math.min(n,100)}%"></div></div>
+    <span class="score-val" style="color:${n>=90?'var(--accent3)':n>=75?'var(--accent)':n>=60?'var(--warn)':'var(--danger)'}">${n.toFixed(1)}%</span>
+  </div>`;
+}
+
+function rankBadgeHTML(rank) {
+  if (!rank || rank === '#N/A' || rank === 'Attrite') return '<span style="color:var(--muted)">—</span>';
+  const r = parseInt(rank);
+  const cls = r === 1 ? 'rank-1' : r === 2 ? 'rank-2' : r === 3 ? 'rank-3' : 'rank-other';
+  return `<span class="rank-badge ${cls}">${r}</span>`;
+}
+
+function avgOfMonthField(agents, monthIdx, field) {
+  const vals = agents.map(a => {
+    if (!a.months || !a.months[monthIdx]) return null;
+    return pct(a.months[monthIdx][field]);
+  }).filter(v => v !== null);
+  if (!vals.length) return null;
+  return vals.reduce((s,v)=>s+v,0)/vals.length;
+}
+
+// ══════════════════════════════════════════════════════════
+//  AGENT VIEW
+// ══════════════════════════════════════════════════════════
+function renderAgentView() {
+  const agent = allAgents.find(a => a.email === currentUser.email);
+  if (!agent) {
+    document.getElementById('view-agent').innerHTML = '<div class="dash-body"><div class="no-data"><div class="icon">📊</div>No data found for your account. Contact your administrator.</div></div>';
+    return;
+  }
+
+  // Profile
+  const initials = (agent.name||'?').split(',').map(p=>p.trim()[0]||'').slice(0,2).join('') || agent.name[0];
+  document.getElementById('agent-avatar').textContent = initials;
+  document.getElementById('agent-name-display').textContent = agent.name;
+  document.getElementById('agent-email-display').textContent = agent.email;
+  document.getElementById('agent-emp-display').textContent = agent.empNo ? 'EMP #' + agent.empNo : '';
+
+  // Stats
+  const activeMonths = (agent.months||[]).filter(m => m.overall && m.overall !== 'Attrite' && m.overall !== '#N/A');
+  let bestScore = 0, bestMonth = '', bestRank = 999, bestRankMonth = '';
+  let sumAtt = 0, sumQa = 0, cnt = 0;
+
+  activeMonths.forEach(m => {
+    const ov = pct(m.overall);
+    if (ov !== null && ov > bestScore) { bestScore = ov; bestMonth = m.label; }
+    const rk = parseInt(m.rank);
+    if (!isNaN(rk) && rk < bestRank) { bestRank = rk; bestRankMonth = m.label; }
+    const att = pct(m.attendance); if (att !== null) { sumAtt += att; cnt++; }
+    const qa = pct(m.qa); if (qa !== null) sumQa += qa;
+  });
+
+  document.getElementById('agent-best-score').textContent = bestScore ? bestScore.toFixed(2)+'%' : '—';
+  document.getElementById('agent-best-month').textContent = bestMonth || '—';
+  document.getElementById('agent-best-rank').textContent = bestRank < 999 ? '#' + bestRank : '—';
+  document.getElementById('agent-best-rank-month').textContent = bestRankMonth || '—';
+  document.getElementById('agent-avg-att').textContent = cnt ? (sumAtt/cnt).toFixed(1)+'%' : '—';
+  document.getElementById('agent-avg-qa').textContent = cnt ? (sumQa/cnt).toFixed(1)+'%' : '—';
+
+  // Month tabs
+  const months = agent.months || [];
+  const tabsEl = document.getElementById('agent-month-tabs');
+  tabsEl.innerHTML = '';
+  months.forEach((m, i) => {
+    const isAttrite = m.overall === 'Attrite' || !m.count;
+    const btn = document.createElement('button');
+    btn.className = 'month-tab' + (isAttrite ? ' no-data' : '');
+    btn.textContent = m.label;
+    if (!isAttrite) btn.onclick = () => renderAgentMonthDetail(agent, i, months);
+    tabsEl.appendChild(btn);
+  });
+
+  // Show latest active month
+  const latestIdx = months.map((m,i)=>({m,i})).filter(({m})=>m.overall && m.overall!=='Attrite'&&m.count).pop();
+  if (latestIdx) renderAgentMonthDetail(agent, latestIdx.i, months);
+}
+
+function renderAgentMonthDetail(agent, idx, months) {
+  document.querySelectorAll('#agent-month-tabs .month-tab').forEach((b,i)=>b.classList.toggle('active',i===idx));
+  const m = months[idx];
+  const el = document.getElementById('agent-month-content');
+
+  if (!m || m.overall === 'Attrite' || !m.count) {
+    el.innerHTML = '<div class="no-data"><div class="icon">📭</div>No data for this month.</div>';
+    return;
+  }
+
+  el.innerHTML = `
+    <div class="stat-row" style="margin-bottom:20px">
+      <div class="stat-card"><div class="stat-label">Count / TPS</div><div class="stat-value blue">${m.count||'—'}</div><div class="stat-sub">TPS: ${fmtPct(m.tps)}</div></div>
+      <div class="stat-card"><div class="stat-label">Attendance</div><div class="stat-value ${colorClass(m.attendance)||'blue'}">${fmtPct(m.attendance)}</div></div>
+      <div class="stat-card"><div class="stat-label">QA Score</div><div class="stat-value ${colorClass(m.qa)||'blue'}">${fmtPct(m.qa)}</div></div>
+      <div class="stat-card"><div class="stat-label">Overall Performance</div><div class="stat-value green">${fmtPct(m.overall)}</div></div>
+      <div class="stat-card"><div class="stat-label">Rank</div><div style="margin-top:8px">${rankBadgeHTML(m.rank)}</div><div class="stat-sub">Out of all agents</div></div>
+    </div>
+    <div style="padding:20px;background:rgba(0,20,50,0.3);border-radius:10px">
+      <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:16px">PERFORMANCE BREAKDOWN</div>
+      <div style="display:grid;gap:12px">
+        <div><div style="font-size:12px;color:var(--muted);margin-bottom:6px">TPS Score</div>${scoreBarHTML(m.tps)}</div>
+        <div><div style="font-size:12px;color:var(--muted);margin-bottom:6px">Attendance</div>${scoreBarHTML(m.attendance)}</div>
+        <div><div style="font-size:12px;color:var(--muted);margin-bottom:6px">QA Score</div>${scoreBarHTML(m.qa)}</div>
+        <div><div style="font-size:12px;color:var(--muted);margin-bottom:6px">Overall Performance</div>${scoreBarHTML(m.overall)}</div>
+      </div>
+    </div>
+  `;
+}
+
+// ══════════════════════════════════════════════════════════
+//  ADMIN VIEW
+// ══════════════════════════════════════════════════════════
+let adminActiveMonth = 0;
+let adminFilteredAgents = [];
+
+function renderAdminView() {
+  const active = allAgents.filter(a => a.email);
+  adminFilteredAgents = active;
+
+  document.getElementById('admin-total-agents').textContent = active.length;
+
+  // Latest month stats
+  if (active.length) {
+    const months = active[0].months || [];
+    const latestIdx = months.map((m,i)=>({m,i})).filter(({m})=>m.count&&m.overall!=='Attrite').pop();
+    if (latestIdx) {
+      adminActiveMonth = latestIdx.i;
+      const avg = avgOfMonthField(active, latestIdx.i, 'overall');
+      document.getElementById('admin-latest-avg').textContent = avg ? avg.toFixed(2)+'%' : '—';
+      document.getElementById('admin-latest-month-label').textContent = months[latestIdx.i].label;
+
+      // Top agent
+      let topAgent = null; let topScore = 0;
+      active.forEach(a => {
+        const s = pct(a.months[latestIdx.i]?.overall);
+        if (s !== null && s > topScore) { topScore = s; topAgent = a; }
+      });
+      if (topAgent) {
+        document.getElementById('admin-top-agent').textContent = topAgent.name.split(',')[0];
+        document.getElementById('admin-top-agent-score').textContent = topScore.toFixed(2)+'%';
+      }
+    }
+    renderAdminMonthTabs(months, active);
+    renderAdminTeamCards(active, adminActiveMonth);
+    renderAdminTable(active, adminActiveMonth);
+  }
+}
+
+function renderAdminMonthTabs(months, agents) {
+  const el = document.getElementById('admin-month-tabs');
+  el.innerHTML = '';
+  months.forEach((m, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'month-tab' + (i === adminActiveMonth ? ' active' : '');
+    btn.textContent = m.label;
+    btn.onclick = () => { adminActiveMonth = i; renderAdminMonthTabs(months, agents); renderAdminTable(agents, i); renderAdminTeamCards(agents, i); };
+    el.appendChild(btn);
+  });
+}
+
+function getTeamLeads() {
+  return managementUsers.filter(u => u.role === 'teamlead');
+}
+
+function renderAdminTeamCards(agents, monthIdx) {
+  const leads = getTeamLeads();
+  const el = document.getElementById('admin-team-cards');
+  el.innerHTML = '';
+  leads.forEach(tl => {
+    const team = agents.filter(a => a.teamLeadEmail === tl.email);
+    if (!team.length) return;
+    const avgOv = avgOfMonthField(team, monthIdx, 'overall');
+    const avgAtt = avgOfMonthField(team, monthIdx, 'attendance');
+    const avgQa = avgOfMonthField(team, monthIdx, 'qa');
+
+    const div = document.createElement('div');
+    div.className = 'team-card';
+    div.innerHTML = `
+      <div class="team-card-header">
+        <div class="team-card-name">${tl.name.split(' ').slice(-1)[0]}'s Team</div>
+        <div class="team-card-count">${team.length} agents</div>
+      </div>
+      <div class="team-metric"><span class="team-metric-label">Avg Overall</span><span class="team-metric-val">${avgOv ? avgOv.toFixed(2)+'%':'—'}</span></div>
+      <div class="team-metric"><span class="team-metric-label">Avg Attendance</span><span class="team-metric-val">${avgAtt ? avgAtt.toFixed(2)+'%':'—'}</span></div>
+      <div class="team-metric"><span class="team-metric-label">Avg QA Score</span><span class="team-metric-val">${avgQa ? avgQa.toFixed(2)+'%':'—'}</span></div>
+    `;
+    el.appendChild(div);
+  });
+}
+
+function renderAdminTable(agents, monthIdx) {
+  const head = document.getElementById('admin-table-head');
+  const body = document.getElementById('admin-table-body');
+  head.innerHTML = '<th>Rank</th><th>Agent Name</th><th>Team Lead</th><th>Count</th><th>TPS</th><th>Attendance</th><th>QA Score</th><th>Overall</th>';
+  body.innerHTML = '';
+
+  // Sort by rank
+  const sorted = [...agents].sort((a, b) => {
+    const ra = parseInt(a.months?.[monthIdx]?.rank) || 9999;
+    const rb = parseInt(b.months?.[monthIdx]?.rank) || 9999;
+    return ra - rb;
+  });
+
+  sorted.forEach(agent => {
+    const m = agent.months?.[monthIdx];
+    const tl = managementUsers.find(u => u.email === agent.teamLeadEmail);
+    const tr = document.createElement('tr');
+    if (m?.overall === 'Attrite' || !m?.count) {
+      tr.innerHTML = `<td>—</td><td>${agent.name}</td><td><span class="team-chip">${tl?.name?.split(' ').slice(-1)[0]||'—'}</span></td><td colspan="5"><span class="attrite-badge">Attrited</span></td>`;
+    } else {
+      tr.innerHTML = `
+        <td>${rankBadgeHTML(m?.rank)}</td>
+        <td><strong>${agent.name}</strong></td>
+        <td><span class="team-chip">${tl?.name?.split(' ').slice(-1)[0]||'—'}</span></td>
+        <td>${m?.count||'—'}</td>
+        <td>${fmtPct(m?.tps)}</td>
+        <td>${fmtPct(m?.attendance)}</td>
+        <td>${fmtPct(m?.qa)}</td>
+        <td>${scoreBarHTML(m?.overall)}</td>
+      `;
+    }
+    body.appendChild(tr);
+  });
+}
+
+function filterAdminTable() {
+  const q = document.getElementById('admin-search').value.toLowerCase();
+  document.querySelectorAll('#admin-table-body tr').forEach(tr => {
+    tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+//  TEAM LEAD VIEW
+// ══════════════════════════════════════════════════════════
+let tlActiveMonth = 0;
+
+function renderTeamLeadView() {
+  const tlEmail = currentUser.email;
+  const myTeam = allAgents.filter(a => a.teamLeadEmail === tlEmail && a.email);
+
+  document.getElementById('tl-member-count').textContent = myTeam.length;
+  document.getElementById('tl-subtitle').textContent = `Team of ${myTeam.length} agents — ${currentUser.name}`;
+
+  if (!myTeam.length) {
+    document.getElementById('tl-avg-overall').textContent = '—';
+    return;
+  }
+
+  const months = myTeam[0].months || [];
+  const latestIdx = months.map((m,i)=>({m,i})).filter(({m})=>m.count&&m.overall!=='Attrite').pop();
+  if (latestIdx) {
+    tlActiveMonth = latestIdx.i;
+    const avgOv = avgOfMonthField(myTeam, latestIdx.i, 'overall');
+    const avgTps = avgOfMonthField(myTeam, latestIdx.i, 'tps');
+    document.getElementById('tl-avg-overall').textContent = avgOv ? avgOv.toFixed(2)+'%' : '—';
+    document.getElementById('tl-avg-tps').textContent = avgTps ? avgTps.toFixed(2)+'%' : '—';
+    document.getElementById('tl-avg-month').textContent = months[latestIdx.i].label;
+
+    // Top rank in team
+    let topRk = 999, topName = '';
+    myTeam.forEach(a => {
+      const r = parseInt(a.months?.[latestIdx.i]?.rank);
+      if (!isNaN(r) && r < topRk) { topRk = r; topName = a.name.split(',')[0]; }
+    });
+    document.getElementById('tl-top-rank').textContent = topRk < 999 ? '#'+topRk : '—';
+    document.getElementById('tl-top-name').textContent = topName || '—';
+  }
+
+  renderTLMonthTabs(months, myTeam);
+  renderTLTable(myTeam, tlActiveMonth, months);
+}
+
+function renderTLMonthTabs(months, team) {
+  const el = document.getElementById('tl-month-tabs');
+  el.innerHTML = '';
+  months.forEach((m, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'month-tab' + (i === tlActiveMonth ? ' active' : '');
+    btn.textContent = m.label;
+    btn.onclick = () => { tlActiveMonth = i; renderTLMonthTabs(months, team); renderTLTable(team, i, months); };
+    el.appendChild(btn);
+  });
+}
+
+function renderTLTable(team, monthIdx, months) {
+  const head = document.getElementById('tl-table-head');
+  const body = document.getElementById('tl-table-body');
+  head.innerHTML = '<th>Rank</th><th>Agent Name</th><th>Count</th><th>TPS</th><th>Attendance</th><th>QA Score</th><th>Overall</th>';
+  body.innerHTML = '';
+
+  const sorted = [...team].sort((a,b) => {
+    const ra = parseInt(a.months?.[monthIdx]?.rank)||9999;
+    const rb = parseInt(b.months?.[monthIdx]?.rank)||9999;
+    return ra-rb;
+  });
+
+  sorted.forEach(agent => {
+    const m = agent.months?.[monthIdx];
+    const tr = document.createElement('tr');
+    if (m?.overall === 'Attrite' || !m?.count) {
+      tr.innerHTML = `<td>—</td><td>${agent.name}</td><td colspan="5"><span class="attrite-badge">Attrited</span></td>`;
+    } else {
+      tr.innerHTML = `
+        <td>${rankBadgeHTML(m?.rank)}</td>
+        <td><strong>${agent.name}</strong></td>
+        <td>${m?.count||'—'}</td>
+        <td>${fmtPct(m?.tps)}</td>
+        <td>${fmtPct(m?.attendance)}</td>
+        <td>${fmtPct(m?.qa)}</td>
+        <td>${scoreBarHTML(m?.overall)}</td>
+      `;
+    }
+    body.appendChild(tr);
+  });
+
+  // Team averages
+  const activeForMonth = team.filter(a => {
+    const m = a.months?.[monthIdx];
+    return m && m.overall !== 'Attrite' && m.count;
+  });
+  const avgOv = avgOfMonthField(activeForMonth, monthIdx, 'overall');
+  const avgTps = avgOfMonthField(activeForMonth, monthIdx, 'tps');
+  const avgAtt = avgOfMonthField(activeForMonth, monthIdx, 'attendance');
+  const avgQa = avgOfMonthField(activeForMonth, monthIdx, 'qa');
+
+  document.getElementById('tl-avg-panel').innerHTML = `
+    <div class="stat-row" style="margin-bottom:0">
+      <div class="stat-card"><div class="stat-label">Avg TPS</div><div class="stat-value blue">${avgTps?avgTps.toFixed(2)+'%':'—'}</div></div>
+      <div class="stat-card"><div class="stat-label">Avg Attendance</div><div class="stat-value blue">${avgAtt?avgAtt.toFixed(2)+'%':'—'}</div></div>
+      <div class="stat-card"><div class="stat-label">Avg QA Score</div><div class="stat-value blue">${avgQa?avgQa.toFixed(2)+'%':'—'}</div></div>
+      <div class="stat-card"><div class="stat-label">Avg Overall</div><div class="stat-value green">${avgOv?avgOv.toFixed(2)+'%':'—'}</div></div>
+    </div>
+  `;
+}
+
+// Enter on login
+document.getElementById('login-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+document.getElementById('login-email').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('login-pass').focus(); });
+</script>
+</body>
+</html>
