@@ -999,7 +999,7 @@ body {
       <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
     </div>
     <h1>REAC AGENT HUB</h1>
-    <p>Performance Intelligence Portal</p>
+    <p>Loading...</p>
   </div>
   <div class="auth-card">
     <div style="position:absolute;top:9px;right:12px;font-family:var(--font-mono);font-size:9px;color:var(--text3);letter-spacing:0.1em">SYS:AUTH v3.0</div>
@@ -1007,15 +1007,15 @@ body {
     <p class="auth-desc">Authenticate to enter the performance network</p>
     <div class="msg-box msg-error" id="login-err"></div>
     <div class="msg-box msg-ok"    id="login-ok"></div>
-    <div class="field">
+    <div class="field" style="width: 100%;">
       <label>Email Address</label>
-      <input type="email" id="login-email" placeholder="your@reacrevenuesolutions.com" autocomplete="email"/>
+      <input type="email" id="login-email" placeholder="your@reacrevenuesolutions.com" autocomplete="email" style="width: 100%; box-sizing: border-box;"/>
     </div>
-    <div class="field">
+    <div class="field" style="width: 100%;">
       <label>Security Key / Password</label>
-      <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"/>
+      <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" style="width: 100%; box-sizing: border-box;"/>
     </div>
-    <button class="btn-primary" id="login-btn" onclick="doLogin()"><span>⬡ AUTHENTICATE</span></button>
+    <button class="btn-primary" id="login-btn" onclick="doLogin()" style="width: 100%; box-sizing: border-box;"><span>⬡ AUTHENTICATE</span></button>
     <div class="auth-footer">
       <button onclick="show('s-forgot')">Forgot password?</button>
       <span class="sep">|</span>
