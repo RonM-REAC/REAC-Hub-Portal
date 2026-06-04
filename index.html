@@ -1,4 +1,4 @@
-cat > /home/claude/index.html << 'HTMLEOF'
+cat > /mnt/user-data/outputs/index.html << 'HTMLEOF'
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -40,8 +40,6 @@ cat > /home/claude/index.html << 'HTMLEOF'
   --input-radius: 2px;
   --btn-radius: 2px;
   --auth-card-bg: rgba(8,15,26,0.92);
-  --particles-visible: block;
-  --grid-visible: block;
 }
 
 [data-theme="clean"] {
@@ -75,8 +73,6 @@ cat > /home/claude/index.html << 'HTMLEOF'
   --input-radius: 8px;
   --btn-radius: 8px;
   --auth-card-bg: #ffffff;
-  --particles-visible: none;
-  --grid-visible: none;
 }
 
 [data-theme="clean"] body { background: var(--bg); }
@@ -132,27 +128,17 @@ cat > /home/claude/index.html << 'HTMLEOF'
 [data-theme="clean"] .btn-ctrl:hover { box-shadow: 0 2px 8px rgba(37,99,235,0.15); }
 [data-theme="clean"] .page-tag { background: #eff6ff; }
 [data-theme="clean"] .s-logo-icon { box-shadow: none; background: #eff6ff; }
+[data-theme="clean"] .month-select-ctrl { background: #f8fafc; border-color: #e2e8f0; }
+[data-theme="clean"] .team-card { background: #ffffff; border-color: #e2e8f0; }
+[data-theme="clean"] .pass-rule.ok { color: #059669; }
+[data-theme="clean"] .pass-rule.fail { color: #94a3b8; }
 
---sidebar-w: 228px;
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { width: 100%; height: 100%; overflow: hidden; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-body);
-  font-size: 15px;
-  letter-spacing: 0.02em;
-  -webkit-font-smoothing: antialiased;
-  transition: background 0.4s ease, color 0.4s ease;
-}
+body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 15px; letter-spacing: 0.02em; -webkit-font-smoothing: antialiased; transition: background 0.4s ease, color 0.4s ease; }
 
 #bg-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
-.grid-overlay {
-  position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background-image: linear-gradient(rgba(0,255,231,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,231,0.025) 1px, transparent 1px);
-  background-size: 55px 55px;
-}
+.grid-overlay { position: fixed; inset: 0; z-index: 0; pointer-events: none; background-image: linear-gradient(rgba(0,255,231,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,231,0.025) 1px, transparent 1px); background-size: 55px 55px; }
 .vignette { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(ellipse at center, transparent 35%, rgba(5,10,18,0.88) 100%); }
 @keyframes scanline-move { 0% { top: -4px; } 100% { top: 100%; } }
 .scanline { position: fixed; left: 0; width: 100%; height: 3px; z-index: 5; pointer-events: none; background: linear-gradient(180deg, transparent, rgba(0,255,231,0.07), transparent); animation: scanline-move 7s linear infinite; }
@@ -205,14 +191,24 @@ body {
 .auth-footer button:hover { text-shadow: 0 0 12px rgba(0,255,231,0.7); }
 .auth-footer .sep { color: var(--text3); }
 
+/* OTP boxes */
 .otp-row { display: flex; gap: 10px; justify-content: center; margin: 1.4rem 0; }
 .otp-box { width: 52px; height: 60px; background: rgba(0,255,231,0.04); border: 1px solid var(--border); border-radius: 4px; color: var(--neon); font-family: var(--font-head); font-size: 22px; font-weight: 700; text-align: center; outline: none; transition: all 0.2s; caret-color: var(--neon); }
 .otp-box:focus { border-color: var(--neon); background: rgba(0,255,231,0.09); box-shadow: 0 0 20px rgba(0,255,231,0.2); }
 .otp-box.filled { border-color: rgba(0,255,231,0.6); background: rgba(0,255,231,0.07); }
 
+/* Password rules */
+.pass-rules { margin: 10px 0 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 5px 12px; }
+.pass-rule { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; display: flex; align-items: center; gap: 5px; transition: color 0.2s; color: var(--text3); }
+.pass-rule.ok   { color: var(--neon); }
+.pass-rule.fail { color: var(--text3); }
+.pass-rule-icon { font-size: 10px; }
+.pass-strength { height: 3px; background: var(--border2); border-radius: 2px; margin: 8px 0 4px; overflow: hidden; }
+.pass-strength-fill { height: 100%; border-radius: 2px; transition: width 0.4s ease, background 0.4s ease; width: 0%; }
+
+/* App layout */
 .app-screen { flex-direction: row; }
 .app-layout { display: flex; width: 100%; height: 100%; }
-
 .sidebar { width: 228px; height: 100%; flex-shrink: 0; background: var(--sidebar-bg); border-right: 1px solid var(--sidebar-border); display: flex; flex-direction: column; position: relative; overflow: hidden; box-shadow: 4px 0 30px rgba(0,0,0,0.5); transition: width 0.32s cubic-bezier(0.4,0,0.2,1), min-width 0.32s cubic-bezier(0.4,0,0.2,1); min-width: 228px; }
 .sidebar.collapsed { width: 0 !important; min-width: 0 !important; overflow: hidden; }
 .sidebar-glow { position: absolute; bottom: 0; left: 0; right: 0; height: 260px; background: radial-gradient(ellipse at bottom, rgba(0,255,231,0.06) 0%, transparent 70%); pointer-events: none; }
@@ -230,7 +226,6 @@ body {
 .nav-item:hover { color: var(--text); background: rgba(0,255,231,0.04); }
 .nav-item.active { color: var(--neon); background: rgba(0,255,231,0.07); border-left-color: var(--neon); }
 .nav-item.active::after { content: ''; position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 3px; height: 55%; background: var(--neon); box-shadow: 0 0 10px rgba(0,255,231,0.9); opacity: 0.5; border-radius: 2px; }
-.nav-badge-pill { margin-left: auto; font-size: 9px; color: var(--warn); border: 1px solid rgba(255,181,71,0.4); background: rgba(255,181,71,0.08); padding: 1px 7px; border-radius: 10px; font-family: var(--font-mono); letter-spacing: 0.08em; }
 .sidebar-user { padding: 0.9rem 1.2rem; border-top: 1px solid var(--sidebar-border); display: flex; align-items: center; gap: 9px; flex-shrink: 0; white-space: nowrap; }
 .user-avatar { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 11px; color: var(--neon); flex-shrink: 0; background: rgba(0,255,231,0.09); }
 .user-info { flex: 1; overflow: hidden; }
@@ -239,9 +234,8 @@ body {
 .sidebar-logout { background: none; border: none; cursor: pointer; color: var(--text3); transition: color 0.2s; padding: 4px; flex-shrink: 0; }
 .sidebar-logout:hover { color: var(--danger); }
 .sidebar-logout svg { width: 14px; height: 14px; stroke: currentColor; }
-
 .sidebar-toggle-btn { position: absolute; top: 50%; right: -14px; transform: translateY(-50%); z-index: 100; width: 28px; height: 28px; background: var(--sidebar-bg); border: 1px solid var(--sidebar-border); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text2); transition: all 0.2s; box-shadow: 2px 0 8px rgba(0,0,0,0.2); flex-shrink: 0; }
-.sidebar-toggle-btn:hover { color: var(--neon); border-color: var(--neon); box-shadow: 0 0 12px rgba(0,255,231,0.2); }
+.sidebar-toggle-btn:hover { color: var(--neon); border-color: var(--neon); }
 .sidebar-toggle-btn svg { width: 13px; height: 13px; stroke: currentColor; }
 .sidebar-open-btn { position: fixed; top: 50%; left: 0; transform: translateY(-50%); z-index: 200; width: 24px; height: 48px; background: var(--sidebar-bg); border: 1px solid var(--sidebar-border); border-left: none; border-radius: 0 8px 8px 0; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text2); transition: all 0.2s; box-shadow: 2px 0 8px rgba(0,0,0,0.15); opacity: 0; pointer-events: none; }
 .sidebar-open-btn.visible { opacity: 1; pointer-events: all; }
@@ -256,7 +250,6 @@ body {
 .sync-badge { font-size: 10px; font-family: var(--font-mono); letter-spacing: 0.12em; display: flex; align-items: center; gap: 6px; }
 .sync-dot { width: 6px; height: 6px; border-radius: 50%; animation: blink 2s infinite; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.15} }
-
 .theme-switcher { display: flex; align-items: center; gap: 6px; background: var(--bg3); border: 1px solid var(--border2); border-radius: 20px; padding: 3px 4px; }
 [data-theme="clean"] .theme-switcher { background: #f1f5f9; border-color: #e2e8f0; }
 .theme-btn { display: flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 14px; border: none; cursor: pointer; font-size: 10px; font-family: var(--font-mono); letter-spacing: 0.08em; transition: all 0.25s; background: transparent; color: var(--text3); }
@@ -284,7 +277,6 @@ body {
 .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(160px,1fr)); gap: 1rem; margin-bottom: 1.75rem; }
 .metrics-grid-5 { display: grid; grid-template-columns: repeat(5,1fr); gap: 0.75rem; margin-bottom: 1.75rem; }
 @media (max-width: 900px) { .metrics-grid-5 { grid-template-columns: repeat(3,1fr); } }
-
 .metric-card { background: rgba(8,15,26,0.8); border: 1px solid var(--border2); border-radius: var(--card-radius); padding: 1.2rem 1.25rem 1rem; position: relative; overflow: hidden; transition: all 0.3s; cursor: default; }
 .metric-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--card-color, var(--neon)), transparent); opacity: 0.7; }
 .metric-card:hover { border-color: rgba(0,255,231,0.3); background: rgba(0,255,231,0.05); transform: translateY(-2px); box-shadow: 0 10px 35px rgba(0,0,0,0.35); }
@@ -294,12 +286,10 @@ body {
 .metric-sub.up { color: var(--neon); } .metric-sub.down { color: var(--danger); }
 
 .bar-wrap { margin-top: 10px; }
-.bar-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text2); margin-bottom: 5px; font-family: var(--font-mono); }
 .bar-bg { height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: visible; position: relative; }
 .bar-fill { height: 100%; border-radius: 2px; position: relative; transition: width 1.1s ease; }
 .bar-fill::after { content: ''; position: absolute; right: 0; top: 50%; transform: translate(50%,-50%); width: 8px; height: 8px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px currentColor; }
 
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
 .grid-3 { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
 .panel { background: rgba(8,15,26,0.8); border: 1px solid var(--border2); border-radius: var(--card-radius); padding: 1.25rem; position: relative; transition: background 0.4s ease, border-color 0.4s ease; }
 .panel-title { font-family: var(--font-head); font-size: 10px; color: var(--neon); letter-spacing: 0.22em; text-transform: uppercase; margin-bottom: 1.2rem; display: flex; align-items: center; gap: 8px; }
@@ -314,13 +304,6 @@ body {
 .data-table tr:hover td { background: rgba(0,255,231,0.03); }
 .data-table tr:last-child td { border-bottom: none; }
 .data-table .row-highlight td { background: rgba(0,255,231,0.05); }
-
-.badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-family: var(--font-mono); padding: 3px 9px; border-radius: 2px; letter-spacing: 0.1em; text-transform: uppercase; border: 1px solid; }
-.badge-green  { color:var(--neon);   border-color:rgba(0,255,231,0.3);  background:rgba(0,255,231,0.07);  }
-.badge-amber  { color:var(--warn);   border-color:rgba(255,181,71,0.3); background:rgba(255,181,71,0.07); }
-.badge-red    { color:var(--danger); border-color:rgba(255,77,109,0.3); background:rgba(255,77,109,0.07); }
-.badge-purple { color:var(--purple); border-color:rgba(167,139,250,0.3);background:rgba(167,139,250,0.07);}
-.badge-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; animation: blink 2s infinite; }
 
 .rank-badge { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 50%; font-family: var(--font-mono); font-size: 11px; font-weight: 700; }
 .rk-1 { color:var(--gold);   background:rgba(255,215,0,0.12);   border:1px solid rgba(255,215,0,0.4);  box-shadow:0 0 10px rgba(255,215,0,0.3); }
@@ -337,25 +320,10 @@ body {
 .sbar-fill.danger { background:linear-gradient(90deg,var(--danger),#ff6b35); }
 .sbar-val { font-family:var(--font-mono); font-size:12px; font-weight:700; min-width:56px; }
 
-.tabs { display:flex; gap:0; border-bottom:1px solid var(--border2); margin-bottom:1.5rem; flex-wrap:wrap; }
-.tab-btn { padding:9px 16px; background:none; border:none; color:var(--text2); font-family:var(--font-mono); font-size:11px; letter-spacing:0.12em; cursor:pointer; position:relative; border-bottom:2px solid transparent; margin-bottom:-1px; transition:all 0.2s; text-transform:uppercase; }
-.tab-btn:hover { color:var(--text); }
-.tab-btn.active { color:var(--neon); border-bottom-color:var(--neon); }
-.tab-pane { display:none; } .tab-pane.active { display:block; }
-
 .month-tabs { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:1.25rem; }
 .month-tab { padding:6px 14px; border-radius:3px; font-size:11px; font-family:var(--font-mono); letter-spacing:0.08em; cursor:pointer; border:1px solid var(--border2); background:transparent; color:var(--text2); transition:all 0.2s; }
 .month-tab:hover { border-color:var(--neon); color:var(--neon); }
 .month-tab.active { background:rgba(0,255,231,0.12); color:var(--neon); border-color:var(--neon); box-shadow:0 0 12px rgba(0,255,231,0.15); }
-.month-tab.no-data { opacity:0.35; cursor:default; }
-.month-tab.no-data:hover { border-color:var(--border2); color:var(--text2); }
-
-.stat-mini-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(145px,1fr)); gap:0.75rem; margin-bottom:1.25rem; }
-.stat-mini { background:rgba(0,255,231,0.04); border:1px solid var(--border2); border-radius:var(--card-radius); padding:0.9rem 1rem; position:relative; overflow:hidden; }
-.stat-mini::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--mini-col,var(--neon)),transparent); opacity:0.6; }
-.stat-mini-label { font-size:9px; color:var(--text2); letter-spacing:0.2em; text-transform:uppercase; font-family:var(--font-mono); margin-bottom:6px; }
-.stat-mini-val { font-family:var(--font-head); font-size:20px; font-weight:700; color:var(--mini-col,var(--neon)); text-shadow:0 0 15px var(--mini-col,rgba(0,255,231,0.4)); }
-.stat-mini-sub { font-size:11px; color:var(--text2); margin-top:3px; }
 
 .activity-list { list-style:none; }
 .activity-item { display:flex; align-items:flex-start; gap:10px; padding:9px 0; border-bottom:1px solid rgba(0,255,231,0.05); font-size:12px; color:var(--text); }
@@ -363,22 +331,10 @@ body {
 .activity-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; margin-top:3px; box-shadow:0 0 8px currentColor; }
 .activity-meta { font-family:var(--font-mono); font-size:10px; color:var(--text3); margin-top:2px; letter-spacing:0.05em; }
 
-.profile-banner { background:rgba(8,15,26,0.8); border:1px solid var(--border2); border-radius:var(--card-radius); padding:1.75rem 1.75rem; margin-bottom:1.5rem; display:flex; align-items:center; gap:1.5rem; position:relative; overflow:hidden; }
-.profile-banner::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--neon),rgba(0,255,231,0.4),transparent); }
-.profile-avatar { width:60px; height:60px; border-radius:12px; background:rgba(0,255,231,0.1); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-family:var(--font-head); font-size:20px; font-weight:700; color:var(--neon); flex-shrink:0; box-shadow:0 0 20px rgba(0,255,231,0.2); }
-.profile-info { flex:1; }
-.profile-name { font-family:var(--font-head); font-size:16px; font-weight:700; color:var(--text); margin-bottom:3px; }
-.profile-email { font-size:13px; color:var(--text2); margin-bottom:4px; }
-.profile-emp { font-size:11px; color:var(--neon); font-family:var(--font-mono); letter-spacing:0.12em; }
-
 .ctrl-row { display:flex; gap:8px; margin-bottom:1rem; flex-wrap:wrap; }
 .ctrl-input { flex:1; min-width:160px; height:36px; padding:0 12px; background:rgba(0,255,231,0.03); border:1px solid var(--border); border-radius:var(--input-radius); color:var(--text); font-family:var(--font-mono); font-size:12px; outline:none; transition:all 0.2s; }
 .ctrl-input:focus { border-color:var(--neon); box-shadow:0 0 15px rgba(0,255,231,0.1); }
 .ctrl-input::placeholder { color:var(--text3); }
-.ctrl-select { height:36px; padding:0 10px; background:var(--bg2); border:1px solid var(--border); border-radius:var(--input-radius); color:var(--text2); font-family:var(--font-mono); font-size:12px; outline:none; }
-.btn-ctrl { height:36px; padding:0 16px; background:transparent; border:1px solid var(--border); border-radius:var(--btn-radius); color:var(--text2); font-family:var(--font-mono); font-size:11px; letter-spacing:0.1em; cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; gap:6px; }
-.btn-ctrl:hover { border-color:var(--neon); color:var(--neon); box-shadow:0 0 15px rgba(0,255,231,0.15); }
-.btn-ctrl svg { width:14px; height:14px; stroke:currentColor; }
 
 .no-data { text-align:center; padding:50px 20px; color:var(--text2); font-size:14px; }
 .no-data .nd-icon { font-size:36px; opacity:0.35; margin-bottom:10px; }
@@ -411,18 +367,17 @@ body {
 .team-metric-label { color:var(--text2); }
 .team-metric-val { font-family:var(--font-mono); font-size:12px; color:var(--neon); font-weight:700; }
 
-/* Month select dropdown */
 .month-select-ctrl { height:30px; padding:0 10px; background:var(--bg2); border:1px solid var(--border); border-radius:var(--input-radius); color:var(--text2); font-family:var(--font-mono); font-size:11px; outline:none; cursor:pointer; }
 .month-select-ctrl:focus { border-color:var(--neon); }
-[data-theme="clean"] .month-select-ctrl { background:#f8fafc; border-color:#e2e8f0; }
 
-/* Team breakdown chart */
-.team-chart-wrap { position:relative; height:180px; margin-top:1rem; }
+/* Metric toggle checkboxes for charts */
+.metric-toggles { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:0.75rem; }
+.metric-toggle-btn { display:flex; align-items:center; gap:5px; padding:4px 10px; border-radius:3px; font-size:10px; font-family:var(--font-mono); letter-spacing:0.08em; cursor:pointer; border:1px solid var(--border2); background:transparent; color:var(--text3); transition:all 0.2s; }
+.metric-toggle-btn.active { color:var(--text); border-color:currentColor; }
+.metric-toggle-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
 
-/* Clean theme team card override */
 [data-theme="clean"] .team-card { background:#ffffff; border-color:#e2e8f0; }
 [data-theme="clean"] .team-card:hover { box-shadow:0 4px 20px rgba(37,99,235,0.1); border-color:rgba(37,99,235,0.25); }
-[data-theme="clean"] .team-chart-wrap canvas { filter: none; }
 </style>
 </head>
 <body>
@@ -432,6 +387,7 @@ body {
 <div class="vignette"></div>
 <div class="scanline"></div>
 
+<!-- LOADING -->
 <div id="s-loading" class="screen active">
   <div class="load-logo">REAC AGENT HUB</div>
   <div class="load-sub">Loading. . .</div>
@@ -439,6 +395,7 @@ body {
   <div class="load-bar-wrap"><div class="load-bar"></div></div>
 </div>
 
+<!-- LOGIN -->
 <div id="s-login" class="screen auth-screen">
   <div class="auth-bg-glow"></div>
   <div class="auth-logo">
@@ -453,7 +410,7 @@ body {
     <h2>Access Terminal</h2>
     <p class="auth-desc">Authenticate to enter the performance network</p>
     <div class="msg-box msg-error" id="login-err"></div>
-    <div class="msg-box msg-ok"    id="login-ok"></div>
+    <div class="msg-box msg-ok" id="login-ok"></div>
     <div class="field"><label>Email Address</label><input type="email" id="login-email" placeholder="your@reacrevenuesolutions.com" autocomplete="email"/></div>
     <div class="field"><label>Security Key / Password</label><input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"/></div>
     <button class="btn-primary" id="login-btn" onclick="doLogin()"><span>⬡ AUTHENTICATE</span></button>
@@ -465,6 +422,7 @@ body {
   </div>
 </div>
 
+<!-- SIGNUP -->
 <div id="s-signup" class="screen auth-screen">
   <div class="auth-bg-glow" style="background:radial-gradient(circle,rgba(255,107,53,0.05) 0%,transparent 65%)"></div>
   <div class="auth-logo">
@@ -474,38 +432,46 @@ body {
     <h1 style="color:var(--neon3);text-shadow:0 0 25px rgba(255,107,53,0.5)">REAC AGENT HUB</h1>
     <p>New Agent Enrollment</p>
   </div>
-  <div class="auth-card" style="border-color:rgba(255,107,53,0.25); display: flex; flex-direction: column;">
+  <div class="auth-card" style="border-color:rgba(255,107,53,0.25);display:flex;flex-direction:column;">
     <h2 style="color:var(--neon3)">Request Access</h2>
     <p class="auth-desc">Your email must already be registered in the system by an admin.</p>
     <div class="msg-box msg-error" id="signup-err"></div>
-    <div class="msg-box msg-ok"    id="signup-ok"></div>
-    <div class="field" style="width:100%;box-sizing:border-box;margin-bottom:15px;">
+    <div class="msg-box msg-ok" id="signup-ok"></div>
+    <div class="field" style="width:100%;margin-bottom:15px;">
       <label style="color:var(--neon3)">Email Address</label>
-      <input type="email" id="signup-email" placeholder="your@reacrevenuesolutions.com" style="width:100%;box-sizing:border-box;"/>
+      <input type="email" id="signup-email" placeholder="your@reacrevenuesolutions.com"/>
     </div>
-    <div class="field" style="width:100%;box-sizing:border-box;margin-bottom:15px;">
+    <div class="field" style="width:100%;margin-bottom:15px;">
       <label style="color:var(--neon3)">Create Password</label>
-      <div style="position:relative;width:100%;">
-        <input type="password" id="signup-pass" placeholder="Min. 8 characters" style="width:100%;box-sizing:border-box;padding-right:40px;"/>
-        <button type="button" onclick="togglePasswordVisibility('signup-pass',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text3);padding:0;display:flex;align-items:center;">
+      <div style="position:relative;">
+        <input type="password" id="signup-pass" placeholder="Min. 8 characters" style="padding-right:40px;" oninput="checkPassRules('signup')"/>
+        <button type="button" onclick="togglePwd('signup-pass',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text3);padding:0;display:flex;align-items:center;">
           <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
         </button>
       </div>
+      <div class="pass-strength"><div class="pass-strength-fill" id="signup-strength-fill"></div></div>
+      <div class="pass-rules" id="signup-pass-rules">
+        <span class="pass-rule fail" id="sr-len"><span class="pass-rule-icon">○</span> 8+ characters</span>
+        <span class="pass-rule fail" id="sr-up"><span class="pass-rule-icon">○</span> Uppercase letter</span>
+        <span class="pass-rule fail" id="sr-num"><span class="pass-rule-icon">○</span> Number</span>
+        <span class="pass-rule fail" id="sr-sym"><span class="pass-rule-icon">○</span> Special character</span>
+      </div>
     </div>
-    <div class="field" style="width:100%;box-sizing:border-box;margin-bottom:20px;">
+    <div class="field" style="width:100%;margin-bottom:20px;">
       <label style="color:var(--neon3)">Confirm Password</label>
-      <div style="position:relative;width:100%;">
-        <input type="password" id="signup-pass2" placeholder="Repeat password" style="width:100%;box-sizing:border-box;padding-right:40px;"/>
-        <button type="button" onclick="togglePasswordVisibility('signup-pass2',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text3);padding:0;display:flex;align-items:center;">
+      <div style="position:relative;">
+        <input type="password" id="signup-pass2" placeholder="Repeat password" style="padding-right:40px;"/>
+        <button type="button" onclick="togglePwd('signup-pass2',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text3);padding:0;display:flex;align-items:center;">
           <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
         </button>
       </div>
     </div>
-    <button class="btn-primary" id="signup-btn" onclick="doSignup()" style="border-color:var(--neon3);color:var(--neon3);width:100%;box-sizing:border-box;"><span>⬡ SUBMIT ENROLLMENT</span></button>
+    <button class="btn-primary" id="signup-btn" onclick="doSignup()" style="border-color:var(--neon3);color:var(--neon3);"><span>⬡ SUBMIT ENROLLMENT</span></button>
     <div class="auth-footer" style="margin-top:15px;"><button onclick="show('s-login')" style="background:none;border:none;color:var(--text3);cursor:pointer;">← Back to login</button></div>
   </div>
 </div>
 
+<!-- FORGOT -->
 <div id="s-forgot" class="screen auth-screen">
   <div class="auth-bg-glow" style="background:radial-gradient(circle,rgba(167,139,250,0.06) 0%,transparent 65%)"></div>
   <div class="auth-logo">
@@ -519,13 +485,14 @@ body {
     <h2 style="color:var(--purple)">Reset Credentials</h2>
     <p class="auth-desc">Enter your email — a one-time code will be dispatched to your inbox.</p>
     <div class="msg-box msg-error" id="forgot-err"></div>
-    <div class="msg-box msg-ok"    id="forgot-ok"></div>
+    <div class="msg-box msg-ok" id="forgot-ok"></div>
     <div class="field"><label style="color:var(--purple)">Email Address</label><input type="email" id="forgot-email" placeholder="your@reacrevenuesolutions.com"/></div>
     <button class="btn-primary" id="forgot-btn" onclick="doForgot()" style="border-color:var(--purple);color:var(--purple)"><span>⬡ SEND OTP CODE</span></button>
     <button class="btn-ghost" onclick="show('s-login')">← Back to login</button>
   </div>
 </div>
 
+<!-- OTP VERIFY (step 1: enter code only) -->
 <div id="s-otp" class="screen auth-screen">
   <div class="auth-bg-glow"></div>
   <div class="auth-logo">
@@ -533,13 +500,13 @@ body {
       <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><line x1="12" y1="16" x2="12" y2="16.01"/></svg>
     </div>
     <h1>REAC AGENT HUB</h1>
-    <p id="otp-subtitle-label">Enter verification code</p>
+    <p>Enter verification code</p>
   </div>
   <div class="auth-card">
     <h2>OTP Verification</h2>
     <p class="auth-desc" id="otp-card-desc">Enter the 6-digit code sent to your email. You can paste it directly.</p>
     <div class="msg-box msg-error" id="otp-err"></div>
-    <div class="msg-box msg-ok"    id="otp-ok"></div>
+    <div class="msg-box msg-ok" id="otp-ok"></div>
     <div class="otp-row" id="otp-row">
       <input class="otp-box" id="otp0" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="one-time-code"/>
       <input class="otp-box" id="otp1" maxlength="1" inputmode="numeric" pattern="[0-9]"/>
@@ -548,12 +515,53 @@ body {
       <input class="otp-box" id="otp4" maxlength="1" inputmode="numeric" pattern="[0-9]"/>
       <input class="otp-box" id="otp5" maxlength="1" inputmode="numeric" pattern="[0-9]"/>
     </div>
-    <div id="otp-newpass-fields" style="display:none">
-      <div class="field"><label>New Password</label><input type="password" id="new-pass" placeholder="Min. 8 characters"/></div>
-      <div class="field"><label>Confirm New Password</label><input type="password" id="new-pass2" placeholder="Repeat new password"/></div>
-    </div>
     <button class="btn-primary" id="otp-btn" onclick="doVerifyOtp()"><span>⬡ VERIFY CODE</span></button>
     <button class="btn-ghost" id="otp-resend-btn" onclick="doResendOtp()">Resend Code</button>
+    <button class="btn-ghost" onclick="show('s-login')">← Back to login</button>
+  </div>
+</div>
+
+<!-- NEW PASSWORD (step 2: after OTP verified) -->
+<div id="s-newpass" class="screen auth-screen">
+  <div class="auth-bg-glow"></div>
+  <div class="auth-logo">
+    <div class="logo-icon" style="border-color:var(--neon);box-shadow:0 0 30px rgba(0,255,231,0.3)">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    </div>
+    <h1>REAC AGENT HUB</h1>
+    <p>Set New Password</p>
+  </div>
+  <div class="auth-card">
+    <h2>Create New Password</h2>
+    <p class="auth-desc">OTP verified! Now set a strong password for your account.</p>
+    <div class="msg-box msg-error" id="newpass-err"></div>
+    <div class="msg-box msg-ok" id="newpass-ok"></div>
+    <div class="field">
+      <label>New Password</label>
+      <div style="position:relative;">
+        <input type="password" id="new-pass" placeholder="Min. 8 characters" style="padding-right:40px;" oninput="checkPassRules('new')"/>
+        <button type="button" onclick="togglePwd('new-pass',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text3);padding:0;display:flex;align-items:center;">
+          <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+        </button>
+      </div>
+      <div class="pass-strength"><div class="pass-strength-fill" id="new-strength-fill"></div></div>
+      <div class="pass-rules" id="new-pass-rules">
+        <span class="pass-rule fail" id="nr-len"><span class="pass-rule-icon">○</span> 8+ characters</span>
+        <span class="pass-rule fail" id="nr-up"><span class="pass-rule-icon">○</span> Uppercase letter</span>
+        <span class="pass-rule fail" id="nr-num"><span class="pass-rule-icon">○</span> Number</span>
+        <span class="pass-rule fail" id="nr-sym"><span class="pass-rule-icon">○</span> Special character</span>
+      </div>
+    </div>
+    <div class="field">
+      <label>Confirm New Password</label>
+      <div style="position:relative;">
+        <input type="password" id="new-pass2" placeholder="Repeat new password" style="padding-right:40px;"/>
+        <button type="button" onclick="togglePwd('new-pass2',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text3);padding:0;display:flex;align-items:center;">
+          <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+        </button>
+      </div>
+    </div>
+    <button class="btn-primary" id="newpass-btn" onclick="doSetNewPassword()"><span>⬡ SET PASSWORD</span></button>
     <button class="btn-ghost" onclick="show('s-login')">← Back to login</button>
   </div>
 </div>
@@ -565,7 +573,7 @@ body {
   </div>
   <div class="app-layout">
     <div class="sidebar" id="sidebar-agent">
-      <div class="sidebar-toggle-btn" onclick="toggleSidebar('agent')" title="Collapse sidebar">
+      <div class="sidebar-toggle-btn" onclick="toggleSidebar('agent')">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       </div>
       <div class="sidebar-glow"></div>
@@ -588,10 +596,7 @@ body {
       </div>
       <div class="sidebar-user">
         <div class="user-avatar" id="agent-sb-avatar">?</div>
-        <div class="user-info">
-          <div class="uname" id="agent-sb-name">—</div>
-          <div class="urole">AGENT</div>
-        </div>
+        <div class="user-info"><div class="uname" id="agent-sb-name">—</div><div class="urole">AGENT</div></div>
         <button class="sidebar-logout" onclick="doLogout()">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         </button>
@@ -601,7 +606,7 @@ body {
       <div class="topbar">
         <div class="topbar-title" id="agent-topbar-title">Dashboard</div>
         <div class="topbar-right">
-          <div class="theme-switcher" id="agent-theme-switcher">
+          <div class="theme-switcher">
             <button class="theme-btn active" id="agent-theme-fut" onclick="setTheme('futuristic')">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>DARK
             </button>
@@ -620,14 +625,14 @@ body {
   </div>
 </div>
 
-<!-- MANAGER / ADMIN APP -->
+<!-- ADMIN APP -->
 <div id="s-admin" class="screen app-screen purple-accent">
   <div class="sidebar-open-btn" id="admin-open-btn" onclick="toggleSidebar('admin')">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
   </div>
   <div class="app-layout">
     <div class="sidebar" id="sidebar-admin">
-      <div class="sidebar-toggle-btn" onclick="toggleSidebar('admin')" title="Collapse sidebar">
+      <div class="sidebar-toggle-btn" onclick="toggleSidebar('admin')">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       </div>
       <div class="sidebar-glow" style="background:radial-gradient(ellipse at bottom,rgba(167,139,250,0.08) 0%,transparent 70%)"></div>
@@ -656,10 +661,7 @@ body {
       </div>
       <div class="sidebar-user">
         <div class="user-avatar" id="admin-sb-avatar" style="border-color:rgba(167,139,250,0.5);background:rgba(167,139,250,0.12);color:var(--purple)">?</div>
-        <div class="user-info">
-          <div class="uname" id="admin-sb-name">—</div>
-          <div class="urole" style="color:var(--purple)" id="admin-sb-role">MANAGER</div>
-        </div>
+        <div class="user-info"><div class="uname" id="admin-sb-name">—</div><div class="urole" style="color:var(--purple)" id="admin-sb-role">MANAGER</div></div>
         <button class="sidebar-logout" onclick="doLogout()">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         </button>
@@ -669,7 +671,7 @@ body {
       <div class="topbar">
         <div class="topbar-title" id="admin-topbar-title" style="color:var(--purple)">REAC Revenue Solutions</div>
         <div class="topbar-right">
-          <div class="theme-switcher" id="admin-theme-switcher">
+          <div class="theme-switcher">
             <button class="theme-btn active" id="admin-theme-fut" onclick="setTheme('futuristic')">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>DARK
             </button>
@@ -695,7 +697,7 @@ body {
   </div>
   <div class="app-layout">
     <div class="sidebar" id="sidebar-tl">
-      <div class="sidebar-toggle-btn" onclick="toggleSidebar('tl')" title="Collapse sidebar">
+      <div class="sidebar-toggle-btn" onclick="toggleSidebar('tl')">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       </div>
       <div class="sidebar-glow" style="background:radial-gradient(ellipse at bottom,rgba(55,138,221,0.08) 0%,transparent 70%)"></div>
@@ -724,10 +726,7 @@ body {
       </div>
       <div class="sidebar-user">
         <div class="user-avatar" id="tl-sb-avatar" style="border-color:rgba(55,138,221,0.5);background:rgba(55,138,221,0.12);color:#378ADD">?</div>
-        <div class="user-info">
-          <div class="uname" id="tl-sb-name">—</div>
-          <div class="urole" style="color:#378ADD">TEAM LEAD</div>
-        </div>
+        <div class="user-info"><div class="uname" id="tl-sb-name">—</div><div class="urole" style="color:#378ADD">TEAM LEAD</div></div>
         <button class="sidebar-logout" onclick="doLogout()">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         </button>
@@ -737,7 +736,7 @@ body {
       <div class="topbar">
         <div class="topbar-title" id="tl-topbar-title" style="color:#378ADD">Team Overview</div>
         <div class="topbar-right">
-          <div class="theme-switcher" id="tl-theme-switcher">
+          <div class="theme-switcher">
             <button class="theme-btn active" id="tl-theme-fut" onclick="setTheme('futuristic')">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>DARK
             </button>
@@ -766,14 +765,34 @@ let currentUser   = null;
 let allAgents     = [];
 let mgmtUsers     = [];
 let pendingEmail  = '';
-let otpMode       = 'forgot';
+let otpMode       = 'forgot'; // 'forgot' | 'signup'
 let _signupPass   = '';
+let _verifiedOtp  = '';       // stores OTP after step-1 verification
 let adminMonthIdx = 0;
 let tlMonthIdx    = 0;
 let adminBreakdownMonthIdx = 0;
 let currentTheme  = localStorage.getItem('reac_theme') || 'futuristic';
-let teamChartInstances = {};
+let chartInstances = {}; // keyed by canvas id
 
+// ── METRICS CONFIG ──
+const METRICS = [
+  { key:'tps',        label:'TPS',        color:'#378ADD' },
+  { key:'attendance', label:'Attendance',  color:'#a78bfa' },
+  { key:'qa',         label:'QA',          color:'#ffb547' },
+  { key:'overall',    label:'Overall',     color:'#00ffe7' }
+];
+
+// Per-chart active metrics state
+let chartMetricState = {}; // canvasId -> Set of active keys
+
+function getActiveMetrics(canvasId) {
+  if (!chartMetricState[canvasId]) {
+    chartMetricState[canvasId] = new Set(METRICS.map(m=>m.key));
+  }
+  return chartMetricState[canvasId];
+}
+
+// ── THEME ──
 function setTheme(theme) {
   currentTheme = theme;
   localStorage.setItem('reac_theme', theme);
@@ -787,6 +806,7 @@ function setTheme(theme) {
 }
 function applyStoredTheme() { setTheme(currentTheme); }
 
+// ── SIDEBAR ──
 const sidebarState = { agent: true, admin: true, tl: true };
 function toggleSidebar(which) {
   const sidebar = document.getElementById('sidebar-' + which);
@@ -796,18 +816,46 @@ function toggleSidebar(which) {
   else        { sidebar.classList.remove('collapsed'); openBtn.classList.remove('visible'); sidebarState[which] = true; }
 }
 
-function togglePasswordVisibility(inputId, btn) {
-  const inputField = document.getElementById(inputId);
-  const svgIcon = btn.querySelector('.eye-icon');
-  if (inputField.type === "password") {
-    inputField.type = "text";
-    svgIcon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
+// ── PASSWORD VISIBILITY ──
+function togglePwd(inputId, btn) {
+  const el = document.getElementById(inputId);
+  const svg = btn.querySelector('.eye-icon');
+  if (el.type === 'password') {
+    el.type = 'text';
+    svg.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
   } else {
-    inputField.type = "password";
-    svgIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+    el.type = 'password';
+    svg.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
   }
 }
 
+// ── PASSWORD RULES ──
+function checkPassRules(prefix) {
+  const inputId   = prefix === 'signup' ? 'signup-pass' : 'new-pass';
+  const fillId    = prefix === 'signup' ? 'signup-strength-fill' : 'new-strength-fill';
+  const rulePrefix = prefix === 'signup' ? 'sr' : 'nr';
+  const val = document.getElementById(inputId)?.value || '';
+  const rules = {
+    len: val.length >= 8,
+    up:  /[A-Z]/.test(val),
+    num: /[0-9]/.test(val),
+    sym: /[^A-Za-z0-9]/.test(val)
+  };
+  Object.entries(rules).forEach(([k, ok]) => {
+    const el = document.getElementById(`${rulePrefix}-${k}`);
+    if (!el) return;
+    el.className = 'pass-rule ' + (ok ? 'ok' : 'fail');
+    el.querySelector('.pass-rule-icon').textContent = ok ? '●' : '○';
+  });
+  const score = Object.values(rules).filter(Boolean).length;
+  const fill  = document.getElementById(fillId);
+  if (fill) {
+    fill.style.width = (score / 4 * 100) + '%';
+    fill.style.background = score <= 1 ? 'var(--danger)' : score === 2 ? 'var(--warn)' : score === 3 ? '#378ADD' : 'var(--neon)';
+  }
+}
+
+// ── INIT ──
 window.addEventListener('load', async () => {
   applyStoredTheme();
   initOtpBoxes();
@@ -826,7 +874,11 @@ function hideSplash() {
   setTimeout(() => s.classList.remove('active'), 650);
 }
 
-function show(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); clearMsgs(); }
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  clearMsgs();
+}
 function clearMsgs() { document.querySelectorAll('.msg-box').forEach(el => el.style.display = 'none'); }
 function showErr(id, msg) { const el=document.getElementById(id); el.textContent=msg; el.style.display='block'; }
 function showOk(id, msg)  { const el=document.getElementById(id); el.textContent=msg; el.style.display='block'; }
@@ -844,6 +896,7 @@ async function gasPost(action, data={}) {
   return r.json();
 }
 
+// ── AUTH ──
 async function doLogin() {
   const email = document.getElementById('login-email').value.trim().toLowerCase();
   const pass  = document.getElementById('login-pass').value;
@@ -863,6 +916,9 @@ async function doSignup() {
   const pass2 = document.getElementById('signup-pass2').value;
   if (!email||!pass||!pass2) { showErr('signup-err','All fields are required.'); return; }
   if (pass.length < 8)       { showErr('signup-err','Password must be at least 8 characters.'); return; }
+  if (!/[A-Z]/.test(pass))   { showErr('signup-err','Password needs at least one uppercase letter.'); return; }
+  if (!/[0-9]/.test(pass))   { showErr('signup-err','Password needs at least one number.'); return; }
+  if (!/[^A-Za-z0-9]/.test(pass)) { showErr('signup-err','Password needs at least one special character.'); return; }
   if (pass !== pass2)        { showErr('signup-err','Passwords do not match.'); return; }
   setBtnLoading('signup-btn', true);
   try {
@@ -871,7 +927,7 @@ async function doSignup() {
     if (check.hasPassword){ showErr('signup-err','Account already exists. Please sign in.'); setBtnLoading('signup-btn',false); return; }
     pendingEmail = email; otpMode = 'signup'; _signupPass = pass;
     const otpRes = await gasGet('sendOtp', { email });
-    if (otpRes.success) { setupOtpScreen(email,'signup'); show('s-otp'); }
+    if (otpRes.success) { setupOtpScreen(email); show('s-otp'); }
     else { showErr('signup-err','Failed to send OTP. Try again.'); }
   } catch(e) { showErr('signup-err','Connection error.'); }
   setBtnLoading('signup-btn', false);
@@ -885,16 +941,15 @@ async function doForgot() {
     const check = await gasGet('checkEmail', { email });
     if (!check.exists) { showErr('forgot-err','Email not found.'); setBtnLoading('forgot-btn',false); return; }
     const otpRes = await gasGet('sendOtp', { email });
-    if (otpRes.success) { pendingEmail=email; otpMode='forgot'; setupOtpScreen(email,'forgot'); show('s-otp'); }
+    if (otpRes.success) { pendingEmail=email; otpMode='forgot'; setupOtpScreen(email); show('s-otp'); }
     else { showErr('forgot-err','Failed to send OTP.'); }
   } catch(e) { showErr('forgot-err','Connection error.'); }
   setBtnLoading('forgot-btn', false);
 }
 
-function setupOtpScreen(email, mode) {
+function setupOtpScreen(email) {
   clearOtpBoxes();
   document.getElementById('otp-card-desc').textContent = `A 6-digit code was sent to ${email}. You can paste it directly into the first box.`;
-  document.getElementById('otp-newpass-fields').style.display = mode==='forgot'?'block':'none';
 }
 
 async function doResendOtp() {
@@ -908,29 +963,71 @@ async function doResendOtp() {
   setBtnLoading('otp-btn', false);
 }
 
+// STEP 1: Verify OTP only — then move to password screen
 async function doVerifyOtp() {
   const code = getOtpValue();
   if (code.length < 6) { showErr('otp-err','Please enter all 6 digits.'); return; }
   setBtnLoading('otp-btn', true);
   try {
-    let password = '';
-    if (otpMode === 'forgot') {
-      password = document.getElementById('new-pass').value;
-      const p2 = document.getElementById('new-pass2').value;
-      if (!password||password.length<8) { showErr('otp-err','Password must be at least 8 characters.'); setBtnLoading('otp-btn',false); return; }
-      if (password!==p2) { showErr('otp-err','Passwords do not match.'); setBtnLoading('otp-btn',false); return; }
-    } else { password = _signupPass; }
-    const res = await gasPost('verifyOtpAndSetPassword', { email: pendingEmail, otp: code, password });
-    if (res.success) { show('s-login'); setTimeout(() => showOk('login-ok', otpMode==='forgot'?'Password updated! Sign in.':'Account created! Sign in.'), 100); }
-    else { showErr('otp-err', res.message||'Invalid or expired OTP.'); }
+    // For signup: we can verify OTP first, then set password after
+    // We call verifyOtp (without setting password) to confirm code validity
+    const res = await gasGet('verifyOtp', { email: pendingEmail, otp: code });
+    if (res.success) {
+      _verifiedOtp = code;
+      if (otpMode === 'signup') {
+        // Signup: OTP verified, set password directly (we already have it)
+        const finalRes = await gasPost('verifyOtpAndSetPassword', { email: pendingEmail, otp: code, password: _signupPass });
+        if (finalRes.success) {
+          show('s-login');
+          setTimeout(() => showOk('login-ok', 'Account created! Sign in.'), 100);
+        } else { showErr('otp-err', finalRes.message || 'Failed to create account.'); }
+      } else {
+        // Forgot: OTP verified, now show new password screen
+        clearMsgs();
+        // Reset new password fields
+        const npEl = document.getElementById('new-pass');
+        const np2El = document.getElementById('new-pass2');
+        if (npEl) npEl.value = '';
+        if (np2El) np2El.value = '';
+        const sfill = document.getElementById('new-strength-fill');
+        if (sfill) sfill.style.width = '0%';
+        ['nr-len','nr-up','nr-num','nr-sym'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) { el.className='pass-rule fail'; el.querySelector('.pass-rule-icon').textContent='○'; }
+        });
+        show('s-newpass');
+      }
+    } else {
+      showErr('otp-err', res.message || 'Invalid or expired OTP.');
+    }
   } catch(e) { showErr('otp-err','Connection error.'); }
   setBtnLoading('otp-btn', false);
+}
+
+// STEP 2: Set new password (forgot flow)
+async function doSetNewPassword() {
+  const password = document.getElementById('new-pass').value;
+  const p2       = document.getElementById('new-pass2').value;
+  if (!password || password.length < 8) { showErr('newpass-err','Password must be at least 8 characters.'); return; }
+  if (!/[A-Z]/.test(password)) { showErr('newpass-err','Password needs at least one uppercase letter.'); return; }
+  if (!/[0-9]/.test(password)) { showErr('newpass-err','Password needs at least one number.'); return; }
+  if (!/[^A-Za-z0-9]/.test(password)) { showErr('newpass-err','Password needs at least one special character.'); return; }
+  if (password !== p2) { showErr('newpass-err','Passwords do not match.'); return; }
+  setBtnLoading('newpass-btn', true);
+  try {
+    const res = await gasPost('verifyOtpAndSetPassword', { email: pendingEmail, otp: _verifiedOtp, password });
+    if (res.success) {
+      show('s-login');
+      setTimeout(() => showOk('login-ok', 'Password updated! Sign in.'), 100);
+    } else { showErr('newpass-err', res.message || 'Failed to update password.'); }
+  } catch(e) { showErr('newpass-err','Connection error.'); }
+  setBtnLoading('newpass-btn', false);
 }
 
 function initOtpBoxes() {
   const boxes = Array.from({length:6}, (_,i) => document.getElementById('otp'+i));
   boxes.forEach((box, i) => {
-    box.addEventListener('input', (e) => {
+    box.addEventListener('input', () => {
       const val = box.value.replace(/\D/g,''); box.value = val ? val[val.length-1] : '';
       box.classList.toggle('filled', !!box.value);
       if (box.value && i<5) boxes[i+1].focus();
@@ -950,7 +1047,10 @@ function initOtpBoxes() {
     box.addEventListener('click', () => box.select());
   });
 }
-function clearOtpBoxes() { Array.from({length:6}, (_,i) => { const b=document.getElementById('otp'+i); b.value=''; b.classList.remove('filled'); }); document.getElementById('otp0').focus(); }
+function clearOtpBoxes() {
+  Array.from({length:6}, (_,i) => { const b=document.getElementById('otp'+i); b.value=''; b.classList.remove('filled'); });
+  document.getElementById('otp0').focus();
+}
 function getOtpValue() { return Array.from({length:6}, (_,i) => document.getElementById('otp'+i).value).join(''); }
 
 function setBtnLoading(id, on) {
@@ -958,7 +1058,7 @@ function setBtnLoading(id, on) {
   btn.disabled = on;
   const sp = btn.querySelector('span');
   if (on) { sp._orig=sp.innerHTML; sp.innerHTML='<span class="spinner-inline"></span> PROCESSING...'; }
-  else if (sp._orig) { sp.innerHTML=sp._orig; }
+  else if (sp && sp._orig) { sp.innerHTML=sp._orig; }
 }
 
 function doLogout() { currentUser = null; sessionStorage.removeItem('reac_user'); show('s-login'); }
@@ -1022,12 +1122,119 @@ function latestActiveIdxAcrossAgents(agents) {
   return best;
 }
 
+// ── CHART BUILDER ──
+// Builds a line chart with metric toggles. agentList: array of agents to avg across.
+function buildTrendChart(canvasId, agentList, accentColor) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const allMonths = allAgents[0]?.months || [];
+  const labels = [];
+  const dataByMetric = {};
+  METRICS.forEach(m => dataByMetric[m.key] = []);
+
+  allMonths.forEach((mDef, mIdx) => {
+    const activeAgents = agentList.filter(a => {
+      const m = a.months?.[mIdx]; return m && m.count && m.overall !== 'Attrite';
+    });
+    if (activeAgents.length === 0) return;
+    labels.push(mDef.label);
+    METRICS.forEach(m => {
+      const av = avgField(activeAgents, mIdx, m.key);
+      dataByMetric[m.key].push(av !== null ? parseFloat(av.toFixed(2)) : null);
+    });
+  });
+
+  if (chartInstances[canvasId]) { chartInstances[canvasId].destroy(); delete chartInstances[canvasId]; }
+
+  const activeSet = getActiveMetrics(canvasId);
+  const isDark = currentTheme !== 'clean';
+  const gridColor = isDark ? 'rgba(0,255,231,0.06)' : 'rgba(0,0,0,0.06)';
+  const tickColor = isDark ? '#3d6b65' : '#94a3b8';
+
+  const datasets = METRICS.map(m => ({
+    label: m.label,
+    data: dataByMetric[m.key],
+    borderColor: m.color,
+    backgroundColor: 'transparent',
+    borderWidth: activeSet.has(m.key) ? 2 : 0,
+    pointRadius: activeSet.has(m.key) ? 3 : 0,
+    pointBackgroundColor: m.color,
+    tension: 0.35,
+    hidden: !activeSet.has(m.key)
+  }));
+
+  chartInstances[canvasId] = new Chart(canvas, {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      interaction: { mode:'index', intersect:false },
+      plugins: {
+        legend: { display: false }, // we use custom toggles
+        tooltip: {
+          backgroundColor: isDark?'rgba(5,10,18,0.95)':'rgba(255,255,255,0.97)',
+          titleColor: isDark?'#00ffe7':'#0f172a',
+          bodyColor: isDark?'#8abfba':'#475569',
+          borderColor: isDark?'rgba(0,255,231,0.2)':'#e2e8f0', borderWidth:1,
+          callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y!==null?ctx.parsed.y.toFixed(2)+'%':'—'}` }
+        }
+      },
+      scales: {
+        x: { grid:{color:gridColor}, ticks:{color:tickColor,font:{size:10}} },
+        y: { grid:{color:gridColor}, ticks:{color:tickColor,font:{size:10},callback:v=>v+'%'}, min:0, max:100 }
+      }
+    }
+  });
+}
+
+// Builds toggle buttons HTML for a chart
+function metricTogglesHTML(canvasId) {
+  const activeSet = getActiveMetrics(canvasId);
+  return `<div class="metric-toggles" id="toggles-${canvasId.replace(/[^a-zA-Z0-9]/g,'_')}">
+    ${METRICS.map(m => `
+      <button class="metric-toggle-btn ${activeSet.has(m.key)?'active':''}"
+        style="${activeSet.has(m.key)?'color:'+m.color+';border-color:'+m.color:'color:var(--text3)'}"
+        onclick="toggleMetric('${canvasId}','${m.key}',this)">
+        <span class="metric-toggle-dot" style="background:${m.color};opacity:${activeSet.has(m.key)?1:0.3}"></span>
+        ${m.label}
+      </button>
+    `).join('')}
+  </div>`;
+}
+
+function toggleMetric(canvasId, key, btn) {
+  const activeSet = getActiveMetrics(canvasId);
+  if (activeSet.has(key)) {
+    if (activeSet.size === 1) return; // keep at least one
+    activeSet.delete(key);
+  } else {
+    activeSet.add(key);
+  }
+  const m = METRICS.find(x=>x.key===key);
+  const isActive = activeSet.has(key);
+  btn.className = 'metric-toggle-btn ' + (isActive?'active':'');
+  btn.style.color = isActive ? m.color : 'var(--text3)';
+  btn.style.borderColor = isActive ? m.color : 'var(--border2)';
+  btn.querySelector('.metric-toggle-dot').style.opacity = isActive ? 1 : 0.3;
+
+  // Update chart dataset visibility
+  const chart = chartInstances[canvasId];
+  if (chart) {
+    const dsIdx = METRICS.findIndex(x=>x.key===key);
+    const ds = chart.data.datasets[dsIdx];
+    ds.hidden = !isActive;
+    ds.borderWidth = isActive ? 2 : 0;
+    ds.pointRadius = isActive ? 3 : 0;
+    chart.update();
+  }
+}
+
 // ── AGENT NAV ──
-const agentPages = { dash:'Dashboard', scores:'My Scores' };
 function agentNav(page, el) {
   document.querySelectorAll('#s-agent .nav-item').forEach(n=>n.classList.remove('active'));
   el.classList.add('active');
-  document.getElementById('agent-topbar-title').textContent = agentPages[page]||page;
+  const titles = { dash:'Dashboard', scores:'My Scores' };
+  document.getElementById('agent-topbar-title').textContent = titles[page]||page;
   if (page==='dash')   renderAgentDash();
   if (page==='scores') renderAgentScores();
 }
@@ -1048,6 +1255,8 @@ function renderAgentDash() {
     const d=(a-b).toFixed(1), sign=d>0?'▲ +':'▼ ', cls=d>0?'up':'down';
     return `<div class="metric-sub ${cls}">${sign}${d}% vs ${prev.label}</div>`;
   }
+
+  const canvasId = 'chart-agent-trend';
   ca.innerHTML = `
     <div class="page-section">
       <div class="page-header">
@@ -1081,6 +1290,14 @@ function renderAgentDash() {
           <div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:${pct(latest?.qa)||0}%;background:var(--warn);color:var(--warn)"></div></div></div>
         </div>
       </div>
+
+      <!-- Trend Chart -->
+      <div class="panel" style="margin-bottom:1.5rem">
+        <div class="panel-title">My Performance Trend</div>
+        ${metricTogglesHTML(canvasId)}
+        <canvas id="${canvasId}" height="120"></canvas>
+      </div>
+
       <div class="grid-3">
         <div class="panel">
           <div class="panel-title">Score Breakdown — ${latest?latest.label:'N/A'}</div>
@@ -1115,6 +1332,9 @@ function renderAgentDash() {
         </div>
       </div>
     </div>`;
+
+  // Build chart with only this agent's data (treat as single-agent average)
+  setTimeout(() => buildTrendChart(canvasId, [agent], 'var(--neon)'), 60);
 }
 
 // ── AGENT SCORES ──
@@ -1155,7 +1375,7 @@ function renderAgentScores() {
     </div>`;
 }
 
-// ── SHARED LEADERBOARD (all agents, highlights TL's team) ──
+// ── SHARED LEADERBOARD ──
 function renderLeaderboard(contentAreaId, highlightEmails, accent, isAdmin) {
   const ca = document.getElementById(contentAreaId);
   const latestIdx = latestActiveIdxAcrossAgents(allAgents);
@@ -1174,7 +1394,7 @@ function renderLeaderboard(contentAreaId, highlightEmails, accent, isAdmin) {
       <div class="metrics-grid">
         ${sorted.slice(0,3).map((a,i)=>{
           const m=a.months[latestIdx];
-          const cols=[['var(--gold)'],['var(--silver)'],['var(--bronze)']];
+          const cols=['var(--gold)','var(--silver)','var(--bronze)'];
           const medals=['🥇','🥈','🥉'];
           return `<div class="metric-card" style="--card-color:${cols[i]}">
             <div class="metric-label">${medals[i]} Rank ${i+1}</div>
@@ -1233,8 +1453,6 @@ function renderAdminOverview() {
   const avgQa  = latestIdx>=0?avgField(active,latestIdx,'qa'):null;
   const avgAtt = latestIdx>=0?avgField(active,latestIdx,'attendance'):null;
   const leads  = mgmtUsers.filter(u=>u.role==='teamlead');
-
-  // Build month options for breakdown dropdown
   const allMonths = allAgents[0]?.months||[];
   if (adminBreakdownMonthIdx===0 && latestIdx>0) adminBreakdownMonthIdx = latestIdx;
 
@@ -1245,8 +1463,6 @@ function renderAdminOverview() {
         <h1>Team Overview</h1>
         <p>Aggregate performance metrics across all agents for <strong style="color:var(--purple)">${latestLabel}</strong>.</p>
       </div>
-
-      <!-- 5-column summary cards -->
       <div class="metrics-grid-5">
         <div class="metric-card" style="--card-color:var(--purple)">
           <div class="metric-label">Total Agents</div>
@@ -1275,8 +1491,8 @@ function renderAdminOverview() {
         </div>
       </div>
 
-      <!-- Team Breakdown with month selector -->
       ${leads.length?`
+      <!-- Team Breakdown -->
       <div class="panel" style="margin-bottom:1.5rem">
         <div class="panel-title-row">
           <div class="panel-title" style="color:var(--purple)">Team Breakdown</div>
@@ -1289,29 +1505,30 @@ function renderAdminOverview() {
         </div>
       </div>
 
-      <!-- Trend Charts per team -->
+      <!-- Team Trend Charts -->
       <div class="panel" style="margin-bottom:1.5rem">
         <div class="panel-title" style="color:var(--purple)">Team Trend Charts</div>
         <div id="admin-trend-charts" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:1.25rem;align-items:start;">
-          ${leads.map(tl=>`
-            <div style="background:rgba(0,255,231,0.02);border:1px solid var(--border2);border-radius:var(--card-radius);padding:1rem;">
-              <div style="font-family:var(--font-head);font-size:10px;color:var(--purple);letter-spacing:0.1em;margin-bottom:0.75rem;">${tl.name} — TREND</div>
-              <canvas id="chart-team-${tl.email.replace(/[@.]/g,'_')}" height="160"></canvas>
-            </div>
-          `).join('')}
+          ${leads.map(tl=>{
+            const cid='chart-admin-'+tl.email.replace(/[@.]/g,'_');
+            return `<div style="background:rgba(0,255,231,0.02);border:1px solid var(--border2);border-radius:var(--card-radius);padding:1rem;">
+              <div style="font-family:var(--font-head);font-size:10px;color:var(--purple);letter-spacing:0.1em;margin-bottom:0.5rem;">${tl.name} — TREND</div>
+              ${metricTogglesHTML(cid)}
+              <canvas id="${cid}" height="160"></canvas>
+            </div>`;
+          }).join('')}
         </div>
       </div>
-      `:''
-      }
+      `:''}
 
-      <!-- Rankings table -->
+      <!-- Rankings -->
       <div class="panel">
         <div class="panel-title" style="color:var(--purple)">Score Rankings — ${latestLabel}</div>
         <div style="overflow-x:auto">
           <table class="data-table">
             <thead><tr><th>Rank</th><th>Agent</th><th>Team Lead</th><th>TPS</th><th>Attendance</th><th>QA</th><th>Overall</th></tr></thead>
             <tbody>
-              ${active.sort((a,b)=>(parseInt(a.months[latestIdx]?.rank)||9999)-(parseInt(b.months[latestIdx]?.rank)||9999)).map(a=>{
+              ${[...active].sort((a,b)=>(parseInt(a.months[latestIdx]?.rank)||9999)-(parseInt(b.months[latestIdx]?.rank)||9999)).map(a=>{
                 const m=a.months[latestIdx];
                 const tl=mgmtUsers.find(u=>u.email===a.teamLeadEmail);
                 return `<tr>
@@ -1328,8 +1545,15 @@ function renderAdminOverview() {
       </div>
     </div>`;
 
-  // Render trend charts after DOM is ready
-  if (leads.length) { setTimeout(() => renderAdminTrendCharts(leads), 80); }
+  if (leads.length) {
+    setTimeout(() => {
+      leads.forEach(tl => {
+        const cid = 'chart-admin-' + tl.email.replace(/[@.]/g,'_');
+        const team = allAgents.filter(a=>a.teamLeadEmail===tl.email);
+        buildTrendChart(cid, team, 'var(--purple)');
+      });
+    }, 80);
+  }
 }
 
 function buildTeamBreakdownCards(leads, monthIdx) {
@@ -1358,54 +1582,6 @@ function adminBreakdownSwitch(idx) {
   const leads = mgmtUsers.filter(u=>u.role==='teamlead');
   const grid = document.getElementById('admin-team-breakdown-grid');
   if (grid) grid.innerHTML = buildTeamBreakdownCards(leads, adminBreakdownMonthIdx);
-}
-
-function renderAdminTrendCharts(leads) {
-  const isDark = currentTheme !== 'clean';
-  const gridColor = isDark ? 'rgba(0,255,231,0.06)' : 'rgba(0,0,0,0.06)';
-  const tickColor = isDark ? '#3d6b65' : '#94a3b8';
-  const metrics = [
-    { key:'tps',        label:'TPS',        color:'#378ADD' },
-    { key:'attendance', label:'Attendance',  color:'#a78bfa' },
-    { key:'qa',         label:'QA',          color:'#ffb547' },
-    { key:'overall',    label:'Overall',     color:'#00ffe7' }
-  ];
-  leads.forEach(tl => {
-    const canvasId = 'chart-team-' + tl.email.replace(/[@.]/g,'_');
-    const canvas   = document.getElementById(canvasId);
-    if (!canvas) return;
-    const team = allAgents.filter(a=>a.teamLeadEmail===tl.email);
-    const allMonths = allAgents[0]?.months||[];
-    const labels = [];
-    const datasets = metrics.map(m=>({ label:m.label, data:[], borderColor:m.color, backgroundColor:'transparent', borderWidth:2, pointRadius:3, pointBackgroundColor:m.color, tension:0.35 }));
-    allMonths.forEach((mDef,mIdx)=>{
-      const teamActive = team.filter(a=>{const m=a.months?.[mIdx]; return m&&m.count&&m.overall!=='Attrite';});
-      if (teamActive.length===0) return;
-      labels.push(mDef.label);
-      metrics.forEach((m,di)=>{
-        const av = avgField(teamActive, mIdx, m.key);
-        datasets[di].data.push(av!==null ? parseFloat(av.toFixed(2)) : null);
-      });
-    });
-    // Destroy old
-    if (teamChartInstances[canvasId]) { teamChartInstances[canvasId].destroy(); }
-    teamChartInstances[canvasId] = new Chart(canvas, {
-      type:'line',
-      data:{ labels, datasets },
-      options:{
-        responsive:true, maintainAspectRatio:true,
-        interaction:{ mode:'index', intersect:false },
-        plugins:{
-          legend:{ position:'bottom', labels:{ color: isDark?'#8abfba':'#475569', font:{size:10}, boxWidth:12, padding:10 } },
-          tooltip:{ backgroundColor: isDark?'rgba(5,10,18,0.95)':'rgba(255,255,255,0.97)', titleColor: isDark?'#00ffe7':'#0f172a', bodyColor: isDark?'#8abfba':'#475569', borderColor: isDark?'rgba(0,255,231,0.2)':'#e2e8f0', borderWidth:1, callbacks:{ label: ctx=>` ${ctx.dataset.label}: ${ctx.parsed.y!==null?ctx.parsed.y.toFixed(2)+'%':'—'}` } }
-        },
-        scales:{
-          x:{ grid:{ color:gridColor }, ticks:{ color:tickColor, font:{size:10} } },
-          y:{ grid:{ color:gridColor }, ticks:{ color:tickColor, font:{size:10}, callback:v=>v+'%' }, min:0, max:100 }
-        }
-      }
-    });
-  });
 }
 
 // ── ADMIN ALL AGENTS ──
@@ -1461,9 +1637,7 @@ function renderAdminAgentsTable(monthIdx) {
       <td><strong>${a.name}</strong><br><span style="font-size:10px;color:var(--text3);font-family:var(--font-mono)">${a.email}</span></td>
       <td><span class="team-chip">${tl?tl.name:'—'}</span></td>
       <td style="font-family:var(--font-mono)">${m.count||'—'}</td>
-      <td>${fmtPct(m.tps)}</td>
-      <td>${fmtPct(m.attendance)}</td>
-      <td>${fmtPct(m.qa)}</td>
+      <td>${fmtPct(m.tps)}</td><td>${fmtPct(m.attendance)}</td><td>${fmtPct(m.qa)}</td>
       <td>${scoreBarHTML(m.overall)}</td>
     </tr>`;
   }).join('');
@@ -1479,30 +1653,25 @@ function tlNav(page, el) {
   if (page==='overview') renderTlOverview();
   if (page==='scores')   renderTlScores();
   if (page==='lb') {
-    // Show ALL agents, highlight TL's team
     const myTeamEmails = allAgents.filter(a=>a.teamLeadEmail===currentUser.email).map(a=>a.email);
     renderLeaderboard('tl-content-area', myTeamEmails, '#378ADD', false);
   }
 }
 
-// ── TEAM LEAD OVERVIEW (simplified: 5 metric cards only, clean table) ──
+// ── TEAM LEAD OVERVIEW ──
 function renderTlOverview() {
   const ca = document.getElementById('tl-content-area');
   const myTeam=allAgents.filter(a=>a.teamLeadEmail===currentUser.email);
   const latestIdx=latestActiveIdxAcrossAgents(myTeam);
   const latestLabel=latestIdx>=0?(myTeam.find(a=>a.months?.[latestIdx])?.months[latestIdx]?.label||''):'—';
-
   const active=myTeam.filter(a=>{const m=a.months?.[latestIdx]; return latestIdx>=0&&m&&m.count&&m.overall!=='Attrite';});
   const avgOv =avgField(active,latestIdx,'overall');
   const avgTps=avgField(active,latestIdx,'tps');
   const avgAtt=avgField(active,latestIdx,'attendance');
   const avgQa =avgField(active,latestIdx,'qa');
-
-  let topRk=9999,topName='';
-  active.forEach(a=>{const r=parseInt(a.months?.[latestIdx]?.rank); if(!isNaN(r)&&r<topRk){topRk=r;topName=a.name;}});
-
   const sorted=[...active].sort((a,b)=>(parseInt(a.months[latestIdx]?.rank)||9999)-(parseInt(b.months[latestIdx]?.rank)||9999));
 
+  const canvasId = 'chart-tl-trend';
   ca.innerHTML=`
     <div class="page-section">
       <div class="page-header">
@@ -1510,8 +1679,6 @@ function renderTlOverview() {
         <h1>Team Overview</h1>
         <p>Performance summary for your team — ${myTeam.length} agents, ${active.length} active this period.</p>
       </div>
-
-      <!-- 5 metric cards: Members, TPS, Attendance, QA, Overall -->
       <div class="metrics-grid-5">
         <div class="metric-card" style="--card-color:#378ADD">
           <div class="metric-label">Team Members</div>
@@ -1540,7 +1707,14 @@ function renderTlOverview() {
         </div>
       </div>
 
-      <!-- Team Rankings table only, no duplicate summary below -->
+      <!-- Team Trend Chart -->
+      <div class="panel" style="margin-bottom:1.5rem">
+        <div class="panel-title" style="color:#378ADD">Team Performance Trend</div>
+        ${metricTogglesHTML(canvasId)}
+        <canvas id="${canvasId}" height="130"></canvas>
+      </div>
+
+      <!-- Team Rankings -->
       <div class="panel">
         <div class="panel-title" style="color:#378ADD">Team Rankings — ${latestLabel}</div>
         <div style="overflow-x:auto">
@@ -1563,6 +1737,8 @@ function renderTlOverview() {
         </div>
       </div>
     </div>`;
+
+  setTimeout(() => buildTrendChart(canvasId, myTeam, '#378ADD'), 60);
 }
 
 // ── TEAM LEAD SCORES ──
@@ -1572,6 +1748,9 @@ function renderTlScores() {
   const months=myTeam[0]?.months||[];
   if (!months.length) { ca.innerHTML='<div class="no-data"><div class="nd-icon">📊</div>No team data available.</div>'; return; }
   if (tlMonthIdx===0) tlMonthIdx=latestActiveIdxAcrossAgents(myTeam);
+
+  const canvasId = 'chart-tl-scores';
+
   ca.innerHTML=`
     <div class="page-section">
       <div class="page-header">
@@ -1579,6 +1758,14 @@ function renderTlScores() {
         <h1>Team Scores</h1>
         <p>Month-by-month breakdown — January through present.</p>
       </div>
+
+      <!-- Trend Chart with month-aware context -->
+      <div class="panel" style="margin-bottom:1.5rem">
+        <div class="panel-title" style="color:#378ADD">Team Trend — All Months</div>
+        ${metricTogglesHTML(canvasId)}
+        <canvas id="${canvasId}" height="130"></canvas>
+      </div>
+
       <div class="panel">
         <div class="panel-title" style="color:#378ADD">Monthly Records</div>
         <div class="month-tabs" id="tl-month-tabs"></div>
@@ -1590,8 +1777,10 @@ function renderTlScores() {
         </div>
       </div>
     </div>`;
+
   renderTlMonthTabs(months, myTeam);
   renderTlTable(myTeam, tlMonthIdx);
+  setTimeout(() => buildTrendChart(canvasId, myTeam, '#378ADD'), 60);
 }
 
 function renderTlMonthTabs(months, team) {
@@ -1603,6 +1792,9 @@ function tlMonthSwitch(idx) {
   const myTeam=allAgents.filter(a=>a.teamLeadEmail===currentUser.email);
   renderTlMonthTabs(myTeam[0]?.months||[], myTeam);
   renderTlTable(myTeam, idx);
+  // Rebuild chart to reflect month context (highlight selected month)
+  const canvasId = 'chart-tl-scores';
+  if (chartInstances[canvasId]) buildTrendChart(canvasId, myTeam, '#378ADD');
 }
 function renderTlTable(team, monthIdx) {
   const thead=document.getElementById('tl-scores-thead');
@@ -1669,10 +1861,11 @@ function initParticles() {
 // ── KEYBOARD ──
 document.addEventListener('keydown',e=>{
   if(e.key==='Enter'){
-    if(document.getElementById('s-login').classList.contains('active'))  doLogin();
-    if(document.getElementById('s-signup').classList.contains('active')) doSignup();
-    if(document.getElementById('s-forgot').classList.contains('active')) doForgot();
-    if(document.getElementById('s-otp').classList.contains('active'))    doVerifyOtp();
+    if(document.getElementById('s-login').classList.contains('active'))    doLogin();
+    if(document.getElementById('s-signup').classList.contains('active'))   doSignup();
+    if(document.getElementById('s-forgot').classList.contains('active'))   doForgot();
+    if(document.getElementById('s-otp').classList.contains('active'))      doVerifyOtp();
+    if(document.getElementById('s-newpass').classList.contains('active'))  doSetNewPassword();
   }
 });
 </script>
