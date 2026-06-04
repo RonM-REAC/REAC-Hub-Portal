@@ -1224,7 +1224,7 @@ body {
     </div>
     <div class="main-content">
       <div class="topbar">
-        <div class="topbar-title" id="admin-topbar-title" style="color:var(--purple)">Command Overview</div>
+        <div class="topbar-title" id="admin-topbar-title" style="color:var(--purple)">REAC Revenue Solutions</div>
         <div class="topbar-right">
           <div class="theme-switcher" id="admin-theme-switcher">
             <button class="theme-btn active" id="admin-theme-fut" onclick="setTheme('futuristic')">
@@ -1910,7 +1910,7 @@ function renderLeaderboard(contentAreaId, agents, accent) {
 function adminNav(page, el) {
   document.querySelectorAll('#s-admin .nav-item').forEach(n=>n.classList.remove('active'));
   el.classList.add('active');
-  const titles={overview:'Command Overview',agents:'All Agents',lb:'Leaderboard'};
+  const titles={overview:'REAC Revenue Solutions',agents:'All Agents',lb:'Leaderboard'};
   document.getElementById('admin-topbar-title').textContent=titles[page]||page;
   if (page==='overview') renderAdminOverview();
   if (page==='agents')   renderAdminAgents();
@@ -1946,11 +1946,6 @@ function renderAdminOverview() {
           <div class="metric-value">${allAgents.length}</div>
           <div class="metric-sub">${active.length} active this period</div>
         </div>
-        <div class="metric-card" style="--card-color:var(--neon)">
-          <div class="metric-label">Avg Overall Score</div>
-          <div class="metric-value">${avgOv?avgOv.toFixed(2)+'%':'—'}</div>
-          <div class="metric-sub">${latestLabel}</div>
-        </div>
         <div class="metric-card" style="--card-color:#378ADD">
           <div class="metric-label">Avg TPS</div>
           <div class="metric-value">${avgTps?avgTps.toFixed(2)+'%':'—'}</div>
@@ -1959,6 +1954,11 @@ function renderAdminOverview() {
         <div class="metric-card" style="--card-color:var(--warn)">
           <div class="metric-label">Avg QA Score</div>
           <div class="metric-value">${avgQa?avgQa.toFixed(2)+'%':'—'}</div>
+          <div class="metric-sub">${latestLabel}</div>
+        </div>
+         <div class="metric-card" style="--card-color:var(--neon)">
+          <div class="metric-label">Avg Overall Score</div>
+          <div class="metric-value">${avgOv?avgOv.toFixed(2)+'%':'—'}</div>
           <div class="metric-sub">${latestLabel}</div>
         </div>
       </div>
@@ -1977,16 +1977,17 @@ function renderAdminOverview() {
                 <span class="team-card-name">${tl.name} — Team</span>
                 <span class="team-card-count">${team.length} agents</span>
               </div>
-              <div class="team-metric"><span class="team-metric-label">Avg Overall</span><span class="team-metric-val">${avO?avO.toFixed(2)+'%':'—'}</span></div>
+              <div class="team-metric"><span class="team-metric-label">Avg TPS</span><span class="team-metric-val">${avT?avT.toFixed(2)+'%':'—'}</span></div>
               <div class="team-metric"><span class="team-metric-label">Avg Attendance</span><span class="team-metric-val">${avA?avA.toFixed(2)+'%':'—'}</span></div>
               <div class="team-metric"><span class="team-metric-label">Avg QA</span><span class="team-metric-val">${avQ?avQ.toFixed(2)+'%':'—'}</span></div>
+              <div class="team-metric"><span class="team-metric-label">Avg Overall</span><span class="team-metric-val">${avO?avO.toFixed(2)+'%':'—'}</span></div>
             </div>`;
           }).join('')}
         </div>
       </div>`:''
       }
       <div class="panel">
-        <div class="panel-title" style="color:var(--purple)">Score Distribution — ${latestLabel}</div>
+        <div class="panel-title" style="color:var(--purple)">Score Rankings — ${latestLabel}</div>
         <div style="overflow-x:auto">
           <table class="data-table">
             <thead><tr><th>Rank</th><th>Agent</th><th>Team Lead</th><th>TPS</th><th>Attendance</th><th>QA</th><th>Overall</th></tr></thead>
