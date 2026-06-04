@@ -5,12 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>REAC Agent Hub</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Playfair+Display:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
 /* ═══════════════════════════════════════
-   CSS VARIABLES & RESET
+   THEME SYSTEM
 ═══════════════════════════════════════ */
-:root {
+
+/* FUTURISTIC THEME (default) */
+:root,
+[data-theme="futuristic"] {
   --neon:    #00ffe7;
   --neon2:   #7b5ea7;
   --neon3:   #ff6b35;
@@ -38,8 +41,203 @@
   --font-head: 'Orbitron', monospace;
   --font-body: 'Rajdhani', sans-serif;
   --font-mono: 'Share Tech Mono', monospace;
-  --sidebar-w: 228px;
+
+  --sidebar-bg: rgba(6,12,22,0.97);
+  --sidebar-border: var(--border2);
+  --topbar-bg: rgba(6,12,22,0.97);
+  --card-radius: 4px;
+  --input-radius: 2px;
+  --btn-radius: 2px;
+  --auth-card-bg: rgba(8,15,26,0.92);
+  --particles-visible: block;
+  --grid-visible: block;
 }
+
+/* CLEAN PORTAL THEME */
+[data-theme="clean"] {
+  --neon:    #2563eb;
+  --neon2:   #7c3aed;
+  --neon3:   #dc2626;
+  --purple:  #7c3aed;
+  --gold:    #d97706;
+  --silver:  #6b7280;
+  --bronze:  #92400e;
+
+  --bg:      #f8fafc;
+  --bg2:     #f1f5f9;
+  --bg3:     #e2e8f0;
+  --panel:   rgba(255,255,255,0.9);
+  --panel2:  rgba(255,255,255,1);
+  --border:  rgba(37,99,235,0.2);
+  --border2: #e2e8f0;
+
+  --text:    #0f172a;
+  --text2:   #475569;
+  --text3:   #94a3b8;
+
+  --success: #059669;
+  --warn:    #d97706;
+  --danger:  #dc2626;
+
+  --font-head: 'Playfair Display', serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+
+  --sidebar-bg: #ffffff;
+  --sidebar-border: #e2e8f0;
+  --topbar-bg: #ffffff;
+  --card-radius: 10px;
+  --input-radius: 8px;
+  --btn-radius: 8px;
+  --auth-card-bg: #ffffff;
+  --particles-visible: none;
+  --grid-visible: none;
+}
+
+[data-theme="clean"] body {
+  background: var(--bg);
+}
+[data-theme="clean"] .grid-overlay { display: none; }
+[data-theme="clean"] .vignette { display: none; }
+[data-theme="clean"] .scanline { display: none; }
+[data-theme="clean"] #bg-canvas { display: none; }
+
+[data-theme="clean"] .auth-screen {
+  background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 50%, #f0f9ff 100%);
+}
+[data-theme="clean"] .auth-card {
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 20px 60px rgba(37,99,235,0.08);
+  border-color: #e2e8f0;
+  background: #ffffff;
+}
+[data-theme="clean"] .auth-card::before,
+[data-theme="clean"] .auth-card::after { display: none; }
+[data-theme="clean"] .sidebar {
+  box-shadow: 1px 0 0 0 #e2e8f0, 4px 0 20px rgba(0,0,0,0.04);
+}
+[data-theme="clean"] .sidebar-glow { display: none; }
+[data-theme="clean"] .panel {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+[data-theme="clean"] .metric-card {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+[data-theme="clean"] .metric-card:hover {
+  box-shadow: 0 8px 24px rgba(37,99,235,0.12);
+  border-color: rgba(37,99,235,0.25);
+}
+[data-theme="clean"] .metric-value {
+  text-shadow: none;
+}
+[data-theme="clean"] .data-table td {
+  border-bottom-color: #f1f5f9;
+}
+[data-theme="clean"] .data-table tr:hover td {
+  background: #f8fafc;
+}
+[data-theme="clean"] .topbar {
+  box-shadow: 0 1px 0 0 #e2e8f0;
+  border-bottom-color: #e2e8f0;
+}
+[data-theme="clean"] .nav-item.active {
+  background: #eff6ff;
+  border-left-color: var(--neon);
+  color: var(--neon);
+}
+[data-theme="clean"] .nav-item.active::after {
+  display: none;
+}
+[data-theme="clean"] .nav-item:hover {
+  background: #f8fafc;
+}
+[data-theme="clean"] .rank-badge.rk-1 { box-shadow: none; }
+[data-theme="clean"] .sbar { background: #f1f5f9; }
+[data-theme="clean"] .btn-primary {
+  background: var(--neon);
+  color: white !important;
+  border-color: var(--neon);
+}
+[data-theme="clean"] .btn-primary::before { display: none; }
+[data-theme="clean"] .btn-primary:hover { opacity: 0.9; box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+[data-theme="clean"] .field input {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  color: var(--text);
+}
+[data-theme="clean"] .field input:focus {
+  border-color: var(--neon);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+  background: #ffffff;
+}
+[data-theme="clean"] .load-logo { color: var(--neon); text-shadow: none; }
+[data-theme="clean"] .load-bar { box-shadow: none; }
+[data-theme="clean"] #s-loading { background: #f0f4ff; }
+[data-theme="clean"] .otp-box {
+  border-color: #e2e8f0;
+  background: #f8fafc;
+  color: var(--neon);
+}
+[data-theme="clean"] .otp-box:focus {
+  border-color: var(--neon);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+  background: #ffffff;
+}
+[data-theme="clean"] .team-card {
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+[data-theme="clean"] .team-card:hover {
+  box-shadow: 0 4px 20px rgba(37,99,235,0.1);
+  border-color: rgba(37,99,235,0.25);
+}
+[data-theme="clean"] .profile-banner {
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+[data-theme="clean"] .profile-banner::before { display: none; }
+[data-theme="clean"] .tab-btn.active { color: var(--neon); border-bottom-color: var(--neon); }
+[data-theme="clean"] .month-tab.active { background: #eff6ff; color: var(--neon); border-color: var(--neon); box-shadow: none; }
+[data-theme="clean"] #toast { background: #fff; border-color: var(--neon); box-shadow: 0 4px 20px rgba(37,99,235,0.15); }
+[data-theme="clean"] .badge-green  { color: #059669; border-color: rgba(5,150,105,0.3); background: rgba(5,150,105,0.07); }
+[data-theme="clean"] .badge-amber  { color: var(--warn); border-color: rgba(217,119,6,0.3); background: rgba(217,119,6,0.07); }
+[data-theme="clean"] .badge-red    { color: var(--danger); border-color: rgba(220,38,38,0.3); background: rgba(220,38,38,0.07); }
+[data-theme="clean"] .sbar-fill.good { background: linear-gradient(90deg,#059669,#10b981); }
+[data-theme="clean"] .sbar-fill.ok { background: linear-gradient(90deg,#2563eb,#60a5fa); }
+[data-theme="clean"] .sbar-fill.warn { background: linear-gradient(90deg,#d97706,#fbbf24); }
+[data-theme="clean"] .sbar-fill.danger { background: linear-gradient(90deg,#dc2626,#f87171); }
+[data-theme="clean"] .auth-bg-glow { display: none; }
+[data-theme="clean"] .ctrl-input {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  color: var(--text);
+}
+[data-theme="clean"] .ctrl-input:focus {
+  border-color: var(--neon);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+}
+[data-theme="clean"] .ctrl-select {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+[data-theme="clean"] .btn-ctrl:hover {
+  box-shadow: 0 2px 8px rgba(37,99,235,0.15);
+}
+[data-theme="clean"] .page-tag {
+  background: #eff6ff;
+}
+[data-theme="clean"] .s-logo-icon {
+  box-shadow: none;
+  background: #eff6ff;
+}
+
+/* ═══════════════════════════════════════
+   CSS VARIABLES & RESET
+═══════════════════════════════════════ */
+--sidebar-w: 228px;
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { width: 100%; height: 100%; overflow: hidden; }
@@ -51,6 +249,7 @@ body {
   font-size: 15px;
   letter-spacing: 0.02em;
   -webkit-font-smoothing: antialiased;
+  transition: background 0.4s ease, color 0.4s ease;
 }
 
 /* ═══════════════════════════════════════
@@ -155,12 +354,13 @@ body {
 
 .auth-card {
   width: 430px; max-width: 100%;
-  background: rgba(8,15,26,0.92);
+  background: var(--auth-card-bg);
   border: 1px solid var(--border);
-  border-radius: 4px; padding: 2rem 2.5rem;
+  border-radius: var(--card-radius); padding: 2rem 2.5rem;
   position: relative; backdrop-filter: blur(24px);
   animation: fadeUp 0.5s ease;
   box-shadow: 0 0 70px rgba(0,255,231,0.07), inset 0 0 40px rgba(0,255,231,0.02);
+  transition: background 0.4s ease, border-color 0.4s ease;
 }
 .auth-card::before, .auth-card::after {
   content: ''; position: absolute;
@@ -187,7 +387,7 @@ body {
   width: 100%; height: 42px; padding: 0 14px;
   background: rgba(0,255,231,0.03);
   border: 1px solid var(--border2);
-  border-radius: 2px; color: var(--text);
+  border-radius: var(--input-radius); color: var(--text);
   font-family: var(--font-mono); font-size: 13px;
   outline: none; transition: all 0.25s; letter-spacing: 0.05em;
 }
@@ -210,7 +410,7 @@ body {
 /* Buttons */
 .btn-primary {
   width: 100%; height: 44px; background: transparent;
-  border: 1px solid var(--neon); border-radius: 2px;
+  border: 1px solid var(--neon); border-radius: var(--btn-radius);
   color: var(--neon); font-family: var(--font-head); font-size: 11px;
   font-weight: 700; letter-spacing: 0.28em; text-transform: uppercase;
   cursor: pointer; position: relative; overflow: hidden;
@@ -227,7 +427,7 @@ body {
 
 .btn-ghost {
   width: 100%; height: 40px; background: transparent;
-  border: 1px solid var(--border2); border-radius: 2px;
+  border: 1px solid var(--border2); border-radius: var(--btn-radius);
   color: var(--text2); font-family: var(--font-mono); font-size: 11px;
   letter-spacing: 0.12em; cursor: pointer; transition: all 0.25s; margin-top: 8px;
 }
@@ -282,12 +482,19 @@ body {
 
 /* ── SIDEBAR ── */
 .sidebar {
-  width: var(--sidebar-w); height: 100%; flex-shrink: 0;
-  background: rgba(6,12,22,0.97);
-  border-right: 1px solid var(--border2);
+  width: 228px; height: 100%; flex-shrink: 0;
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--sidebar-border);
   display: flex; flex-direction: column;
   position: relative; overflow: hidden;
   box-shadow: 4px 0 30px rgba(0,0,0,0.5);
+  transition: width 0.32s cubic-bezier(0.4,0,0.2,1), min-width 0.32s cubic-bezier(0.4,0,0.2,1);
+  min-width: 228px;
+}
+.sidebar.collapsed {
+  width: 0 !important;
+  min-width: 0 !important;
+  overflow: hidden;
 }
 .sidebar-glow {
   position: absolute; bottom: 0; left: 0; right: 0; height: 260px;
@@ -296,8 +503,9 @@ body {
 }
 .sidebar-logo {
   padding: 1.4rem 1.2rem 1.2rem;
-  border-bottom: 1px solid var(--border2);
+  border-bottom: 1px solid var(--sidebar-border);
   display: flex; align-items: center; gap: 11px; flex-shrink: 0;
+  white-space: nowrap;
 }
 .s-logo-icon {
   width: 36px; height: 36px; border: 1px solid var(--neon); border-radius: 8px;
@@ -311,7 +519,7 @@ body {
 }
 .s-logo-text p { font-size: 9px; color: var(--text2); letter-spacing: 0.12em; margin-top: 1px; }
 
-.sidebar-nav { flex: 1; padding: 1rem 0; overflow-y: auto; }
+.sidebar-nav { flex: 1; padding: 1rem 0; overflow-y: auto; white-space: nowrap; }
 .sidebar-nav::-webkit-scrollbar { width: 0; }
 .nav-section { margin-bottom: 1.5rem; }
 .nav-section-label {
@@ -324,7 +532,7 @@ body {
   padding: 10px 1.2rem; cursor: pointer; position: relative;
   transition: all 0.2s; color: var(--text2); font-size: 13px;
   letter-spacing: 0.05em; border-left: 2px solid transparent;
-  user-select: none;
+  user-select: none; white-space: nowrap;
 }
 .nav-item svg { width: 15px; height: 15px; stroke: currentColor; flex-shrink: 0; }
 .nav-item:hover { color: var(--text); background: rgba(0,255,231,0.04); }
@@ -345,8 +553,8 @@ body {
 }
 
 .sidebar-user {
-  padding: 0.9rem 1.2rem; border-top: 1px solid var(--border2);
-  display: flex; align-items: center; gap: 9px; flex-shrink: 0;
+  padding: 0.9rem 1.2rem; border-top: 1px solid var(--sidebar-border);
+  display: flex; align-items: center; gap: 9px; flex-shrink: 0; white-space: nowrap;
 }
 .user-avatar {
   width: 34px; height: 34px; border-radius: 50%;
@@ -364,15 +572,72 @@ body {
 .sidebar-logout:hover { color: var(--danger); }
 .sidebar-logout svg { width: 14px; height: 14px; stroke: currentColor; }
 
+/* ── SIDEBAR TOGGLE BUTTON ── */
+.sidebar-toggle-btn {
+  position: absolute;
+  top: 50%;
+  right: -14px;
+  transform: translateY(-50%);
+  z-index: 100;
+  width: 28px; height: 28px;
+  background: var(--sidebar-bg);
+  border: 1px solid var(--sidebar-border);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: var(--text2);
+  transition: all 0.2s;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.2);
+  flex-shrink: 0;
+}
+.sidebar-toggle-btn:hover {
+  color: var(--neon);
+  border-color: var(--neon);
+  box-shadow: 0 0 12px rgba(0,255,231,0.2);
+}
+.sidebar-toggle-btn svg { width: 13px; height: 13px; stroke: currentColor; }
+
+/* When sidebar collapsed, show toggle floated on the left */
+.sidebar-open-btn {
+  position: fixed;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  z-index: 200;
+  width: 24px; height: 48px;
+  background: var(--sidebar-bg);
+  border: 1px solid var(--sidebar-border);
+  border-left: none;
+  border-radius: 0 8px 8px 0;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: var(--text2);
+  transition: all 0.2s;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+  opacity: 0;
+  pointer-events: none;
+}
+.sidebar-open-btn.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+.sidebar-open-btn:hover {
+  color: var(--neon);
+  border-color: var(--neon);
+  background: var(--bg2);
+}
+.sidebar-open-btn svg { width: 12px; height: 12px; stroke: currentColor; }
+
 /* ── MAIN CONTENT ── */
 .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
 
 .topbar {
   height: 56px; flex-shrink: 0;
-  background: rgba(6,12,22,0.97);
-  border-bottom: 1px solid var(--border2);
+  background: var(--topbar-bg);
+  border-bottom: 1px solid var(--sidebar-border);
   padding: 0 1.5rem;
   display: flex; align-items: center; justify-content: space-between;
+  transition: background 0.4s ease;
 }
 .topbar-title {
   font-family: var(--font-head); font-size: 13px; color: var(--text);
@@ -389,6 +654,32 @@ body {
   animation: blink 2s infinite;
 }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.15} }
+
+/* ── THEME SWITCHER ── */
+.theme-switcher {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--bg3); border: 1px solid var(--border2); border-radius: 20px;
+  padding: 3px 4px;
+}
+[data-theme="clean"] .theme-switcher {
+  background: #f1f5f9; border-color: #e2e8f0;
+}
+.theme-btn {
+  display: flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 14px; border: none;
+  cursor: pointer; font-size: 10px; font-family: var(--font-mono);
+  letter-spacing: 0.08em; transition: all 0.25s;
+  background: transparent; color: var(--text3);
+}
+.theme-btn.active {
+  background: var(--neon); color: var(--bg);
+  font-weight: 700;
+}
+[data-theme="clean"] .theme-btn.active {
+  background: var(--neon); color: #fff;
+}
+.theme-btn:not(.active):hover { color: var(--text2); }
+.theme-btn svg { width: 11px; height: 11px; stroke: currentColor; }
 
 .content-area { flex: 1; overflow-y: auto; padding: 1.5rem; }
 .content-area::-webkit-scrollbar { width: 4px; }
@@ -421,7 +712,7 @@ body {
 .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(175px,1fr)); gap: 1rem; margin-bottom: 1.75rem; }
 .metric-card {
   background: rgba(8,15,26,0.8);
-  border: 1px solid var(--border2); border-radius: 4px;
+  border: 1px solid var(--border2); border-radius: var(--card-radius);
   padding: 1.2rem 1.25rem 1rem; position: relative; overflow: hidden;
   transition: all 0.3s; cursor: default;
 }
@@ -464,7 +755,8 @@ body {
 .panel {
   background: rgba(8,15,26,0.8);
   border: 1px solid var(--border2);
-  border-radius: 4px; padding: 1.25rem; position: relative;
+  border-radius: var(--card-radius); padding: 1.25rem; position: relative;
+  transition: background 0.4s ease, border-color 0.4s ease;
 }
 .panel-title {
   font-family: var(--font-head); font-size: 10px; color: var(--neon);
@@ -554,7 +846,7 @@ body {
 .stat-mini-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(145px,1fr)); gap:0.75rem; margin-bottom:1.25rem; }
 .stat-mini {
   background:rgba(0,255,231,0.04);
-  border:1px solid var(--border2); border-radius:4px;
+  border:1px solid var(--border2); border-radius:var(--card-radius);
   padding:0.9rem 1rem; position:relative; overflow:hidden;
 }
 .stat-mini::before {
@@ -575,7 +867,7 @@ body {
 /* ── PROFILE BANNER ── */
 .profile-banner {
   background:rgba(8,15,26,0.8);
-  border:1px solid var(--border2); border-radius:4px;
+  border:1px solid var(--border2); border-radius:var(--card-radius);
   padding:1.75rem 1.75rem; margin-bottom:1.5rem;
   display:flex; align-items:center; gap:1.5rem;
   position:relative; overflow:hidden;
@@ -601,19 +893,19 @@ body {
 .ctrl-row { display:flex; gap:8px; margin-bottom:1rem; flex-wrap:wrap; }
 .ctrl-input {
   flex:1; min-width:160px; height:36px; padding:0 12px;
-  background:rgba(0,255,231,0.03); border:1px solid var(--border); border-radius:2px;
+  background:rgba(0,255,231,0.03); border:1px solid var(--border); border-radius:var(--input-radius);
   color:var(--text); font-family:var(--font-mono); font-size:12px; outline:none; transition:all 0.2s;
 }
 .ctrl-input:focus { border-color:var(--neon); box-shadow:0 0 15px rgba(0,255,231,0.1); }
 .ctrl-input::placeholder { color:var(--text3); }
 .ctrl-select {
   height:36px; padding:0 10px;
-  background:var(--bg2); border:1px solid var(--border); border-radius:2px;
+  background:var(--bg2); border:1px solid var(--border); border-radius:var(--input-radius);
   color:var(--text2); font-family:var(--font-mono); font-size:12px; outline:none;
 }
 .btn-ctrl {
   height:36px; padding:0 16px;
-  background:transparent; border:1px solid var(--border); border-radius:2px;
+  background:transparent; border:1px solid var(--border); border-radius:var(--btn-radius);
   color:var(--text2); font-family:var(--font-mono); font-size:11px; letter-spacing:0.1em;
   cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; gap:6px;
 }
@@ -639,7 +931,7 @@ body {
 /* ── TOAST ── */
 #toast {
   position:fixed; bottom:2rem; right:2rem;
-  background:var(--bg3); border:1px solid var(--neon); border-radius:4px;
+  background:var(--bg3); border:1px solid var(--neon); border-radius:var(--card-radius);
   padding:12px 20px; font-family:var(--font-mono); font-size:12px; color:var(--neon);
   box-shadow:0 0 35px rgba(0,255,231,0.22); z-index:9999;
   opacity:0; pointer-events:none; transition:opacity 0.35s; letter-spacing:0.08em;
@@ -668,7 +960,7 @@ body {
 /* Team overview cards */
 .team-overview-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1rem; }
 .team-card {
-  background:rgba(8,15,26,0.8); border:1px solid var(--border2); border-radius:4px;
+  background:rgba(8,15,26,0.8); border:1px solid var(--border2); border-radius:var(--card-radius);
   padding:1.25rem; transition:all 0.25s;
 }
 .team-card:hover { border-color:rgba(167,139,250,0.4); transform:translateY(-2px); box-shadow:0 8px 30px rgba(0,0,0,0.35); }
@@ -797,7 +1089,6 @@ body {
     <p class="auth-desc" id="otp-card-desc">Enter the 6-digit code sent to your email. You can paste it directly.</p>
     <div class="msg-box msg-error" id="otp-err"></div>
     <div class="msg-box msg-ok"    id="otp-ok"></div>
-
     <div class="otp-row" id="otp-row">
       <input class="otp-box" id="otp0" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="one-time-code"/>
       <input class="otp-box" id="otp1" maxlength="1" inputmode="numeric" pattern="[0-9]"/>
@@ -806,24 +1097,29 @@ body {
       <input class="otp-box" id="otp4" maxlength="1" inputmode="numeric" pattern="[0-9]"/>
       <input class="otp-box" id="otp5" maxlength="1" inputmode="numeric" pattern="[0-9]"/>
     </div>
-
-    <!-- New password fields (only for forgot) -->
     <div id="otp-newpass-fields" style="display:none">
       <div class="field"><label>New Password</label><input type="password" id="new-pass" placeholder="Min. 8 characters"/></div>
       <div class="field"><label>Confirm New Password</label><input type="password" id="new-pass2" placeholder="Repeat new password"/></div>
     </div>
-
     <button class="btn-primary" id="otp-btn" onclick="doVerifyOtp()"><span>⬡ VERIFY CODE</span></button>
     <button class="btn-ghost" id="otp-resend-btn" onclick="doResendOtp()">Resend Code</button>
   </div>
 </div>
 
 <!-- ══════════════════════════════════
-     AGENT APP
+     AGENT APP  (NO Leaderboard nav)
 ══════════════════════════════════════ -->
 <div id="s-agent" class="screen app-screen">
+  <!-- Sidebar open button (visible when collapsed) -->
+  <div class="sidebar-open-btn" id="agent-open-btn" onclick="toggleSidebar('agent')">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+  </div>
   <div class="app-layout">
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar-agent">
+      <!-- collapse toggle -->
+      <div class="sidebar-toggle-btn" onclick="toggleSidebar('agent')" title="Collapse sidebar">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </div>
       <div class="sidebar-glow"></div>
       <div class="sidebar-logo">
         <div class="s-logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
@@ -840,10 +1136,6 @@ body {
             <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
             My Scores
           </div>
-          <div class="nav-item" id="nav-a-lb" onclick="agentNav('lb',this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6l4-4 4 4"/><path d="M12 2v10"/><path d="M4 20h16"/><path d="M4 14l4 3h8l4-3"/></svg>
-            Leaderboard
-          </div>
         </div>
       </div>
       <div class="sidebar-user">
@@ -857,11 +1149,20 @@ body {
         </button>
       </div>
     </div>
-
     <div class="main-content">
       <div class="topbar">
         <div class="topbar-title" id="agent-topbar-title">Dashboard</div>
         <div class="topbar-right">
+          <div class="theme-switcher" id="agent-theme-switcher">
+            <button class="theme-btn active" id="agent-theme-fut" onclick="setTheme('futuristic')">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              CYBER
+            </button>
+            <button class="theme-btn" id="agent-theme-cln" onclick="setTheme('clean')">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7m0-18H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7m0-18v18"/></svg>
+              CLEAN
+            </button>
+          </div>
           <div class="sync-badge" style="color:var(--neon)"><div class="sync-dot" style="background:var(--neon);box-shadow:0 0 6px var(--neon)"></div>LIVE</div>
           <div class="clock" id="clock-agent">--:--:--</div>
         </div>
@@ -877,8 +1178,14 @@ body {
      MANAGER / ADMIN APP
 ══════════════════════════════════════ -->
 <div id="s-admin" class="screen app-screen purple-accent">
+  <div class="sidebar-open-btn" id="admin-open-btn" onclick="toggleSidebar('admin')">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+  </div>
   <div class="app-layout">
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar-admin">
+      <div class="sidebar-toggle-btn" onclick="toggleSidebar('admin')" title="Collapse sidebar">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </div>
       <div class="sidebar-glow" style="background:radial-gradient(ellipse at bottom,rgba(167,139,250,0.08) 0%,transparent 70%)"></div>
       <div class="sidebar-logo">
         <div class="s-logo-icon" style="border-color:var(--purple);box-shadow:0 0 18px rgba(167,139,250,0.3)">
@@ -897,6 +1204,10 @@ body {
             <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             All Agents
           </div>
+          <div class="nav-item" id="nav-m-lb" onclick="adminNav('lb',this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6l4-4 4 4"/><path d="M12 2v10"/><path d="M4 20h16"/><path d="M4 14l4 3h8l4-3"/></svg>
+            Leaderboard
+          </div>
         </div>
       </div>
       <div class="sidebar-user">
@@ -910,11 +1221,20 @@ body {
         </button>
       </div>
     </div>
-
     <div class="main-content">
       <div class="topbar">
         <div class="topbar-title" id="admin-topbar-title" style="color:var(--purple)">Command Overview</div>
         <div class="topbar-right">
+          <div class="theme-switcher" id="admin-theme-switcher">
+            <button class="theme-btn active" id="admin-theme-fut" onclick="setTheme('futuristic')">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              CYBER
+            </button>
+            <button class="theme-btn" id="admin-theme-cln" onclick="setTheme('clean')">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7m0-18H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7m0-18v18"/></svg>
+              CLEAN
+            </button>
+          </div>
           <div class="sync-badge"><div class="sync-dot" style="background:var(--purple);box-shadow:0 0 6px var(--purple)"></div><span style="color:var(--purple)">SYNCED</span></div>
           <div class="clock" id="clock-admin">--:--:--</div>
         </div>
@@ -930,8 +1250,14 @@ body {
      TEAM LEAD APP
 ══════════════════════════════════════ -->
 <div id="s-teamlead" class="screen app-screen">
+  <div class="sidebar-open-btn" id="tl-open-btn" onclick="toggleSidebar('tl')">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+  </div>
   <div class="app-layout">
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar-tl">
+      <div class="sidebar-toggle-btn" onclick="toggleSidebar('tl')" title="Collapse sidebar">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </div>
       <div class="sidebar-glow" style="background:radial-gradient(ellipse at bottom,rgba(55,138,221,0.08) 0%,transparent 70%)"></div>
       <div class="sidebar-logo">
         <div class="s-logo-icon" style="border-color:#378ADD;box-shadow:0 0 18px rgba(55,138,221,0.3)">
@@ -942,13 +1268,17 @@ body {
       <div class="sidebar-nav">
         <div class="nav-section">
           <div class="nav-section-label">Team Panel</div>
-          <div class="nav-item active" id="nav-t-overview" onclick="tlNav('overview',this)" style="--neon:#378ADD">
+          <div class="nav-item active" id="nav-t-overview" onclick="tlNav('overview',this)">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
             Team Overview
           </div>
-          <div class="nav-item" id="nav-t-scores" onclick="tlNav('scores',this)" style="--neon:#378ADD">
+          <div class="nav-item" id="nav-t-scores" onclick="tlNav('scores',this)">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
             Team Scores
+          </div>
+          <div class="nav-item" id="nav-t-lb" onclick="tlNav('lb',this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6l4-4 4 4"/><path d="M12 2v10"/><path d="M4 20h16"/><path d="M4 14l4 3h8l4-3"/></svg>
+            Leaderboard
           </div>
         </div>
       </div>
@@ -963,11 +1293,20 @@ body {
         </button>
       </div>
     </div>
-
     <div class="main-content">
       <div class="topbar">
         <div class="topbar-title" id="tl-topbar-title" style="color:#378ADD">Team Overview</div>
         <div class="topbar-right">
+          <div class="theme-switcher" id="tl-theme-switcher">
+            <button class="theme-btn active" id="tl-theme-fut" onclick="setTheme('futuristic')">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              CYBER
+            </button>
+            <button class="theme-btn" id="tl-theme-cln" onclick="setTheme('clean')">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7m0-18H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7m0-18v18"/></svg>
+              CLEAN
+            </button>
+          </div>
           <div class="sync-badge"><div class="sync-dot" style="background:#378ADD;box-shadow:0 0 6px #378ADD"></div><span style="color:#378ADD">LIVE</span></div>
           <div class="clock" id="clock-tl">--:--:--</div>
         </div>
@@ -986,7 +1325,7 @@ body {
 // ══════════════════════════════════════════════════════════
 //  CONFIG
 // ══════════════════════════════════════════════════════════
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbwymOfEt1wKIdyiwCyKxvPc6tQcfJuEFxVVCgWHdh5MhhYqr3Rf3RVI7B3tIhCoy82dOQ/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbw9YZDu--oRQ-ANhbk-16t-8D66IrAO_rQI7KZ1dpPgQUtIuzCiNUwH5pMZDgsJGqu45w/exec';
 
 // ══════════════════════════════════════════════════════════
 //  STATE
@@ -995,15 +1334,61 @@ let currentUser   = null;
 let allAgents     = [];
 let mgmtUsers     = [];
 let pendingEmail  = '';
-let otpMode       = 'forgot'; // 'signup' | 'forgot'
+let otpMode       = 'forgot';
 let _signupPass   = '';
 let adminMonthIdx = 0;
 let tlMonthIdx    = 0;
+let currentTheme  = localStorage.getItem('reac_theme') || 'futuristic';
+
+// ══════════════════════════════════════════════════════════
+//  THEME
+// ══════════════════════════════════════════════════════════
+function setTheme(theme) {
+  currentTheme = theme;
+  localStorage.setItem('reac_theme', theme);
+  document.documentElement.setAttribute('data-theme', theme);
+
+  // Update all theme buttons
+  ['agent','admin','tl'].forEach(prefix => {
+    const futBtn = document.getElementById(prefix + '-theme-fut');
+    const clnBtn = document.getElementById(prefix + '-theme-cln');
+    if (futBtn) futBtn.classList.toggle('active', theme === 'futuristic');
+    if (clnBtn) clnBtn.classList.toggle('active', theme === 'clean');
+  });
+}
+
+function applyStoredTheme() {
+  setTheme(currentTheme);
+}
+
+// ══════════════════════════════════════════════════════════
+//  SIDEBAR TOGGLE
+// ══════════════════════════════════════════════════════════
+const sidebarState = { agent: true, admin: true, tl: true }; // true = open
+
+function toggleSidebar(which) {
+  const sidebar   = document.getElementById('sidebar-' + which);
+  const openBtn   = document.getElementById(which + '-open-btn');
+  const isOpen    = sidebarState[which];
+
+  if (isOpen) {
+    // Collapse
+    sidebar.classList.add('collapsed');
+    openBtn.classList.add('visible');
+    sidebarState[which] = false;
+  } else {
+    // Expand
+    sidebar.classList.remove('collapsed');
+    openBtn.classList.remove('visible');
+    sidebarState[which] = true;
+  }
+}
 
 // ══════════════════════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════════════════════
 window.addEventListener('load', async () => {
+  applyStoredTheme();
   initOtpBoxes();
   initParticles();
   startClocks();
@@ -1035,13 +1420,9 @@ function show(id) {
   document.getElementById(id).classList.add('active');
   clearMsgs();
 }
-
-function clearMsgs() {
-  document.querySelectorAll('.msg-box').forEach(el => el.style.display = 'none');
-}
+function clearMsgs() { document.querySelectorAll('.msg-box').forEach(el => el.style.display = 'none'); }
 function showErr(id, msg) { const el=document.getElementById(id); el.textContent=msg; el.style.display='block'; }
 function showOk(id, msg)  { const el=document.getElementById(id); el.textContent=msg; el.style.display='block'; }
-
 function toast(msg, ms=3500) {
   const t = document.getElementById('toast');
   t.textContent = '⬡ ' + msg;
@@ -1059,12 +1440,12 @@ async function gasGet(action, params={}) {
   const r = await fetch(url.toString());
   return r.json();
 }
-
 async function gasPost(action, data={}) {
   const url = new URL(GAS_URL);
-  url.searchParams.set('action', action);
-  Object.entries(data).forEach(([k,v]) => url.searchParams.set(k,v));
-  const r = await fetch(url.toString());
+  const r = await fetch(url.toString(), {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ action, ...data })
+  });
   return r.json();
 }
 
@@ -1075,7 +1456,6 @@ async function doLogin() {
   const email = document.getElementById('login-email').value.trim().toLowerCase();
   const pass  = document.getElementById('login-pass').value;
   if (!email || !pass) { showErr('login-err','Please enter email and password.'); return; }
-
   setBtnLoading('login-btn', true);
   try {
     const res = await gasGet('login', { email, password: pass });
@@ -1083,9 +1463,7 @@ async function doLogin() {
       currentUser = res.user;
       sessionStorage.setItem('reac_user', JSON.stringify(currentUser));
       await loadDashboard();
-    } else {
-      showErr('login-err', res.message || 'Invalid credentials.');
-    }
+    } else { showErr('login-err', res.message || 'Invalid credentials.'); }
   } catch(e) { showErr('login-err','Connection error. Please try again.'); }
   setBtnLoading('login-btn', false);
 }
@@ -1100,24 +1478,15 @@ async function doSignup() {
   if (!email||!pass||!pass2) { showErr('signup-err','All fields are required.'); return; }
   if (pass.length < 8)       { showErr('signup-err','Password must be at least 8 characters.'); return; }
   if (pass !== pass2)        { showErr('signup-err','Passwords do not match.'); return; }
-
   setBtnLoading('signup-btn', true);
   try {
     const check = await gasGet('checkEmail', { email });
     if (!check.exists)    { showErr('signup-err','Email not registered. Contact your admin.'); setBtnLoading('signup-btn',false); return; }
     if (check.hasPassword){ showErr('signup-err','Account already exists. Please sign in.'); setBtnLoading('signup-btn',false); return; }
-
-    pendingEmail = email;
-    otpMode = 'signup';
-    _signupPass = pass;
-
+    pendingEmail = email; otpMode = 'signup'; _signupPass = pass;
     const otpRes = await gasGet('sendOtp', { email });
-    if (otpRes.success) {
-      setupOtpScreen(email, 'signup');
-      show('s-otp');
-    } else {
-      showErr('signup-err', 'Failed to send OTP. Try again.');
-    }
+    if (otpRes.success) { setupOtpScreen(email,'signup'); show('s-otp'); }
+    else                { showErr('signup-err','Failed to send OTP. Try again.'); }
   } catch(e) { showErr('signup-err','Connection error.'); }
   setBtnLoading('signup-btn', false);
 }
@@ -1128,21 +1497,13 @@ async function doSignup() {
 async function doForgot() {
   const email = document.getElementById('forgot-email').value.trim().toLowerCase();
   if (!email) { showErr('forgot-err','Please enter your email.'); return; }
-
   setBtnLoading('forgot-btn', true);
   try {
     const check = await gasGet('checkEmail', { email });
     if (!check.exists) { showErr('forgot-err','Email not found.'); setBtnLoading('forgot-btn',false); return; }
-
     const otpRes = await gasGet('sendOtp', { email });
-    if (otpRes.success) {
-      pendingEmail = email;
-      otpMode = 'forgot';
-      setupOtpScreen(email, 'forgot');
-      show('s-otp');
-    } else {
-      showErr('forgot-err', 'Failed to send OTP.');
-    }
+    if (otpRes.success) { pendingEmail=email; otpMode='forgot'; setupOtpScreen(email,'forgot'); show('s-otp'); }
+    else                { showErr('forgot-err','Failed to send OTP.'); }
   } catch(e) { showErr('forgot-err','Connection error.'); }
   setBtnLoading('forgot-btn', false);
 }
@@ -1151,7 +1512,7 @@ function setupOtpScreen(email, mode) {
   clearOtpBoxes();
   document.getElementById('otp-card-desc').textContent =
     `A 6-digit code was sent to ${email}. You can paste it directly into the first box.`;
-  document.getElementById('otp-newpass-fields').style.display = mode === 'forgot' ? 'block' : 'none';
+  document.getElementById('otp-newpass-fields').style.display = mode==='forgot'?'block':'none';
 }
 
 async function doResendOtp() {
@@ -1171,89 +1532,59 @@ async function doResendOtp() {
 async function doVerifyOtp() {
   const code = getOtpValue();
   if (code.length < 6) { showErr('otp-err','Please enter all 6 digits.'); return; }
-
   setBtnLoading('otp-btn', true);
   try {
     let password = '';
     if (otpMode === 'forgot') {
       password = document.getElementById('new-pass').value;
       const p2 = document.getElementById('new-pass2').value;
-      if (!password || password.length < 8) { showErr('otp-err','Password must be at least 8 characters.'); setBtnLoading('otp-btn',false); return; }
-      if (password !== p2) { showErr('otp-err','Passwords do not match.'); setBtnLoading('otp-btn',false); return; }
-    } else {
-      password = _signupPass;
-    }
-
+      if (!password||password.length<8) { showErr('otp-err','Password must be at least 8 characters.'); setBtnLoading('otp-btn',false); return; }
+      if (password!==p2) { showErr('otp-err','Passwords do not match.'); setBtnLoading('otp-btn',false); return; }
+    } else { password = _signupPass; }
     const res = await gasPost('verifyOtpAndSetPassword', { email: pendingEmail, otp: code, password });
     if (res.success) {
       show('s-login');
-      setTimeout(() => showOk('login-ok', otpMode==='forgot' ? 'Password updated! Sign in.' : 'Account created! Sign in.'), 100);
-    } else {
-      showErr('otp-err', res.message || 'Invalid or expired OTP.');
-    }
+      setTimeout(() => showOk('login-ok', otpMode==='forgot'?'Password updated! Sign in.':'Account created! Sign in.'), 100);
+    } else { showErr('otp-err', res.message||'Invalid or expired OTP.'); }
   } catch(e) { showErr('otp-err','Connection error.'); }
   setBtnLoading('otp-btn', false);
 }
 
 // ══════════════════════════════════════════════════════════
-//  OTP BOX LOGIC (paste + backspace + auto-advance)
+//  OTP BOX LOGIC
 // ══════════════════════════════════════════════════════════
 function initOtpBoxes() {
   const boxes = Array.from({length:6}, (_,i) => document.getElementById('otp'+i));
-
   boxes.forEach((box, i) => {
-    // Only allow digits visually
     box.addEventListener('input', (e) => {
       const val = box.value.replace(/\D/g,'');
       box.value = val ? val[val.length-1] : '';
       box.classList.toggle('filled', !!box.value);
-      if (box.value && i < 5) boxes[i+1].focus();
+      if (box.value && i<5) boxes[i+1].focus();
     });
-
-    // Backspace: clear current and go back
     box.addEventListener('keydown', (e) => {
-      if (e.key === 'Backspace') {
-        if (box.value) {
-          box.value = '';
-          box.classList.remove('filled');
-        } else if (i > 0) {
-          boxes[i-1].value = '';
-          boxes[i-1].classList.remove('filled');
-          boxes[i-1].focus();
-        }
+      if (e.key==='Backspace') {
+        if (box.value) { box.value=''; box.classList.remove('filled'); }
+        else if (i>0) { boxes[i-1].value=''; boxes[i-1].classList.remove('filled'); boxes[i-1].focus(); }
         e.preventDefault();
       }
-      // Arrow navigation
-      if (e.key === 'ArrowLeft'  && i > 0) { boxes[i-1].focus(); e.preventDefault(); }
-      if (e.key === 'ArrowRight' && i < 5) { boxes[i+1].focus(); e.preventDefault(); }
+      if (e.key==='ArrowLeft'  && i>0) { boxes[i-1].focus(); e.preventDefault(); }
+      if (e.key==='ArrowRight' && i<5) { boxes[i+1].focus(); e.preventDefault(); }
     });
-
-    // Paste: distribute digits across boxes
     box.addEventListener('paste', (e) => {
       e.preventDefault();
-      const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g,'');
+      const text = (e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'');
       if (!text) return;
-      boxes.forEach((b, j) => {
-        b.value = text[j] || '';
-        b.classList.toggle('filled', !!b.value);
-      });
-      const nextEmpty = text.length < 6 ? text.length : 5;
-      boxes[Math.min(nextEmpty, 5)].focus();
+      boxes.forEach((b,j) => { b.value=text[j]||''; b.classList.toggle('filled',!!b.value); });
+      boxes[Math.min(text.length<6?text.length:5, 5)].focus();
     });
-
-    // Click — select existing digit
     box.addEventListener('click', () => box.select());
   });
 }
-
 function clearOtpBoxes() {
-  Array.from({length:6}, (_,i) => {
-    const b = document.getElementById('otp'+i);
-    b.value = ''; b.classList.remove('filled');
-  });
+  Array.from({length:6}, (_,i) => { const b=document.getElementById('otp'+i); b.value=''; b.classList.remove('filled'); });
   document.getElementById('otp0').focus();
 }
-
 function getOtpValue() {
   return Array.from({length:6}, (_,i) => document.getElementById('otp'+i).value).join('');
 }
@@ -1262,12 +1593,11 @@ function getOtpValue() {
 //  BUTTON LOADING STATE
 // ══════════════════════════════════════════════════════════
 function setBtnLoading(id, on) {
-  const btn = document.getElementById(id);
-  if (!btn) return;
+  const btn = document.getElementById(id); if (!btn) return;
   btn.disabled = on;
   const sp = btn.querySelector('span');
-  if (on) { sp._orig = sp.innerHTML; sp.innerHTML = '<span class="spinner-inline"></span> PROCESSING...'; }
-  else if (sp._orig) { sp.innerHTML = sp._orig; }
+  if (on) { sp._orig=sp.innerHTML; sp.innerHTML='<span class="spinner-inline"></span> PROCESSING...'; }
+  else if (sp._orig) { sp.innerHTML=sp._orig; }
 }
 
 // ══════════════════════════════════════════════════════════
@@ -1287,37 +1617,29 @@ async function loadDashboard() {
     const res = await gasGet('getData');
     allAgents = res.agents     || [];
     mgmtUsers = res.management || [];
-  } catch(e) { allAgents = []; mgmtUsers = []; }
+  } catch(e) { allAgents=[]; mgmtUsers=[]; }
 
   hideSplash();
 
-  const role = (currentUser.role || 'agent').toLowerCase();
-  const name = currentUser.name || currentUser.email;
+  const role = (currentUser.role||'agent').toLowerCase();
+  const name = currentUser.name||currentUser.email;
 
-  if (role === 'admin') {
-    setupAdminUI(name, role);
-    show('s-admin');
-    renderAdminOverview();
-  } else if (role === 'teamlead') {
-    setupTlUI(name);
-    show('s-teamlead');
-    renderTlOverview();
+  if (role==='admin') {
+    setupAdminUI(name, role); show('s-admin'); renderAdminOverview();
+  } else if (role==='teamlead') {
+    setupTlUI(name); show('s-teamlead'); renderTlOverview();
   } else {
-    setupAgentUI(name);
-    show('s-agent');
-    renderAgentDash();
+    setupAgentUI(name); show('s-agent'); renderAgentDash();
   }
 }
 
-// ── sidebar helpers ──
 function initials(name) {
   return (name||'?').split(/[\s,]+/).filter(Boolean).slice(0,2).map(p=>p[0].toUpperCase()).join('');
 }
 function shortName(name) {
   const parts = name.split(',');
-  return parts[parts.length-1].trim().split(' ').filter(Boolean)[0] || name;
+  return parts[parts.length-1].trim().split(' ').filter(Boolean)[0]||name;
 }
-
 function setupAgentUI(name) {
   document.getElementById('agent-sb-avatar').textContent = initials(name);
   document.getElementById('agent-sb-name').textContent   = shortName(name);
@@ -1336,20 +1658,17 @@ function setupTlUI(name) {
 //  DATA HELPERS
 // ══════════════════════════════════════════════════════════
 function pct(val) {
-  if (val === null || val === undefined || val === '' || val === 'Attrite') return null;
+  if (val===null||val===undefined||val===''||val==='Attrite') return null;
   const n = parseFloat(String(val).replace('%',''));
   return isNaN(n) ? null : n;
 }
-function fmtPct(val) {
-  const n = pct(val);
-  return n === null ? '—' : n.toFixed(2) + '%';
-}
+function fmtPct(val) { const n=pct(val); return n===null?'—':n.toFixed(2)+'%'; }
 
 function scoreBarHTML(val) {
   const n = pct(val);
-  if (n === null) return '<span style="color:var(--text3)">—</span>';
-  const cls  = n >= 90 ? 'good' : n >= 75 ? 'ok' : n >= 60 ? 'warn' : 'danger';
-  const col  = n >= 90 ? 'var(--neon)' : n >= 75 ? '#378ADD' : n >= 60 ? 'var(--warn)' : 'var(--danger)';
+  if (n===null) return '<span style="color:var(--text3)">—</span>';
+  const cls = n>=90?'good':n>=75?'ok':n>=60?'warn':'danger';
+  const col = n>=90?'var(--neon)':n>=75?'#378ADD':n>=60?'var(--warn)':'var(--danger)';
   return `<div class="sbar-wrap">
     <div class="sbar"><div class="sbar-fill ${cls}" style="width:${Math.min(n,100)}%"></div></div>
     <span class="sbar-val" style="color:${col}">${n.toFixed(2)}%</span>
@@ -1357,113 +1676,101 @@ function scoreBarHTML(val) {
 }
 
 function rankBadgeHTML(rank) {
-  if (!rank || rank === '#N/A' || rank === 'Attrite') return '<span style="color:var(--text3)">—</span>';
-  const r = parseInt(rank);
-  if (isNaN(r)) return '<span style="color:var(--text3)">—</span>';
-  const cls = r===1?'rk-1':r===2?'rk-2':r===3?'rk-3':'rk-n';
-  const icon = r===1?' ★':'';
-  return `<span class="rank-badge ${cls}">${r}${icon}</span>`;
+  if (!rank||rank==='#N/A'||rank==='Attrite') return '<span style="color:var(--text3)">—</span>';
+  const r=parseInt(rank); if (isNaN(r)) return '<span style="color:var(--text3)">—</span>';
+  const cls=r===1?'rk-1':r===2?'rk-2':r===3?'rk-3':'rk-n';
+  return `<span class="rank-badge ${cls}">${r}${r===1?' ★':''}</span>`;
 }
 
 function avgField(agents, monthIdx, field) {
-  const vals = agents.map(a => pct(a.months?.[monthIdx]?.[field])).filter(v => v !== null);
+  const vals = agents.map(a=>pct(a.months?.[monthIdx]?.[field])).filter(v=>v!==null);
   return vals.length ? vals.reduce((s,v)=>s+v,0)/vals.length : null;
 }
 
 function latestActiveMonthIdx(agent) {
-  if (!agent || !agent.months) return -1;
-  // Find latest month with data (not attrite, not empty)
-  for (let i = agent.months.length - 1; i >= 0; i--) {
-    const m = agent.months[i];
-    if (m && m.count && m.overall && m.overall !== 'Attrite') return i;
+  if (!agent||!agent.months) return -1;
+  for (let i=agent.months.length-1;i>=0;i--) {
+    const m=agent.months[i];
+    if (m&&m.count&&m.overall&&m.overall!=='Attrite') return i;
   }
   return -1;
 }
 
 function latestActiveIdxAcrossAgents(agents) {
-  let best = -1;
-  agents.forEach(a => { const idx = latestActiveMonthIdx(a); if (idx > best) best = idx; });
+  let best=-1;
+  agents.forEach(a=>{const idx=latestActiveMonthIdx(a);if(idx>best)best=idx;});
   return best;
 }
 
 // ══════════════════════════════════════════════════════════
-//  AGENT NAV
+//  AGENT NAV  (no leaderboard)
 // ══════════════════════════════════════════════════════════
-const agentPages = { dash:'Dashboard', scores:'My Scores', lb:'Leaderboard' };
+const agentPages = { dash:'Dashboard', scores:'My Scores' };
 function agentNav(page, el) {
-  document.querySelectorAll('#s-agent .nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('#s-agent .nav-item').forEach(n=>n.classList.remove('active'));
   el.classList.add('active');
-  document.getElementById('agent-topbar-title').textContent = agentPages[page] || page;
-  if (page === 'dash')   renderAgentDash();
-  if (page === 'scores') renderAgentScores();
-  if (page === 'lb')     renderAgentLeaderboard();
+  document.getElementById('agent-topbar-title').textContent = agentPages[page]||page;
+  if (page==='dash')   renderAgentDash();
+  if (page==='scores') renderAgentScores();
 }
 
 // ══════════════════════════════════════════════════════════
 //  AGENT — DASHBOARD
 // ══════════════════════════════════════════════════════════
 function renderAgentDash() {
-  const agent = allAgents.find(a => a.email === currentUser.email);
+  const agent = allAgents.find(a=>a.email===currentUser.email);
   const ca = document.getElementById('agent-content-area');
+  if (!agent) { ca.innerHTML='<div class="no-data"><div class="nd-icon">📊</div>No data found for your account. Contact your administrator.</div>'; return; }
 
-  if (!agent) {
-    ca.innerHTML = '<div class="no-data"><div class="nd-icon">📊</div>No data found for your account. Contact your administrator.</div>';
-    return;
-  }
-
-  const months    = agent.months || [];
-  const latestIdx = latestActiveMonthIdx(agent);
-  const latest    = latestIdx >= 0 ? months[latestIdx] : null;
-  const prev      = latestIdx > 0 ? months.slice(0,latestIdx).reverse().find(m => m.count && m.overall && m.overall!=='Attrite') : null;
+  const months=agent.months||[];
+  const latestIdx=latestActiveMonthIdx(agent);
+  const latest=latestIdx>=0?months[latestIdx]:null;
+  const prev=latestIdx>0?months.slice(0,latestIdx).reverse().find(m=>m.count&&m.overall&&m.overall!=='Attrite'):null;
 
   function delta(field) {
-    if (!latest || !prev) return '';
-    const a = pct(latest[field]), b = pct(prev[field]);
+    if (!latest||!prev) return '';
+    const a=pct(latest[field]),b=pct(prev[field]);
     if (a===null||b===null) return '';
-    const d = (a-b).toFixed(1);
-    const sign = d > 0 ? '▲ +' : '▼ ';
-    const cls  = d > 0 ? 'up' : 'down';
+    const d=(a-b).toFixed(1), sign=d>0?'▲ +':'▼ ', cls=d>0?'up':'down';
     return `<div class="metric-sub ${cls}">${sign}${d}% vs ${prev.label}</div>`;
   }
 
   ca.innerHTML = `
     <div class="page-section">
       <div class="page-header">
-        <div class="page-tag">// PERIOD: ${latest ? latest.label.toUpperCase() : 'N/A'}</div>
+        <div class="page-tag">// PERIOD: ${latest?latest.label.toUpperCase():'N/A'}</div>
         <h1>Welcome back, ${shortName(agent.name)}</h1>
         <p>Your real-time performance summary for the latest period.</p>
       </div>
-
       <div class="metrics-grid">
         <div class="metric-card" style="--card-color:var(--neon)">
           <div class="metric-label">Overall Score</div>
-          <div class="metric-value">${latest ? fmtPct(latest.overall) : '—'}</div>
+          <div class="metric-value">${latest?fmtPct(latest.overall):'—'}</div>
           ${delta('overall')}
           <div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:${pct(latest?.overall)||0}%;background:var(--neon);color:var(--neon)"></div></div></div>
         </div>
         <div class="metric-card" style="--card-color:#378ADD">
           <div class="metric-label">TPS Score</div>
-          <div class="metric-value">${latest ? fmtPct(latest.tps) : '—'}</div>
+          <div class="metric-value">${latest?fmtPct(latest.tps):'—'}</div>
           ${delta('tps')}
           <div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:${pct(latest?.tps)||0}%;background:#378ADD;color:#378ADD"></div></div></div>
         </div>
         <div class="metric-card" style="--card-color:var(--purple)">
           <div class="metric-label">Attendance Rate</div>
-          <div class="metric-value">${latest ? fmtPct(latest.attendance) : '—'}</div>
+          <div class="metric-value">${latest?fmtPct(latest.attendance):'—'}</div>
           ${delta('attendance')}
           <div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:${pct(latest?.attendance)||0}%;background:var(--purple);color:var(--purple)"></div></div></div>
         </div>
         <div class="metric-card" style="--card-color:var(--warn)">
           <div class="metric-label">QA Score</div>
-          <div class="metric-value">${latest ? fmtPct(latest.qa) : '—'}</div>
+          <div class="metric-value">${latest?fmtPct(latest.qa):'—'}</div>
           ${delta('qa')}
           <div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:${pct(latest?.qa)||0}%;background:var(--warn);color:var(--warn)"></div></div></div>
         </div>
       </div>
-
       <div class="grid-3">
         <div class="panel">
-          <div class="panel-title">Score Breakdown — ${latest ? latest.label : 'N/A'}</div>
+          <div class="panel-title">Score Breakdown — ${latest?latest.label:'N/A'}</div>
           <div class="breakdown-grid">
             ${[['TPS Score','tps','#378ADD'],['Attendance','attendance','var(--purple)'],['QA Score','qa','var(--warn)'],['Overall','overall','var(--neon)']].map(([lbl,k,col])=>`
               <div class="breakdown-row">
@@ -1494,21 +1801,19 @@ function renderAgentDash() {
           </ul>
         </div>
       </div>
-    </div>
-  `;
+    </div>`;
 }
 
 // ══════════════════════════════════════════════════════════
 //  AGENT — MY SCORES
 // ══════════════════════════════════════════════════════════
 function renderAgentScores() {
-  const agent = allAgents.find(a => a.email === currentUser.email);
+  const agent = allAgents.find(a=>a.email===currentUser.email);
   const ca = document.getElementById('agent-content-area');
-  if (!agent) { ca.innerHTML = '<div class="no-data"><div class="nd-icon">📊</div>No data found.</div>'; return; }
+  if (!agent) { ca.innerHTML='<div class="no-data"><div class="nd-icon">📊</div>No data found.</div>'; return; }
 
-  const months = (agent.months || []).filter(m => m.count);
-
-  ca.innerHTML = `
+  const months=(agent.months||[]).filter(m=>m.count);
+  ca.innerHTML=`
     <div class="page-section">
       <div class="page-header">
         <div class="page-tag">// AGENT: ${agent.name.toUpperCase()}</div>
@@ -1521,9 +1826,9 @@ function renderAgentScores() {
           <table class="data-table">
             <thead><tr><th>Period</th><th>Count</th><th>TPS</th><th>Attendance</th><th>QA Score</th><th>Overall</th><th>Rank</th></tr></thead>
             <tbody>
-              ${months.slice().reverse().map(m => {
-                const isAttrite = m.overall === 'Attrite';
-                return `<tr${m.label === (agent.months[latestActiveMonthIdx(agent)]?.label) ? ' class="row-highlight"' : ''}>
+              ${months.slice().reverse().map(m=>{
+                const isAttrite=m.overall==='Attrite';
+                return `<tr${m.label===(agent.months[latestActiveMonthIdx(agent)]?.label)?' class="row-highlight"':''}>
                   <td style="font-family:var(--font-mono);color:var(--neon)">${m.label}</td>
                   <td>${m.count||'—'}</td>
                   <td>${isAttrite?'—':fmtPct(m.tps)}</td>
@@ -1541,43 +1846,50 @@ function renderAgentScores() {
 }
 
 // ══════════════════════════════════════════════════════════
-//  AGENT — LEADERBOARD
+//  SHARED LEADERBOARD RENDERER
 // ══════════════════════════════════════════════════════════
-function renderAgentLeaderboard() {
-  const ca = document.getElementById('agent-content-area');
-  const latestIdx = latestActiveIdxAcrossAgents(allAgents);
-  if (latestIdx < 0) { ca.innerHTML = '<div class="no-data"><div class="nd-icon">🏆</div>No leaderboard data available.</div>'; return; }
+function renderLeaderboard(contentAreaId, agents, accent) {
+  const ca = document.getElementById(contentAreaId);
+  const latestIdx = latestActiveIdxAcrossAgents(agents);
+  if (latestIdx<0) { ca.innerHTML='<div class="no-data"><div class="nd-icon">🏆</div>No leaderboard data available.</div>'; return; }
 
-  const latestLabel = allAgents.find(a=>a.months?.[latestIdx])?.months[latestIdx]?.label || '';
-  const active = allAgents.filter(a => {
-    const m = a.months?.[latestIdx];
-    return m && m.count && m.overall !== 'Attrite';
-  });
-  const sorted = [...active].sort((a,b) => {
-    const ra = parseInt(a.months[latestIdx]?.rank) || 9999;
-    const rb = parseInt(b.months[latestIdx]?.rank) || 9999;
-    return ra - rb;
-  });
+  const latestLabel = agents.find(a=>a.months?.[latestIdx])?.months[latestIdx]?.label||'';
+  const active = agents.filter(a=>{const m=a.months?.[latestIdx]; return m&&m.count&&m.overall!=='Attrite';});
+  const sorted = [...active].sort((a,b)=>(parseInt(a.months[latestIdx]?.rank)||9999)-(parseInt(b.months[latestIdx]?.rank)||9999));
 
-  ca.innerHTML = `
+  ca.innerHTML=`
     <div class="page-section">
       <div class="page-header">
-        <div class="page-tag">// TEAM RANKING: ${latestLabel.toUpperCase()}</div>
-        <h1>Leaderboard</h1>
-        <p>Team performance rankings for the latest period.</p>
+        <div class="page-tag" style="color:${accent};border-color:${accent}44">// LEADERBOARD: ${latestLabel.toUpperCase()}</div>
+        <h1>Full Leaderboard</h1>
+        <p>Ranked agent performance for the latest period — ${active.length} active agents.</p>
+      </div>
+      <div class="metrics-grid">
+        ${sorted.slice(0,3).map((a,i)=>{
+          const m=a.months[latestIdx];
+          const cols=[['var(--gold)','var(--gold)'],['var(--silver)','#9ca3af'],['var(--bronze)','#cd7f32']];
+          const [cc,cc2]=cols[i]||['var(--neon)','var(--neon)'];
+          const medals=['🥇','🥈','🥉'];
+          return `<div class="metric-card" style="--card-color:${cc}">
+            <div class="metric-label">${medals[i]} Rank ${i+1}</div>
+            <div class="metric-value" style="font-size:18px">${a.name.split(',').pop().trim().split(' ')[0]}</div>
+            <div class="metric-sub">${fmtPct(m.overall)} overall</div>
+          </div>`;
+        }).join('')}
       </div>
       <div class="panel">
-        <div class="panel-title">Agent Rankings</div>
+        <div class="panel-title" style="color:${accent}">Full Rankings — ${latestLabel}</div>
         <div style="overflow-x:auto">
           <table class="data-table">
-            <thead><tr><th>Rank</th><th>Agent</th><th>TPS</th><th>Attendance</th><th>QA</th><th>Overall</th></tr></thead>
+            <thead><tr><th>Rank</th><th>Agent</th><th>Team Lead</th><th>TPS</th><th>Attendance</th><th>QA</th><th>Overall</th></tr></thead>
             <tbody>
-              ${sorted.map(a => {
-                const m = a.months[latestIdx];
-                const isMe = a.email === currentUser.email;
-                return `<tr${isMe?' class="row-highlight"':''}>
+              ${sorted.map(a=>{
+                const m=a.months[latestIdx];
+                const tl=mgmtUsers.find(u=>u.email===a.teamLeadEmail);
+                return `<tr>
                   <td>${rankBadgeHTML(m.rank)}</td>
-                  <td style="${isMe?'color:var(--neon);font-weight:700':''}">${a.name}${isMe?' <span style="font-size:10px;color:var(--text3)">(you)</span>':''}</td>
+                  <td><strong>${a.name}</strong></td>
+                  <td><span class="team-chip">${tl?tl.name:'—'}</span></td>
                   <td>${fmtPct(m.tps)}</td>
                   <td>${fmtPct(m.attendance)}</td>
                   <td>${fmtPct(m.qa)}</td>
@@ -1595,12 +1907,13 @@ function renderAgentLeaderboard() {
 //  ADMIN NAV
 // ══════════════════════════════════════════════════════════
 function adminNav(page, el) {
-  document.querySelectorAll('#s-admin .nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('#s-admin .nav-item').forEach(n=>n.classList.remove('active'));
   el.classList.add('active');
-  const titles = { overview:'Command Overview', agents:'All Agents' };
-  document.getElementById('admin-topbar-title').textContent = titles[page] || page;
-  if (page === 'overview') renderAdminOverview();
-  if (page === 'agents')   renderAdminAgents();
+  const titles={overview:'Command Overview',agents:'All Agents',lb:'Leaderboard'};
+  document.getElementById('admin-topbar-title').textContent=titles[page]||page;
+  if (page==='overview') renderAdminOverview();
+  if (page==='agents')   renderAdminAgents();
+  if (page==='lb')       renderLeaderboard('admin-content-area', allAgents, 'var(--purple)');
 }
 
 // ══════════════════════════════════════════════════════════
@@ -1609,31 +1922,23 @@ function adminNav(page, el) {
 function renderAdminOverview() {
   const ca = document.getElementById('admin-content-area');
   const latestIdx = latestActiveIdxAcrossAgents(allAgents);
-  const latestLabel = latestIdx >= 0 ? (allAgents.find(a=>a.months?.[latestIdx])?.months[latestIdx]?.label||'') : '—';
+  const latestLabel = latestIdx>=0?(allAgents.find(a=>a.months?.[latestIdx])?.months[latestIdx]?.label||''):'—';
 
-  const active = allAgents.filter(a => {
-    const m = a.months?.[latestIdx];
-    return latestIdx >= 0 && m && m.count && m.overall !== 'Attrite';
-  });
+  const active = allAgents.filter(a=>{const m=a.months?.[latestIdx]; return latestIdx>=0&&m&&m.count&&m.overall!=='Attrite';});
+  const avgOv  = latestIdx>=0?avgField(active,latestIdx,'overall'):null;
+  const avgTps = latestIdx>=0?avgField(active,latestIdx,'tps'):null;
+  const avgQa  = latestIdx>=0?avgField(active,latestIdx,'qa'):null;
+  const avgAtt = latestIdx>=0?avgField(active,latestIdx,'attendance'):null;
 
-  const avgOv  = latestIdx >= 0 ? avgField(active, latestIdx, 'overall')    : null;
-  const avgTps = latestIdx >= 0 ? avgField(active, latestIdx, 'tps')        : null;
-  const avgQa  = latestIdx >= 0 ? avgField(active, latestIdx, 'qa')         : null;
-  const avgAtt = latestIdx >= 0 ? avgField(active, latestIdx, 'attendance') : null;
+  const leads = mgmtUsers.filter(u=>u.role==='teamlead');
 
-  let topAgent=null, topScore=0;
-  active.forEach(a => { const s=pct(a.months[latestIdx]?.overall); if(s!==null&&s>topScore){topScore=s;topAgent=a;} });
-
-  const leads = mgmtUsers.filter(u => u.role === 'teamlead');
-
-  ca.innerHTML = `
+  ca.innerHTML=`
     <div class="page-section">
       <div class="page-header">
         <div class="page-tag" style="color:var(--purple);border-color:rgba(167,139,250,0.3)">// ${latestLabel.toUpperCase()} · ALL TEAMS</div>
         <h1>Team Overview</h1>
         <p>Aggregate performance metrics across all agents.</p>
       </div>
-
       <div class="metrics-grid">
         <div class="metric-card" style="--card-color:var(--purple)">
           <div class="metric-label">Total Agents</div>
@@ -1642,31 +1947,30 @@ function renderAdminOverview() {
         </div>
         <div class="metric-card" style="--card-color:var(--neon)">
           <div class="metric-label">Avg Overall Score</div>
-          <div class="metric-value">${avgOv ? avgOv.toFixed(2)+'%' : '—'}</div>
+          <div class="metric-value">${avgOv?avgOv.toFixed(2)+'%':'—'}</div>
           <div class="metric-sub">${latestLabel}</div>
         </div>
         <div class="metric-card" style="--card-color:#378ADD">
           <div class="metric-label">Avg TPS</div>
-          <div class="metric-value">${avgTps ? avgTps.toFixed(2)+'%' : '—'}</div>
+          <div class="metric-value">${avgTps?avgTps.toFixed(2)+'%':'—'}</div>
           <div class="metric-sub">${latestLabel}</div>
         </div>
         <div class="metric-card" style="--card-color:var(--warn)">
           <div class="metric-label">Avg QA Score</div>
-          <div class="metric-value">${avgQa ? avgQa.toFixed(2)+'%' : '—'}</div>
+          <div class="metric-value">${avgQa?avgQa.toFixed(2)+'%':'—'}</div>
           <div class="metric-sub">${latestLabel}</div>
         </div>
       </div>
-
-      ${leads.length ? `
+      ${leads.length?`
       <div class="panel" style="margin-bottom:1.5rem">
         <div class="panel-title" style="color:var(--purple)">Team Breakdown — ${latestLabel}</div>
         <div class="team-overview-grid">
-          ${leads.map(tl => {
-            const team = allAgents.filter(a => a.teamLeadEmail === tl.email);
-            const teamActive = latestIdx>=0 ? team.filter(a=>{const m=a.months?.[latestIdx];return m&&m.count&&m.overall!=='Attrite';}) : [];
-            const avO = avgField(teamActive,latestIdx,'overall');
-            const avA = avgField(teamActive,latestIdx,'attendance');
-            const avQ = avgField(teamActive,latestIdx,'qa');
+          ${leads.map(tl=>{
+            const team=allAgents.filter(a=>a.teamLeadEmail===tl.email);
+            const teamActive=latestIdx>=0?team.filter(a=>{const m=a.months?.[latestIdx];return m&&m.count&&m.overall!=='Attrite';}):[];
+            const avO=avgField(teamActive,latestIdx,'overall');
+            const avA=avgField(teamActive,latestIdx,'attendance');
+            const avQ=avgField(teamActive,latestIdx,'qa');
             return `<div class="team-card">
               <div class="team-card-header">
                 <span class="team-card-name">${tl.name} — Team</span>
@@ -1678,15 +1982,15 @@ function renderAdminOverview() {
             </div>`;
           }).join('')}
         </div>
-      </div>` : ''}
-
+      </div>`:''
+      }
       <div class="panel">
         <div class="panel-title" style="color:var(--purple)">Score Distribution — ${latestLabel}</div>
         <div style="overflow-x:auto">
           <table class="data-table">
             <thead><tr><th>Rank</th><th>Agent</th><th>Team Lead</th><th>TPS</th><th>Attendance</th><th>QA</th><th>Overall</th></tr></thead>
             <tbody>
-              ${active.sort((a,b)=>(parseInt(a.months[latestIdx]?.rank)||9999)-(parseInt(b.months[latestIdx]?.rank)||9999)).map(a => {
+              ${active.sort((a,b)=>(parseInt(a.months[latestIdx]?.rank)||9999)-(parseInt(b.months[latestIdx]?.rank)||9999)).map(a=>{
                 const m=a.months[latestIdx];
                 const tl=mgmtUsers.find(u=>u.email===a.teamLeadEmail);
                 return `<tr>
@@ -1705,17 +2009,15 @@ function renderAdminOverview() {
 }
 
 // ══════════════════════════════════════════════════════════
-//  ADMIN — ALL AGENTS (month tabs, full history)
+//  ADMIN — ALL AGENTS
 // ══════════════════════════════════════════════════════════
 function renderAdminAgents() {
   const ca = document.getElementById('admin-content-area');
-  const months = allAgents[0]?.months || [];
-  if (!months.length) { ca.innerHTML = '<div class="no-data"><div class="nd-icon">👥</div>No agent data available.</div>'; return; }
+  const months = allAgents[0]?.months||[];
+  if (!months.length) { ca.innerHTML='<div class="no-data"><div class="nd-icon">👥</div>No agent data available.</div>'; return; }
+  if (adminMonthIdx===0) adminMonthIdx=latestActiveIdxAcrossAgents(allAgents);
 
-  // Default to latest active month
-  if (adminMonthIdx === 0) adminMonthIdx = latestActiveIdxAcrossAgents(allAgents);
-
-  ca.innerHTML = `
+  ca.innerHTML=`
     <div class="page-section">
       <div class="page-header">
         <div class="page-tag" style="color:var(--purple);border-color:rgba(167,139,250,0.3)">// ALL AGENTS</div>
@@ -1742,29 +2044,24 @@ function renderAdminAgents() {
 }
 
 function renderAdminMonthTabs(months) {
-  const el = document.getElementById('admin-month-tabs');
-  if (!el) return;
-  el.innerHTML = months.map((m,i) =>
-    `<button class="month-tab${i===adminMonthIdx?' active':''}" onclick="adminMonthSwitch(${i})">${m.label}</button>`
-  ).join('');
+  const el=document.getElementById('admin-month-tabs'); if (!el) return;
+  el.innerHTML=months.map((m,i)=>`<button class="month-tab${i===adminMonthIdx?' active':''}" onclick="adminMonthSwitch(${i})">${m.label}</button>`).join('');
 }
-
 function adminMonthSwitch(idx) {
-  adminMonthIdx = idx;
-  renderAdminMonthTabs(allAgents[0]?.months || []);
+  adminMonthIdx=idx;
+  renderAdminMonthTabs(allAgents[0]?.months||[]);
   renderAdminAgentsTable(idx);
 }
-
 function renderAdminAgentsTable(monthIdx) {
-  const thead = document.getElementById('admin-agents-thead');
-  const tbody = document.getElementById('admin-agents-tbody');
+  const thead=document.getElementById('admin-agents-thead');
+  const tbody=document.getElementById('admin-agents-tbody');
   if (!thead||!tbody) return;
-  thead.innerHTML = '<th>Rank</th><th>Agent</th><th>Team Lead</th><th>Count</th><th>TPS</th><th>Attendance</th><th>QA Score</th><th>Overall</th>';
-  const q = (document.getElementById('admin-search')?.value||'').toLowerCase();
-  const sorted = [...allAgents].sort((a,b)=>(parseInt(a.months?.[monthIdx]?.rank)||9999)-(parseInt(b.months?.[monthIdx]?.rank)||9999));
-  tbody.innerHTML = sorted.filter(a=>!q||a.name.toLowerCase().includes(q)||a.email.includes(q)).map(a => {
-    const m = a.months?.[monthIdx];
-    const tl = mgmtUsers.find(u=>u.email===a.teamLeadEmail);
+  thead.innerHTML='<th>Rank</th><th>Agent</th><th>Team Lead</th><th>Count</th><th>TPS</th><th>Attendance</th><th>QA Score</th><th>Overall</th>';
+  const q=(document.getElementById('admin-search')?.value||'').toLowerCase();
+  const sorted=[...allAgents].sort((a,b)=>(parseInt(a.months?.[monthIdx]?.rank)||9999)-(parseInt(b.months?.[monthIdx]?.rank)||9999));
+  tbody.innerHTML=sorted.filter(a=>!q||a.name.toLowerCase().includes(q)||a.email.includes(q)).map(a=>{
+    const m=a.months?.[monthIdx];
+    const tl=mgmtUsers.find(u=>u.email===a.teamLeadEmail);
     if (!m||!m.count) return `<tr><td>—</td><td>${a.name}</td><td><span class="team-chip">${tl?tl.name:'—'}</span></td><td colspan="5" style="color:var(--text3)">No data this month</td></tr>`;
     if (m.overall==='Attrite') return `<tr><td>—</td><td>${a.name}</td><td><span class="team-chip">${tl?tl.name:'—'}</span></td><td>${m.count||'—'}</td><td colspan="4"><span class="attrite-badge">Attrited</span></td></tr>`;
     return `<tr>
@@ -1779,19 +2076,22 @@ function renderAdminAgentsTable(monthIdx) {
     </tr>`;
   }).join('');
 }
-
 function filterAdminTable() { renderAdminAgentsTable(adminMonthIdx); }
 
 // ══════════════════════════════════════════════════════════
 //  TEAM LEAD NAV
 // ══════════════════════════════════════════════════════════
 function tlNav(page, el) {
-  document.querySelectorAll('#s-teamlead .nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('#s-teamlead .nav-item').forEach(n=>n.classList.remove('active'));
   el.classList.add('active');
-  const titles = { overview:'Team Overview', scores:'Team Scores' };
-  document.getElementById('tl-topbar-title').textContent = titles[page] || page;
-  if (page === 'overview') renderTlOverview();
-  if (page === 'scores')   renderTlScores();
+  const titles={overview:'Team Overview',scores:'Team Scores',lb:'Leaderboard'};
+  document.getElementById('tl-topbar-title').textContent=titles[page]||page;
+  if (page==='overview') renderTlOverview();
+  if (page==='scores')   renderTlScores();
+  if (page==='lb') {
+    const myTeam=allAgents.filter(a=>a.teamLeadEmail===currentUser.email);
+    renderLeaderboard('tl-content-area', myTeam, '#378ADD');
+  }
 }
 
 // ══════════════════════════════════════════════════════════
@@ -1799,29 +2099,28 @@ function tlNav(page, el) {
 // ══════════════════════════════════════════════════════════
 function renderTlOverview() {
   const ca = document.getElementById('tl-content-area');
-  const myTeam = allAgents.filter(a => a.teamLeadEmail === currentUser.email);
-  const latestIdx = latestActiveIdxAcrossAgents(myTeam);
-  const latestLabel = latestIdx>=0 ? (myTeam.find(a=>a.months?.[latestIdx])?.months[latestIdx]?.label||'') : '—';
+  const myTeam=allAgents.filter(a=>a.teamLeadEmail===currentUser.email);
+  const latestIdx=latestActiveIdxAcrossAgents(myTeam);
+  const latestLabel=latestIdx>=0?(myTeam.find(a=>a.months?.[latestIdx])?.months[latestIdx]?.label||''):'—';
 
-  const active = myTeam.filter(a=>{const m=a.months?.[latestIdx];return latestIdx>=0&&m&&m.count&&m.overall!=='Attrite';});
-  const avgOv  = avgField(active,latestIdx,'overall');
-  const avgTps = avgField(active,latestIdx,'tps');
-  const avgAtt = avgField(active,latestIdx,'attendance');
-  const avgQa  = avgField(active,latestIdx,'qa');
+  const active=myTeam.filter(a=>{const m=a.months?.[latestIdx];return latestIdx>=0&&m&&m.count&&m.overall!=='Attrite';});
+  const avgOv =avgField(active,latestIdx,'overall');
+  const avgTps=avgField(active,latestIdx,'tps');
+  const avgAtt=avgField(active,latestIdx,'attendance');
+  const avgQa =avgField(active,latestIdx,'qa');
 
-  let topRk=9999, topName='';
+  let topRk=9999,topName='';
   active.forEach(a=>{const r=parseInt(a.months?.[latestIdx]?.rank);if(!isNaN(r)&&r<topRk){topRk=r;topName=a.name;}});
 
-  const sorted = [...active].sort((a,b)=>(parseInt(a.months[latestIdx]?.rank)||9999)-(parseInt(b.months[latestIdx]?.rank)||9999));
+  const sorted=[...active].sort((a,b)=>(parseInt(a.months[latestIdx]?.rank)||9999)-(parseInt(b.months[latestIdx]?.rank)||9999));
 
-  ca.innerHTML = `
+  ca.innerHTML=`
     <div class="page-section">
       <div class="page-header">
         <div class="page-tag" style="color:#378ADD;border-color:rgba(55,138,221,0.3)">// ${latestLabel.toUpperCase()} · MY TEAM</div>
         <h1>Team Overview</h1>
         <p>Performance summary for your team — ${myTeam.length} agents.</p>
       </div>
-
       <div class="metrics-grid">
         <div class="metric-card" style="--card-color:#378ADD">
           <div class="metric-label">Team Members</div>
@@ -1844,44 +2143,30 @@ function renderTlOverview() {
           <div class="metric-sub">${topName||'—'}</div>
         </div>
       </div>
-
       <div class="panel">
         <div class="panel-title" style="color:#378ADD">Team Rankings — ${latestLabel}</div>
         <div style="overflow-x:auto">
           <table class="data-table">
             <thead><tr><th>Rank</th><th>Agent</th><th>TPS</th><th>Attendance</th><th>QA</th><th>Overall</th></tr></thead>
             <tbody>
-              ${sorted.map(a=>{
-                const m=a.months[latestIdx];
-                return `<tr>
-                  <td>${rankBadgeHTML(m.rank)}</td>
-                  <td><strong>${a.name}</strong></td>
-                  <td>${fmtPct(m.tps)}</td><td>${fmtPct(m.attendance)}</td>
-                  <td>${fmtPct(m.qa)}</td><td>${scoreBarHTML(m.overall)}</td>
-                </tr>`;
-              }).join('')}
+              ${sorted.map(a=>{const m=a.months[latestIdx];return `<tr>
+                <td>${rankBadgeHTML(m.rank)}</td>
+                <td><strong>${a.name}</strong></td>
+                <td>${fmtPct(m.tps)}</td><td>${fmtPct(m.attendance)}</td>
+                <td>${fmtPct(m.qa)}</td><td>${scoreBarHTML(m.overall)}</td>
+              </tr>`;}).join('')}
               ${myTeam.filter(a=>{const m=a.months?.[latestIdx];return !m||!m.count||m.overall==='Attrite';}).map(a=>`
                 <tr><td>—</td><td>${a.name}</td><td colspan="4"><span class="attrite-badge">${a.months?.[latestIdx]?.overall==='Attrite'?'Attrited':'No Data'}</span></td></tr>
               `).join('')}
             </tbody>
           </table>
         </div>
-
         <div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border2)">
-          <div class="panel-title" style="color:#378ADD;font-size:9px">Team Averages</div>
           <div class="metrics-grid" style="margin-bottom:0">
-            <div class="metric-card" style="--card-color:#378ADD">
-              <div class="metric-label">Avg TPS</div><div class="metric-value" style="font-size:22px">${avgTps?avgTps.toFixed(2)+'%':'—'}</div>
-            </div>
-            <div class="metric-card" style="--card-color:var(--purple)">
-              <div class="metric-label">Avg Attendance</div><div class="metric-value" style="font-size:22px">${avgAtt?avgAtt.toFixed(2)+'%':'—'}</div>
-            </div>
-            <div class="metric-card" style="--card-color:var(--warn)">
-              <div class="metric-label">Avg QA</div><div class="metric-value" style="font-size:22px">${avgQa?avgQa.toFixed(2)+'%':'—'}</div>
-            </div>
-            <div class="metric-card" style="--card-color:var(--neon)">
-              <div class="metric-label">Avg Overall</div><div class="metric-value" style="font-size:22px">${avgOv?avgOv.toFixed(2)+'%':'—'}</div>
-            </div>
+            <div class="metric-card" style="--card-color:#378ADD"><div class="metric-label">Avg TPS</div><div class="metric-value" style="font-size:22px">${avgTps?avgTps.toFixed(2)+'%':'—'}</div></div>
+            <div class="metric-card" style="--card-color:var(--purple)"><div class="metric-label">Avg Attendance</div><div class="metric-value" style="font-size:22px">${avgAtt?avgAtt.toFixed(2)+'%':'—'}</div></div>
+            <div class="metric-card" style="--card-color:var(--warn)"><div class="metric-label">Avg QA</div><div class="metric-value" style="font-size:22px">${avgQa?avgQa.toFixed(2)+'%':'—'}</div></div>
+            <div class="metric-card" style="--card-color:var(--neon)"><div class="metric-label">Avg Overall</div><div class="metric-value" style="font-size:22px">${avgOv?avgOv.toFixed(2)+'%':'—'}</div></div>
           </div>
         </div>
       </div>
@@ -1889,17 +2174,16 @@ function renderTlOverview() {
 }
 
 // ══════════════════════════════════════════════════════════
-//  TEAM LEAD — SCORES (with month tabs, from Jan)
+//  TEAM LEAD — SCORES
 // ══════════════════════════════════════════════════════════
 function renderTlScores() {
   const ca = document.getElementById('tl-content-area');
-  const myTeam = allAgents.filter(a => a.teamLeadEmail === currentUser.email);
-  const months = myTeam[0]?.months || [];
+  const myTeam=allAgents.filter(a=>a.teamLeadEmail===currentUser.email);
+  const months=myTeam[0]?.months||[];
   if (!months.length) { ca.innerHTML='<div class="no-data"><div class="nd-icon">📊</div>No team data available.</div>'; return; }
+  if (tlMonthIdx===0) tlMonthIdx=latestActiveIdxAcrossAgents(myTeam);
 
-  if (tlMonthIdx === 0) tlMonthIdx = latestActiveIdxAcrossAgents(myTeam);
-
-  ca.innerHTML = `
+  ca.innerHTML=`
     <div class="page-section">
       <div class="page-header">
         <div class="page-tag" style="color:#378ADD;border-color:rgba(55,138,221,0.3)">// TEAM SCORES</div>
@@ -1910,7 +2194,7 @@ function renderTlScores() {
         <div class="panel-title" style="color:#378ADD">Monthly Records</div>
         <div class="month-tabs" id="tl-month-tabs"></div>
         <div style="overflow-x:auto">
-          <table class="data-table" id="tl-scores-table">
+          <table class="data-table">
             <thead><tr id="tl-scores-thead"></tr></thead>
             <tbody id="tl-scores-tbody"></tbody>
           </table>
@@ -1923,28 +2207,23 @@ function renderTlScores() {
 }
 
 function renderTlMonthTabs(months, team) {
-  const el = document.getElementById('tl-month-tabs');
-  if (!el) return;
-  el.innerHTML = months.map((m,i)=>
-    `<button class="month-tab${i===tlMonthIdx?' active':''}" onclick="tlMonthSwitch(${i})">${m.label}</button>`
-  ).join('');
+  const el=document.getElementById('tl-month-tabs'); if (!el) return;
+  el.innerHTML=months.map((m,i)=>`<button class="month-tab${i===tlMonthIdx?' active':''}" onclick="tlMonthSwitch(${i})">${m.label}</button>`).join('');
 }
-
 function tlMonthSwitch(idx) {
-  tlMonthIdx = idx;
-  const myTeam = allAgents.filter(a => a.teamLeadEmail === currentUser.email);
+  tlMonthIdx=idx;
+  const myTeam=allAgents.filter(a=>a.teamLeadEmail===currentUser.email);
   renderTlMonthTabs(myTeam[0]?.months||[], myTeam);
   renderTlTable(myTeam, idx);
 }
-
 function renderTlTable(team, monthIdx) {
-  const thead = document.getElementById('tl-scores-thead');
-  const tbody = document.getElementById('tl-scores-tbody');
+  const thead=document.getElementById('tl-scores-thead');
+  const tbody=document.getElementById('tl-scores-tbody');
   if (!thead||!tbody) return;
-  thead.innerHTML = '<th>Rank</th><th>Agent</th><th>Count</th><th>TPS</th><th>Attendance</th><th>QA Score</th><th>Overall</th>';
-  const sorted = [...team].sort((a,b)=>(parseInt(a.months?.[monthIdx]?.rank)||9999)-(parseInt(b.months?.[monthIdx]?.rank)||9999));
-  tbody.innerHTML = sorted.map(a=>{
-    const m = a.months?.[monthIdx];
+  thead.innerHTML='<th>Rank</th><th>Agent</th><th>Count</th><th>TPS</th><th>Attendance</th><th>QA Score</th><th>Overall</th>';
+  const sorted=[...team].sort((a,b)=>(parseInt(a.months?.[monthIdx]?.rank)||9999)-(parseInt(b.months?.[monthIdx]?.rank)||9999));
+  tbody.innerHTML=sorted.map(a=>{
+    const m=a.months?.[monthIdx];
     if (!m||!m.count) return `<tr><td>—</td><td>${a.name}</td><td colspan="5" style="color:var(--text3)">No data</td></tr>`;
     if (m.overall==='Attrite') return `<tr><td>—</td><td>${a.name}</td><td>${m.count}</td><td colspan="4"><span class="attrite-badge">Attrited</span></td></tr>`;
     return `<tr>
@@ -1962,59 +2241,57 @@ function renderTlTable(team, monthIdx) {
 // ══════════════════════════════════════════════════════════
 function startClocks() {
   function tick() {
-    const ts = new Date().toLocaleTimeString('en-US',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
-    ['clock-agent','clock-admin','clock-tl'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=ts; });
+    const ts=new Date().toLocaleTimeString('en-US',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    ['clock-agent','clock-admin','clock-tl'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=ts;});
   }
-  tick(); setInterval(tick, 1000);
+  tick(); setInterval(tick,1000);
 }
 
 // ══════════════════════════════════════════════════════════
 //  PARTICLE CANVAS
 // ══════════════════════════════════════════════════════════
 function initParticles() {
-  const canvas = document.getElementById('bg-canvas');
-  const ctx    = canvas.getContext('2d');
-  let W, H, particles = [];
+  const canvas=document.getElementById('bg-canvas');
+  const ctx=canvas.getContext('2d');
+  let W,H,particles=[];
 
-  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
-  resize();
-  window.addEventListener('resize', resize);
+  function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
+  resize(); window.addEventListener('resize',resize);
 
   class Particle {
-    constructor() { this.reset(); }
-    reset() {
-      this.x = Math.random()*W; this.y = Math.random()*H;
-      this.vx = (Math.random()-0.5)*0.28; this.vy = (Math.random()-0.5)*0.28;
-      this.life = Math.random(); this.maxLife = 0.4+Math.random()*0.6;
-      this.size = Math.random()*1.4+0.4;
-      this.type = Math.random()<0.72 ? 'dot' : 'cross';
+    constructor(){this.reset();}
+    reset(){
+      this.x=Math.random()*W;this.y=Math.random()*H;
+      this.vx=(Math.random()-.5)*.28;this.vy=(Math.random()-.5)*.28;
+      this.life=Math.random();this.maxLife=.4+Math.random()*.6;
+      this.size=Math.random()*1.4+.4;
+      this.type=Math.random()<.72?'dot':'cross';
     }
-    update() {
-      this.x += this.vx; this.y += this.vy; this.life += 0.003;
-      if (this.life>this.maxLife||this.x<0||this.x>W||this.y<0||this.y>H) this.reset();
+    update(){
+      this.x+=this.vx;this.y+=this.vy;this.life+=.003;
+      if(this.life>this.maxLife||this.x<0||this.x>W||this.y<0||this.y>H)this.reset();
     }
-    draw() {
-      const alpha = Math.sin(this.life/this.maxLife*Math.PI)*0.45;
-      ctx.globalAlpha = alpha; ctx.fillStyle = '#00ffe7'; ctx.strokeStyle = '#00ffe7'; ctx.lineWidth = 0.5;
-      if (this.type==='dot') { ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fill(); }
-      else { const s=this.size*1.4; ctx.beginPath(); ctx.moveTo(this.x-s,this.y); ctx.lineTo(this.x+s,this.y); ctx.moveTo(this.x,this.y-s); ctx.lineTo(this.x,this.y+s); ctx.stroke(); }
+    draw(){
+      const alpha=Math.sin(this.life/this.maxLife*Math.PI)*.45;
+      ctx.globalAlpha=alpha;ctx.fillStyle='#00ffe7';ctx.strokeStyle='#00ffe7';ctx.lineWidth=.5;
+      if(this.type==='dot'){ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);ctx.fill();}
+      else{const s=this.size*1.4;ctx.beginPath();ctx.moveTo(this.x-s,this.y);ctx.lineTo(this.x+s,this.y);ctx.moveTo(this.x,this.y-s);ctx.lineTo(this.x,this.y+s);ctx.stroke();}
     }
   }
 
-  for (let i=0;i<100;i++) particles.push(new Particle());
-
-  function drawConns() {
-    for (let i=0;i<particles.length;i++) for (let j=i+1;j<particles.length;j++) {
-      const dx=particles[i].x-particles[j].x, dy=particles[i].y-particles[j].y;
+  for(let i=0;i<100;i++)particles.push(new Particle());
+  function drawConns(){
+    for(let i=0;i<particles.length;i++)for(let j=i+1;j<particles.length;j++){
+      const dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y;
       const d=Math.sqrt(dx*dx+dy*dy);
-      if (d<110) { ctx.globalAlpha=(1-d/110)*0.07; ctx.strokeStyle='#00ffe7'; ctx.lineWidth=0.5; ctx.beginPath(); ctx.moveTo(particles[i].x,particles[i].y); ctx.lineTo(particles[j].x,particles[j].y); ctx.stroke(); }
+      if(d<110){ctx.globalAlpha=(1-d/110)*.07;ctx.strokeStyle='#00ffe7';ctx.lineWidth=.5;ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);ctx.stroke();}
     }
   }
-
-  function animate() {
-    ctx.clearRect(0,0,W,H);
-    drawConns(); particles.forEach(p=>{p.update();p.draw();});
-    ctx.globalAlpha=1; requestAnimationFrame(animate);
+  function animate(){
+    // Only draw if futuristic theme
+    if(document.documentElement.getAttribute('data-theme')==='clean'){ctx.clearRect(0,0,W,H);requestAnimationFrame(animate);return;}
+    ctx.clearRect(0,0,W,H);drawConns();particles.forEach(p=>{p.update();p.draw();});
+    ctx.globalAlpha=1;requestAnimationFrame(animate);
   }
   animate();
 }
@@ -2022,12 +2299,12 @@ function initParticles() {
 // ══════════════════════════════════════════════════════════
 //  KEYBOARD SHORTCUTS
 // ══════════════════════════════════════════════════════════
-document.addEventListener('keydown', e => {
-  if (e.key==='Enter') {
-    if (document.getElementById('s-login').classList.contains('active'))  doLogin();
-    if (document.getElementById('s-signup').classList.contains('active')) doSignup();
-    if (document.getElementById('s-forgot').classList.contains('active')) doForgot();
-    if (document.getElementById('s-otp').classList.contains('active'))    doVerifyOtp();
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'){
+    if(document.getElementById('s-login').classList.contains('active'))  doLogin();
+    if(document.getElementById('s-signup').classList.contains('active')) doSignup();
+    if(document.getElementById('s-forgot').classList.contains('active')) doForgot();
+    if(document.getElementById('s-otp').classList.contains('active'))    doVerifyOtp();
   }
 });
 </script>
