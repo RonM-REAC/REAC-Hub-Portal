@@ -984,7 +984,7 @@ body {
 ══════════════════════════════════════ -->
 <div id="s-loading" class="screen active">
   <div class="load-logo">REAC AGENT HUB</div>
-  <div class="load-sub">Performance Intelligence Portal</div>
+  <div class="load-sub">Loading. . .</div>
   <div class="load-spinner"></div>
   <div class="load-bar-wrap"><div class="load-bar"></div></div>
 </div>
@@ -999,7 +999,7 @@ body {
       <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
     </div>
     <h1>REAC AGENT HUB</h1>
-    <p>Loading...</p>
+    <p>Performance Portal</p>
   </div>
   <div class="auth-card">
     <div style="position:absolute;top:9px;right:12px;font-family:var(--font-mono);font-size:9px;color:var(--text3);letter-spacing:0.1em">SYS:AUTH v3.0</div>
@@ -1036,18 +1036,68 @@ body {
     <h1 style="color:var(--neon3);text-shadow:0 0 25px rgba(255,107,53,0.5)">REAC AGENT HUB</h1>
     <p>New Agent Enrollment</p>
   </div>
-  <div class="auth-card" style="border-color:rgba(255,107,53,0.25)">
+  
+  <div class="auth-card" style="border-color:rgba(255,107,53,0.25); display: flex; flex-direction: column;">
     <h2 style="color:var(--neon3)">Request Access</h2>
     <p class="auth-desc">Your email must already be registered in the system by an admin.</p>
     <div class="msg-box msg-error" id="signup-err"></div>
     <div class="msg-box msg-ok"    id="signup-ok"></div>
-    <div class="field"><label style="color:var(--neon3)">Email Address</label><input type="email" id="signup-email" placeholder="your@reacrevenuesolutions.com"/></div>
-    <div class="field"><label style="color:var(--neon3)">Create Password</label><input type="password" id="signup-pass" placeholder="Min. 8 characters"/></div>
-    <div class="field"><label style="color:var(--neon3)">Confirm Password</label><input type="password" id="signup-pass2" placeholder="Repeat password"/></div>
-    <button class="btn-primary" id="signup-btn" onclick="doSignup()" style="border-color:var(--neon3);color:var(--neon3)"><span>⬡ SUBMIT ENROLLMENT</span></button>
-    <div class="auth-footer"><button onclick="show('s-login')">← Back to login</button></div>
+    
+    <!-- Email Field -->
+    <div class="field" style="width: 100%; box-sizing: border-box; margin-bottom: 15px;">
+      <label style="color:var(--neon3); display: block; margin-bottom: 5px;">Email Address</label>
+      <input type="email" id="signup-email" placeholder="your@reacrevenuesolutions.com" style="width: 100%; box-sizing: border-box; text-align: left; padding-right: 10px;"/>
+    </div>
+    
+    <!-- Create Password Field with Eye Toggle -->
+    <div class="field" style="width: 100%; box-sizing: border-box; margin-bottom: 15px;">
+      <label style="color:var(--neon3); display: block; margin-bottom: 5px;">Create Password</label>
+      <div style="position: relative; width: 100%;">
+        <input type="password" id="signup-pass" placeholder="Min. 8 characters" style="width: 100%; box-sizing: border-box; padding-right: 40px; text-align: left;"/>
+        <button type="button" onclick="togglePasswordVisibility('signup-pass', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text3); padding: 0; display: flex; align-items: center;">
+          <!-- SVG Eye Icon -->
+          <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Confirm Password Field with Eye Toggle -->
+    <div class="field" style="width: 100%; box-sizing: border-box; margin-bottom: 20px;">
+      <label style="color:var(--neon3); display: block; margin-bottom: 5px;">Confirm Password</label>
+      <div style="position: relative; width: 100%;">
+        <input type="password" id="signup-pass2" placeholder="Repeat password" style="width: 100%; box-sizing: border-box; padding-right: 40px; text-align: left;"/>
+        <button type="button" onclick="togglePasswordVisibility('signup-pass2', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text3); padding: 0; display: flex; align-items: center;">
+          <!-- SVG Eye Icon -->
+          <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Submit Button -->
+    <button class="btn-primary" id="signup-btn" onclick="doSignup()" style="border-color:var(--neon3); color:var(--neon3); width: 100%; box-sizing: border-box;"><span>⬡ SUBMIT ENROLLMENT</span></button>
+    
+    <!-- Footer -->
+    <div class="auth-footer" style="margin-top: 15px; text-align: center;"><button onclick="show('s-login')" style="background: none; border: none; color: var(--text3); cursor: pointer;">← Back to login</button></div>
   </div>
 </div>
+
+<!-- JavaScript Logic (Add this to your script block or file) -->
+<script>
+function togglePasswordVisibility(inputId, btn) {
+  const inputField = document.getElementById(inputId);
+  const svgIcon = btn.querySelector('.eye-icon');
+  
+  if (inputField.type === "password") {
+    inputField.type = "text";
+    // Change SVG to Eye-Off (slashed eye)
+    svgIcon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
+  } else {
+    inputField.type = "password";
+    // Change SVG back to regular Eye
+    svgIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+  }
+}
+</script>
 
 <!-- ══════════════════════════════════
      FORGOT PASSWORD
