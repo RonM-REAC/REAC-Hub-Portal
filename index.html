@@ -128,7 +128,6 @@
 [data-theme="clean"] .page-tag { background: #eff6ff; }
 [data-theme="clean"] .s-logo-icon { box-shadow: none; background: #eff6ff; }
 [data-theme="clean"] .month-select-ctrl { background: #f8fafc; border-color: #e2e8f0; }
-[data-theme="clean"] .team-card { background: #ffffff; border-color: #e2e8f0; }
 [data-theme="clean"] .pass-rule.ok { color: #059669; }
 [data-theme="clean"] .pass-rule.fail { color: #94a3b8; }
 
@@ -369,7 +368,6 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
 .month-select-ctrl { height:30px; padding:0 10px; background:var(--bg2); border:1px solid var(--border); border-radius:var(--input-radius); color:var(--text2); font-family:var(--font-mono); font-size:11px; outline:none; cursor:pointer; }
 .month-select-ctrl:focus { border-color:var(--neon); }
 
-/* Metric toggle checkboxes for charts */
 .metric-toggles { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:0.75rem; }
 .metric-toggle-btn { display:flex; align-items:center; gap:5px; padding:4px 10px; border-radius:3px; font-size:10px; font-family:var(--font-mono); letter-spacing:0.08em; cursor:pointer; border:1px solid var(--border2); background:transparent; color:var(--text3); transition:all 0.2s; }
 .metric-toggle-btn.active { color:var(--text); border-color:currentColor; }
@@ -405,7 +403,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
     <p>Performance Portal</p>
   </div>
   <div class="auth-card">
-    <div style="position:absolute;top:9px;right:12px;font-family:var(--font-mono);font-size:9px;color:var(--text3);letter-spacing:0.1em">SYS:AUTH v3.0</div>
+    <div style="position:absolute;top:9px;right:12px;font-family:var(--font-mono);font-size:9px;color:var(--text3);letter-spacing:0.1em">SYS:AUTH v4.0</div>
     <h2>Access Terminal</h2>
     <p class="auth-desc">Authenticate to enter the performance network</p>
     <div class="msg-box msg-error" id="login-err"></div>
@@ -776,20 +774,18 @@ let adminBreakdownMonthIdx = 0;
 let currentTheme  = localStorage.getItem('reac_theme') || 'futuristic';
 let chartInstances = {};
 
-// ── METRICS CONFIG ──────────────────────────────────────────────
+// ── METRICS CONFIG ───────────────────────────────────────────────
 const METRICS = [
   { key:'tps',        label:'TPS',        color:'#378ADD' },
-  { key:'attendance', label:'Attendance',  color:'#a78bfa' },
-  { key:'qa',         label:'QA',          color:'#ffb547' },
-  { key:'overall',    label:'Overall',     color:'#00ffe7' }
+  { key:'attendance', label:'Attendance', color:'#a78bfa' },
+  { key:'qa',         label:'QA',         color:'#ffb547' },
+  { key:'overall',    label:'Overall',    color:'#00ffe7' }
 ];
 
 let chartMetricState = {};
 
 function getActiveMetrics(canvasId) {
-  if (!chartMetricState[canvasId]) {
-    chartMetricState[canvasId] = new Set(METRICS.map(m=>m.key));
-  }
+  if (!chartMetricState[canvasId]) chartMetricState[canvasId] = new Set(METRICS.map(m=>m.key));
   return chartMetricState[canvasId];
 }
 
@@ -885,46 +881,25 @@ function showErr(id, msg) { const el=document.getElementById(id); el.textContent
 function showOk(id, msg)  { const el=document.getElementById(id); el.textContent=msg; el.style.display='block'; }
 function toast(msg, ms=3500) { const t=document.getElementById('toast'); t.textContent='⬡ '+msg; t.style.opacity='1'; setTimeout(()=>t.style.opacity='0',ms); }
 
-// ── NETWORK HELPERS ──────────────────────────────────────────────
-// GAS GET: works fine for read operations
+// ── NETWORK: GAS GET ─────────────────────────────────────────────
+// All calls use GET — avoids CORS preflight issues with Google Apps Script.
+// Special characters in passwords are URI-encoded automatically by URLSearchParams.
 async function gasGet(action, params={}) {
   const url = new URL(GAS_URL);
   url.searchParams.set('action', action);
-  Object.entries(params).forEach(([k,v]) => url.searchParams.set(k, v));
+  Object.entries(params).forEach(([k,v]) => url.searchParams.set(k, String(v)));
   const r = await fetch(url.toString(), { redirect: 'follow' });
-  if (!r.ok) throw new Error('Server returned ' + r.status);
+  if (!r.ok) throw new Error('Server error (HTTP ' + r.status + '). Please try again.');
   const text = await r.text();
   try { return JSON.parse(text); }
-  catch(e) { throw new Error('Invalid response from server. Please try again.'); }
+  catch(e) { throw new Error('Unexpected server response. Please try again.'); }
 }
 
-// GAS POST: Google Apps Script does NOT support application/json with CORS.
-// We use URL-encoded form data which avoids the preflight and works reliably.
-async function gasPost(action, data={}) {
-  const params = new URLSearchParams();
-  params.set('action', action);
-  // Flatten all data fields as top-level params so GAS doPost can read them
-  // We still JSON-encode complex values the backend expects via body
-  // Strategy: send as form-urlencoded with all fields stringified
-  Object.entries(data).forEach(([k,v]) => params.set(k, String(v)));
-
-  const r = await fetch(GAS_URL, {
-    method: 'POST',
-    redirect: 'follow',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: params.toString()
-  });
-  if (!r.ok) throw new Error('Server returned ' + r.status);
-  const text = await r.text();
-  try { return JSON.parse(text); }
-  catch(e) { throw new Error('Invalid response from server. Please try again.'); }
-}
-
-// ── AUTH ─────────────────────────────────────────────────────────
+// ── AUTH: LOGIN ──────────────────────────────────────────────────
 async function doLogin() {
   const email = document.getElementById('login-email').value.trim().toLowerCase();
   const pass  = document.getElementById('login-pass').value;
-  if (!email || !pass) { showErr('login-err','Please enter email and password.'); return; }
+  if (!email || !pass) { showErr('login-err','Please enter your email and password.'); return; }
   setBtnLoading('login-btn', true);
   try {
     const res = await gasGet('login', { email, password: pass });
@@ -941,6 +916,7 @@ async function doLogin() {
   setBtnLoading('login-btn', false);
 }
 
+// ── AUTH: SIGNUP ─────────────────────────────────────────────────
 async function doSignup() {
   const email = document.getElementById('signup-email').value.trim().toLowerCase();
   const pass  = document.getElementById('signup-pass').value;
@@ -951,16 +927,19 @@ async function doSignup() {
   if (!/[0-9]/.test(pass))         { showErr('signup-err','Password needs at least one number.'); return; }
   if (!/[^A-Za-z0-9]/.test(pass)) { showErr('signup-err','Password needs at least one special character.'); return; }
   if (pass !== pass2)              { showErr('signup-err','Passwords do not match.'); return; }
+
   setBtnLoading('signup-btn', true);
   try {
     const check = await gasGet('checkEmail', { email });
     if (!check.exists)     { showErr('signup-err','Email not registered. Contact your admin.'); setBtnLoading('signup-btn',false); return; }
     if (check.hasPassword) { showErr('signup-err','Account already exists. Please sign in.'); setBtnLoading('signup-btn',false); return; }
-    pendingEmail = email;
-    otpMode = 'signup';
-    _signupPass = pass;
+
+    // Send OTP first, store password for later
     const otpRes = await gasGet('sendOtp', { email });
     if (otpRes.success) {
+      pendingEmail = email;
+      otpMode      = 'signup';
+      _signupPass  = pass; // held in memory until OTP confirmed
       setupOtpScreen(email);
       show('s-otp');
     } else {
@@ -972,21 +951,23 @@ async function doSignup() {
   setBtnLoading('signup-btn', false);
 }
 
+// ── AUTH: FORGOT PASSWORD ────────────────────────────────────────
 async function doForgot() {
   const email = document.getElementById('forgot-email').value.trim().toLowerCase();
   if (!email) { showErr('forgot-err','Please enter your email.'); return; }
   setBtnLoading('forgot-btn', true);
   try {
     const check = await gasGet('checkEmail', { email });
-    if (!check.exists) { showErr('forgot-err','Email not found.'); setBtnLoading('forgot-btn',false); return; }
+    if (!check.exists) { showErr('forgot-err','Email not found in the system.'); setBtnLoading('forgot-btn',false); return; }
+
     const otpRes = await gasGet('sendOtp', { email });
     if (otpRes.success) {
       pendingEmail = email;
-      otpMode = 'forgot';
+      otpMode      = 'forgot';
       setupOtpScreen(email);
       show('s-otp');
     } else {
-      showErr('forgot-err', otpRes.message || 'Failed to send OTP.');
+      showErr('forgot-err', otpRes.message || 'Failed to send OTP. Try again.');
     }
   } catch(e) {
     showErr('forgot-err', 'Connection error: ' + e.message);
@@ -1006,7 +987,7 @@ async function doResendOtp() {
   try {
     const res = await gasGet('sendOtp', { email: pendingEmail });
     if (res.success) {
-      showOk('otp-ok','New code sent! Check your email.');
+      showOk('otp-ok', 'New code sent! Check your inbox.');
       clearOtpBoxes();
     } else {
       showErr('otp-err', res.message || 'Failed to resend. Try again.');
@@ -1017,39 +998,44 @@ async function doResendOtp() {
   setBtnLoading('otp-resend-btn', false);
 }
 
-// ── STEP 1: Verify OTP ───────────────────────────────────────────
+// ── AUTH: VERIFY OTP (Step 1) ────────────────────────────────────
+// For FORGOT: confirms code → advances to password screen
+// For SIGNUP: confirms code → calls verifyOtpAndSetPassword directly
 async function doVerifyOtp() {
   const code = getOtpValue();
   if (code.length < 6) { showErr('otp-err','Please enter all 6 digits.'); return; }
+
   setBtnLoading('otp-btn', true);
   try {
-    // Use GET for verify (read-only check, no CORS issue)
+    // Step 1: Lightweight check — does NOT consume the OTP
     const verifyRes = await gasGet('verifyOtp', { email: pendingEmail, otp: code });
     if (!verifyRes.success) {
-      showErr('otp-err', verifyRes.message || 'Invalid or expired OTP.');
+      showErr('otp-err', verifyRes.message || 'Invalid or expired OTP. Please try again.');
       setBtnLoading('otp-btn', false);
       return;
     }
 
+    // OTP confirmed ✓
     if (otpMode === 'signup') {
-      // Signup: OTP confirmed — set password via GET with all params
-      // We avoid POST entirely for GAS compatibility
+      // Step 2 (signup): set password immediately — consumes the OTP
       const finalRes = await gasGet('verifyOtpAndSetPassword', {
-        email: pendingEmail,
-        otp: code,
+        email:    pendingEmail,
+        otp:      code,
         password: _signupPass
       });
+      _signupPass = ''; // always clear from memory
       if (finalRes.success) {
-        _signupPass = '';
+        toast('Account created successfully!');
         show('s-login');
-        setTimeout(() => showOk('login-ok', '✓ Account created! You can now sign in.'), 120);
+        setTimeout(() => showOk('login-ok', '✓ Account created! You can now sign in.'), 200);
       } else {
         showErr('otp-err', finalRes.message || 'Failed to create account. Please try again.');
       }
+
     } else {
-      // Forgot: OTP confirmed — move to new-password screen
+      // Step 2 (forgot): advance to new-password screen, carry the code
       _verifiedOtp = code;
-      clearMsgs();
+      // Reset password form
       const npEl  = document.getElementById('new-pass');
       const np2El = document.getElementById('new-pass2');
       if (npEl)  npEl.value  = '';
@@ -1062,36 +1048,48 @@ async function doVerifyOtp() {
       });
       show('s-newpass');
     }
+
   } catch(e) {
     showErr('otp-err', 'Connection error: ' + e.message);
   }
   setBtnLoading('otp-btn', false);
 }
 
-// ── STEP 2: Set new password (forgot flow) ───────────────────────
+// ── AUTH: SET NEW PASSWORD (Step 2, forgot flow) ─────────────────
 async function doSetNewPassword() {
   const password = document.getElementById('new-pass').value;
   const p2       = document.getElementById('new-pass2').value;
-  if (!password || password.length < 8)    { showErr('newpass-err','Password must be at least 8 characters.'); return; }
-  if (!/[A-Z]/.test(password))             { showErr('newpass-err','Password needs at least one uppercase letter.'); return; }
-  if (!/[0-9]/.test(password))             { showErr('newpass-err','Password needs at least one number.'); return; }
-  if (!/[^A-Za-z0-9]/.test(password))     { showErr('newpass-err','Password needs at least one special character.'); return; }
-  if (password !== p2)                     { showErr('newpass-err','Passwords do not match.'); return; }
-  if (!_verifiedOtp)                       { showErr('newpass-err','Session expired. Please start over.'); return; }
+
+  if (!password || password.length < 8)   { showErr('newpass-err','Password must be at least 8 characters.'); return; }
+  if (!/[A-Z]/.test(password))            { showErr('newpass-err','Password needs at least one uppercase letter.'); return; }
+  if (!/[0-9]/.test(password))            { showErr('newpass-err','Password needs at least one number.'); return; }
+  if (!/[^A-Za-z0-9]/.test(password))    { showErr('newpass-err','Password needs at least one special character.'); return; }
+  if (password !== p2)                    { showErr('newpass-err','Passwords do not match.'); return; }
+  if (!_verifiedOtp || !pendingEmail)     { showErr('newpass-err','Session expired. Please start over from Forgot Password.'); return; }
+
   setBtnLoading('newpass-btn', true);
   try {
-    // Use GET to avoid CORS preflight issues with GAS
+    // This call consumes the OTP and writes the new password to the sheet
     const res = await gasGet('verifyOtpAndSetPassword', {
-      email: pendingEmail,
-      otp: _verifiedOtp,
+      email:    pendingEmail,
+      otp:      _verifiedOtp,
       password: password
     });
+
     if (res.success) {
-      _verifiedOtp = '';
+      _verifiedOtp = '';  // clear session
+      pendingEmail = '';
+      toast('Password updated successfully!');
       show('s-login');
-      setTimeout(() => showOk('login-ok', '✓ Password updated! You can now sign in.'), 120);
+      setTimeout(() => showOk('login-ok', '✓ Password updated! You can now sign in.'), 200);
     } else {
+      // If OTP was consumed (session expired between screens), guide user to restart
       showErr('newpass-err', res.message || 'Failed to update password. Please try again.');
+      // If session truly expired, offer a path forward
+      if (res.message && res.message.toLowerCase().includes('expired')) {
+        _verifiedOtp = '';
+        setTimeout(() => show('s-forgot'), 3000);
+      }
     }
   } catch(e) {
     showErr('newpass-err', 'Connection error: ' + e.message);
@@ -1129,10 +1127,7 @@ function initOtpBoxes() {
   });
 }
 function clearOtpBoxes() {
-  Array.from({length:6}, (_,i) => {
-    const b=document.getElementById('otp'+i);
-    b.value=''; b.classList.remove('filled');
-  });
+  Array.from({length:6}, (_,i) => { const b=document.getElementById('otp'+i); b.value=''; b.classList.remove('filled'); });
   setTimeout(() => document.getElementById('otp0').focus(), 50);
 }
 function getOtpValue() {
@@ -1149,26 +1144,31 @@ function setBtnLoading(id, on) {
 }
 
 function doLogout() {
-  currentUser = null;
+  currentUser  = null;
+  _verifiedOtp = '';
+  _signupPass  = '';
+  pendingEmail = '';
   sessionStorage.removeItem('reac_user');
   show('s-login');
 }
 
+// ── DASHBOARD LOADER ─────────────────────────────────────────────
 async function loadDashboard() {
   try {
     const res = await gasGet('getData');
-    allAgents = res.agents||[];
-    mgmtUsers = res.management||[];
+    allAgents = res.agents || [];
+    mgmtUsers = res.management || [];
   } catch(e) {
-    allAgents=[];
-    mgmtUsers=[];
+    allAgents = [];
+    mgmtUsers = [];
+    console.warn('getData failed:', e.message);
   }
   hideSplash();
-  const role = (currentUser.role||'agent').toLowerCase();
-  const name = currentUser.name||currentUser.email;
-  if (role==='admin') {
+  const role = (currentUser.role || 'agent').toLowerCase();
+  const name = currentUser.name || currentUser.email;
+  if (role === 'admin') {
     setupAdminUI(name, role); show('s-admin'); renderAdminOverview();
-  } else if (role==='teamlead') {
+  } else if (role === 'teamlead') {
     setupTlUI(name); show('s-teamlead'); renderTlOverview();
   } else {
     setupAgentUI(name); show('s-agent'); renderAgentDash();
@@ -1180,20 +1180,20 @@ function initials(name) {
 }
 function shortName(name) {
   const parts = name.split(',');
-  return parts[parts.length-1].trim().split(' ').filter(Boolean)[0]||name;
+  return parts[parts.length-1].trim().split(' ').filter(Boolean)[0] || name;
 }
 function setupAgentUI(name) {
-  document.getElementById('agent-sb-avatar').textContent=initials(name);
-  document.getElementById('agent-sb-name').textContent=shortName(name);
+  document.getElementById('agent-sb-avatar').textContent = initials(name);
+  document.getElementById('agent-sb-name').textContent   = shortName(name);
 }
 function setupAdminUI(name, role) {
-  document.getElementById('admin-sb-avatar').textContent=initials(name);
-  document.getElementById('admin-sb-name').textContent=shortName(name);
-  document.getElementById('admin-sb-role').textContent=role.toUpperCase();
+  document.getElementById('admin-sb-avatar').textContent = initials(name);
+  document.getElementById('admin-sb-name').textContent   = shortName(name);
+  document.getElementById('admin-sb-role').textContent   = role.toUpperCase();
 }
 function setupTlUI(name) {
-  document.getElementById('tl-sb-avatar').textContent=initials(name);
-  document.getElementById('tl-sb-name').textContent=shortName(name);
+  document.getElementById('tl-sb-avatar').textContent = initials(name);
+  document.getElementById('tl-sb-name').textContent   = shortName(name);
 }
 
 function pct(val) {
@@ -1238,138 +1238,92 @@ function latestActiveIdxAcrossAgents(agents) {
   return best;
 }
 
-// ── CHART: LINE ──────────────────────────────────────────────────
+// ── CHARTS ───────────────────────────────────────────────────────
 function buildLineChart(canvasId, agentList) {
-  const canvas = document.getElementById(canvasId);
-  if (!canvas) return;
+  const canvas = document.getElementById(canvasId); if (!canvas) return;
   const allMonths = allAgents[0]?.months || [];
-  const labels = [];
-  const dataByMetric = {};
+  const labels = []; const dataByMetric = {};
   METRICS.forEach(m => dataByMetric[m.key] = []);
-
   allMonths.forEach((mDef, mIdx) => {
-    const activeAgents = agentList.filter(a => {
-      const m = a.months?.[mIdx]; return m && m.count && m.overall !== 'Attrite';
-    });
-    if (activeAgents.length === 0) return;
+    const activeAgents = agentList.filter(a=>{const m=a.months?.[mIdx]; return m&&m.count&&m.overall!=='Attrite';});
+    if (activeAgents.length===0) return;
     labels.push(mDef.label);
-    METRICS.forEach(m => {
-      const av = avgField(activeAgents, mIdx, m.key);
-      dataByMetric[m.key].push(av !== null ? parseFloat(av.toFixed(2)) : null);
-    });
+    METRICS.forEach(m=>{const av=avgField(activeAgents,mIdx,m.key); dataByMetric[m.key].push(av!==null?parseFloat(av.toFixed(2)):null);});
   });
-
   if (chartInstances[canvasId]) { chartInstances[canvasId].destroy(); delete chartInstances[canvasId]; }
-
   const activeSet = getActiveMetrics(canvasId);
   const isDark = currentTheme !== 'clean';
-  const gridColor = isDark ? 'rgba(0,255,231,0.06)' : 'rgba(0,0,0,0.06)';
-  const tickColor = isDark ? '#3d6b65' : '#94a3b8';
-
-  const datasets = METRICS.map(m => ({
-    label: m.label,
-    data: dataByMetric[m.key],
-    borderColor: m.color,
-    backgroundColor: 'transparent',
-    borderWidth: activeSet.has(m.key) ? 2 : 0,
-    pointRadius: activeSet.has(m.key) ? 3 : 0,
-    pointBackgroundColor: m.color,
-    tension: 0.35,
-    hidden: !activeSet.has(m.key)
-  }));
-
+  const gridColor = isDark?'rgba(0,255,231,0.06)':'rgba(0,0,0,0.06)';
+  const tickColor = isDark?'#3d6b65':'#94a3b8';
   chartInstances[canvasId] = new Chart(canvas, {
     type: 'line',
-    data: { labels, datasets },
-    options: {
-      responsive: true, maintainAspectRatio: true,
-      interaction: { mode:'index', intersect:false },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: isDark?'rgba(5,10,18,0.95)':'rgba(255,255,255,0.97)',
-          titleColor: isDark?'#00ffe7':'#0f172a',
-          bodyColor: isDark?'#8abfba':'#475569',
-          borderColor: isDark?'rgba(0,255,231,0.2)':'#e2e8f0', borderWidth:1,
-          callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y!==null?ctx.parsed.y.toFixed(2)+'%':'—'}` }
-        }
-      },
-      scales: {
-        x: { grid:{color:gridColor}, ticks:{color:tickColor,font:{size:10}} },
-        y: { grid:{color:gridColor}, ticks:{color:tickColor,font:{size:10},callback:v=>v+'%'}, min:0, max:100 }
+    data: { labels, datasets: METRICS.map(m=>({
+      label: m.label, data: dataByMetric[m.key], borderColor: m.color,
+      backgroundColor: 'transparent', borderWidth: activeSet.has(m.key)?2:0,
+      pointRadius: activeSet.has(m.key)?3:0, pointBackgroundColor: m.color,
+      tension: 0.35, hidden: !activeSet.has(m.key)
+    }))},
+    options: { responsive:true, maintainAspectRatio:true,
+      interaction:{mode:'index',intersect:false},
+      plugins:{ legend:{display:false}, tooltip:{
+        backgroundColor:isDark?'rgba(5,10,18,0.95)':'rgba(255,255,255,0.97)',
+        titleColor:isDark?'#00ffe7':'#0f172a', bodyColor:isDark?'#8abfba':'#475569',
+        borderColor:isDark?'rgba(0,255,231,0.2)':'#e2e8f0', borderWidth:1,
+        callbacks:{label:ctx=>` ${ctx.dataset.label}: ${ctx.parsed.y!==null?ctx.parsed.y.toFixed(2)+'%':'—'}`}
+      }},
+      scales:{
+        x:{grid:{color:gridColor},ticks:{color:tickColor,font:{size:10}}},
+        y:{grid:{color:gridColor},ticks:{color:tickColor,font:{size:10},callback:v=>v+'%'},min:0,max:100}
       }
     }
   });
 }
 
-// ── CHART: BAR ───────────────────────────────────────────────────
 function buildBarChart(canvasId, agentList) {
-  const canvas = document.getElementById(canvasId);
-  if (!canvas) return;
+  const canvas = document.getElementById(canvasId); if (!canvas) return;
   const allMonths = allAgents[0]?.months || [];
-  const labels = [];
-  const dataByMetric = {};
+  const labels = []; const dataByMetric = {};
   METRICS.forEach(m => dataByMetric[m.key] = []);
-
   allMonths.forEach((mDef, mIdx) => {
-    const activeAgents = agentList.filter(a => {
-      const m = a.months?.[mIdx]; return m && m.count && m.overall !== 'Attrite';
-    });
-    if (activeAgents.length === 0) return;
+    const activeAgents = agentList.filter(a=>{const m=a.months?.[mIdx]; return m&&m.count&&m.overall!=='Attrite';});
+    if (activeAgents.length===0) return;
     labels.push(mDef.label);
-    METRICS.forEach(m => {
-      const av = avgField(activeAgents, mIdx, m.key);
-      dataByMetric[m.key].push(av !== null ? parseFloat(av.toFixed(2)) : null);
-    });
+    METRICS.forEach(m=>{const av=avgField(activeAgents,mIdx,m.key); dataByMetric[m.key].push(av!==null?parseFloat(av.toFixed(2)):null);});
   });
-
   if (chartInstances[canvasId]) { chartInstances[canvasId].destroy(); delete chartInstances[canvasId]; }
-
   const activeSet = getActiveMetrics(canvasId);
   const isDark = currentTheme !== 'clean';
-  const gridColor = isDark ? 'rgba(0,255,231,0.06)' : 'rgba(0,0,0,0.06)';
-  const tickColor = isDark ? '#3d6b65' : '#94a3b8';
-
-  const datasets = METRICS.map(m => ({
-    label: m.label,
-    data: dataByMetric[m.key],
-    backgroundColor: activeSet.has(m.key) ? m.color + 'bb' : 'transparent',
-    borderColor: m.color,
-    borderWidth: activeSet.has(m.key) ? 1.5 : 0,
-    borderRadius: 3,
-    hidden: !activeSet.has(m.key)
-  }));
-
+  const gridColor = isDark?'rgba(0,255,231,0.06)':'rgba(0,0,0,0.06)';
+  const tickColor = isDark?'#3d6b65':'#94a3b8';
   chartInstances[canvasId] = new Chart(canvas, {
     type: 'bar',
-    data: { labels, datasets },
-    options: {
-      responsive: true, maintainAspectRatio: true,
-      interaction: { mode:'index', intersect:false },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: isDark?'rgba(5,10,18,0.95)':'rgba(255,255,255,0.97)',
-          titleColor: isDark?'#00ffe7':'#0f172a',
-          bodyColor: isDark?'#8abfba':'#475569',
-          borderColor: isDark?'rgba(0,255,231,0.2)':'#e2e8f0', borderWidth:1,
-          callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y!==null?ctx.parsed.y.toFixed(2)+'%':'—'}` }
-        }
-      },
-      scales: {
-        x: { grid:{color:gridColor}, ticks:{color:tickColor,font:{size:10}} },
-        y: { grid:{color:gridColor}, ticks:{color:tickColor,font:{size:10},callback:v=>v+'%'}, min:0, max:100 }
+    data: { labels, datasets: METRICS.map(m=>({
+      label: m.label, data: dataByMetric[m.key],
+      backgroundColor: activeSet.has(m.key)?m.color+'bb':'transparent',
+      borderColor: m.color, borderWidth: activeSet.has(m.key)?1.5:0,
+      borderRadius: 3, hidden: !activeSet.has(m.key)
+    }))},
+    options: { responsive:true, maintainAspectRatio:true,
+      interaction:{mode:'index',intersect:false},
+      plugins:{ legend:{display:false}, tooltip:{
+        backgroundColor:isDark?'rgba(5,10,18,0.95)':'rgba(255,255,255,0.97)',
+        titleColor:isDark?'#00ffe7':'#0f172a', bodyColor:isDark?'#8abfba':'#475569',
+        borderColor:isDark?'rgba(0,255,231,0.2)':'#e2e8f0', borderWidth:1,
+        callbacks:{label:ctx=>` ${ctx.dataset.label}: ${ctx.parsed.y!==null?ctx.parsed.y.toFixed(2)+'%':'—'}`}
+      }},
+      scales:{
+        x:{grid:{color:gridColor},ticks:{color:tickColor,font:{size:10}}},
+        y:{grid:{color:gridColor},ticks:{color:tickColor,font:{size:10},callback:v=>v+'%'},min:0,max:100}
       }
     }
   });
 }
 
-// ── METRIC TOGGLE BUTTONS ────────────────────────────────────────
 function metricTogglesHTML(canvasId) {
   const activeSet = getActiveMetrics(canvasId);
   const safeId = canvasId.replace(/[^a-zA-Z0-9]/g,'_');
   return `<div class="metric-toggles" id="toggles-${safeId}">
-    ${METRICS.map(m => `
+    ${METRICS.map(m=>`
       <button class="metric-toggle-btn ${activeSet.has(m.key)?'active':''}"
         style="${activeSet.has(m.key)?'color:'+m.color+';border-color:'+m.color:'color:var(--text3)'}"
         onclick="toggleMetric('${canvasId}','${m.key}',this)">
@@ -1382,31 +1336,21 @@ function metricTogglesHTML(canvasId) {
 
 function toggleMetric(canvasId, key, btn) {
   const activeSet = getActiveMetrics(canvasId);
-  if (activeSet.has(key)) {
-    if (activeSet.size === 1) return;
-    activeSet.delete(key);
-  } else {
-    activeSet.add(key);
-  }
+  if (activeSet.has(key)) { if (activeSet.size===1) return; activeSet.delete(key); }
+  else { activeSet.add(key); }
   const m = METRICS.find(x=>x.key===key);
   const isActive = activeSet.has(key);
   btn.className = 'metric-toggle-btn ' + (isActive?'active':'');
   btn.style.color = isActive ? m.color : 'var(--text3)';
   btn.style.borderColor = isActive ? m.color : 'var(--border2)';
   btn.querySelector('.metric-toggle-dot').style.opacity = isActive ? 1 : 0.3;
-
   const chart = chartInstances[canvasId];
   if (chart) {
     const dsIdx = METRICS.findIndex(x=>x.key===key);
     const ds = chart.data.datasets[dsIdx];
     ds.hidden = !isActive;
-    if (chart.config.type === 'bar') {
-      ds.backgroundColor = isActive ? m.color + 'bb' : 'transparent';
-      ds.borderWidth = isActive ? 1.5 : 0;
-    } else {
-      ds.borderWidth = isActive ? 2 : 0;
-      ds.pointRadius = isActive ? 3 : 0;
-    }
+    if (chart.config.type==='bar') { ds.backgroundColor=isActive?m.color+'bb':'transparent'; ds.borderWidth=isActive?1.5:0; }
+    else { ds.borderWidth=isActive?2:0; ds.pointRadius=isActive?3:0; }
     chart.update();
   }
 }
@@ -1415,8 +1359,8 @@ function toggleMetric(canvasId, key, btn) {
 function agentNav(page, el) {
   document.querySelectorAll('#s-agent .nav-item').forEach(n=>n.classList.remove('active'));
   el.classList.add('active');
-  const titles = { dash:'Dashboard', scores:'My Scores' };
-  document.getElementById('agent-topbar-title').textContent = titles[page]||page;
+  const titles={dash:'Dashboard',scores:'My Scores'};
+  document.getElementById('agent-topbar-title').textContent=titles[page]||page;
   if (page==='dash')   renderAgentDash();
   if (page==='scores') renderAgentScores();
 }
@@ -1425,10 +1369,7 @@ function agentNav(page, el) {
 function renderAgentDash() {
   const agent = allAgents.find(a=>a.email===currentUser.email);
   const ca = document.getElementById('agent-content-area');
-  if (!agent) {
-    ca.innerHTML='<div class="no-data"><div class="nd-icon">📊</div>No data found for your account. Contact your administrator.</div>';
-    return;
-  }
+  if (!agent) { ca.innerHTML='<div class="no-data"><div class="nd-icon">📊</div>No data found for your account. Contact your administrator.</div>'; return; }
   const months=agent.months||[];
   const latestIdx=latestActiveMonthIdx(agent);
   const latest=latestIdx>=0?months[latestIdx]:null;
@@ -1440,9 +1381,8 @@ function renderAgentDash() {
     const d=(a-b).toFixed(1), sign=d>0?'▲ +':'▼ ', cls=d>0?'up':'down';
     return `<div class="metric-sub ${cls}">${sign}${d}% vs ${prev.label}</div>`;
   }
-
-  const canvasId = 'chart-agent-trend';
-  ca.innerHTML = `
+  const canvasId='chart-agent-trend';
+  ca.innerHTML=`
     <div class="page-section">
       <div class="page-header">
         <div class="page-tag">// PERIOD: ${latest?latest.label.toUpperCase():'N/A'}</div>
@@ -1516,16 +1456,10 @@ function renderAgentDash() {
         </div>
       </div>
     </div>`;
-
-  setTimeout(() => {
-    const canvas = document.getElementById(canvasId);
-    if (canvas) {
-      canvas.style.maxHeight = '180px';
-      buildLineChart(canvasId, [agent]);
-      const chart = chartInstances[canvasId];
-      if (chart) { chart.options.maintainAspectRatio = false; chart.resize(); }
-    }
-  }, 60);
+  setTimeout(()=>{
+    const canvas=document.getElementById(canvasId);
+    if (canvas) { canvas.style.maxHeight='180px'; buildLineChart(canvasId,[agent]); const ch=chartInstances[canvasId]; if(ch){ch.options.maintainAspectRatio=false;ch.resize();} }
+  },60);
 }
 
 // ── AGENT SCORES ─────────────────────────────────────────────────
@@ -1549,7 +1483,7 @@ function renderAgentScores() {
             <tbody>
               ${months.slice().reverse().map(m=>{
                 const isAttrite=m.overall==='Attrite';
-                const latestMLabel = agent.months[latestActiveMonthIdx(agent)]?.label;
+                const latestMLabel=agent.months[latestActiveMonthIdx(agent)]?.label;
                 return `<tr${m.label===latestMLabel?' class="row-highlight"':''}>
                   <td style="font-family:var(--font-mono);color:var(--neon)">${m.label}</td>
                   <td>${m.count||'—'}</td>
@@ -1604,15 +1538,12 @@ function renderLeaderboard(contentAreaId, highlightEmails, accent, isAdmin) {
               ${sorted.map(a=>{
                 const m=a.months[latestIdx];
                 const tl=mgmtUsers.find(u=>u.email===a.teamLeadEmail);
-                const isMyTeam = highlightSet.has(a.email);
-                const rowStyle = isMyTeam && !isAdmin ? 'background:rgba(55,138,221,0.06);' : '';
-                return `<tr style="${rowStyle}">
+                const isMyTeam=highlightSet.has(a.email);
+                return `<tr style="${isMyTeam&&!isAdmin?'background:rgba(55,138,221,0.06);':''}">
                   <td>${rankBadgeHTML(m.rank)}</td>
                   <td><strong>${a.name}</strong>${isMyTeam&&!isAdmin?'<span class="my-team-chip">My Team</span>':''}</td>
                   <td><span class="team-chip">${tl?tl.name:'—'}</span></td>
-                  <td>${fmtPct(m.tps)}</td>
-                  <td>${fmtPct(m.attendance)}</td>
-                  <td>${fmtPct(m.qa)}</td>
+                  <td>${fmtPct(m.tps)}</td><td>${fmtPct(m.attendance)}</td><td>${fmtPct(m.qa)}</td>
                   <td>${scoreBarHTML(m.overall)}</td>
                 </tr>`;
               }).join('')}
@@ -1631,22 +1562,22 @@ function adminNav(page, el) {
   document.getElementById('admin-topbar-title').textContent=titles[page]||page;
   if (page==='overview') renderAdminOverview();
   if (page==='agents')   renderAdminAgents();
-  if (page==='lb')       renderLeaderboard('admin-content-area', [], 'var(--purple)', true);
+  if (page==='lb')       renderLeaderboard('admin-content-area',[],  'var(--purple)', true);
 }
 
 // ── ADMIN OVERVIEW ───────────────────────────────────────────────
 function renderAdminOverview() {
   const ca = document.getElementById('admin-content-area');
-  const latestIdx = latestActiveIdxAcrossAgents(allAgents);
+  const latestIdx   = latestActiveIdxAcrossAgents(allAgents);
   const latestLabel = latestIdx>=0?(allAgents.find(a=>a.months?.[latestIdx])?.months[latestIdx]?.label||''):'—';
-  const active = allAgents.filter(a=>{const m=a.months?.[latestIdx]; return latestIdx>=0&&m&&m.count&&m.overall!=='Attrite';});
-  const avgOv  = latestIdx>=0?avgField(active,latestIdx,'overall'):null;
-  const avgTps = latestIdx>=0?avgField(active,latestIdx,'tps'):null;
-  const avgQa  = latestIdx>=0?avgField(active,latestIdx,'qa'):null;
-  const avgAtt = latestIdx>=0?avgField(active,latestIdx,'attendance'):null;
-  const leads  = mgmtUsers.filter(u=>u.role==='teamlead');
+  const active  = allAgents.filter(a=>{const m=a.months?.[latestIdx]; return latestIdx>=0&&m&&m.count&&m.overall!=='Attrite';});
+  const avgOv   = latestIdx>=0?avgField(active,latestIdx,'overall'):null;
+  const avgTps  = latestIdx>=0?avgField(active,latestIdx,'tps'):null;
+  const avgQa   = latestIdx>=0?avgField(active,latestIdx,'qa'):null;
+  const avgAtt  = latestIdx>=0?avgField(active,latestIdx,'attendance'):null;
+  const leads   = mgmtUsers.filter(u=>u.role==='teamlead');
   const allMonths = allAgents[0]?.months||[];
-  if (adminBreakdownMonthIdx===0 && latestIdx>0) adminBreakdownMonthIdx = latestIdx;
+  if (adminBreakdownMonthIdx===0 && latestIdx>0) adminBreakdownMonthIdx=latestIdx;
 
   ca.innerHTML=`
     <div class="page-section">
@@ -1691,7 +1622,7 @@ function renderAdminOverview() {
           </select>
         </div>
         <div id="admin-team-breakdown-grid" class="team-overview-grid">
-          ${buildTeamBreakdownCards(leads, adminBreakdownMonthIdx)}
+          ${buildTeamBreakdownCards(leads,adminBreakdownMonthIdx)}
         </div>
       </div>
       <div class="panel" style="margin-bottom:1.5rem">
@@ -1732,13 +1663,12 @@ function renderAdminOverview() {
     </div>`;
 
   if (leads.length) {
-    setTimeout(() => {
-      leads.forEach(tl => {
-        const cid = 'chart-admin-tl-' + tl.email.replace(/[@.]/g,'_');
-        const team = allAgents.filter(a=>a.teamLeadEmail===tl.email);
-        buildBarChart(cid, team);
+    setTimeout(()=>{
+      leads.forEach(tl=>{
+        const cid='chart-admin-tl-'+tl.email.replace(/[@.]/g,'_');
+        buildBarChart(cid, allAgents.filter(a=>a.teamLeadEmail===tl.email));
       });
-    }, 80);
+    },80);
   }
 }
 
@@ -1746,10 +1676,10 @@ function buildTeamBreakdownCards(leads, monthIdx) {
   return leads.map(tl=>{
     const team       = allAgents.filter(a=>a.teamLeadEmail===tl.email);
     const teamActive = team.filter(a=>{const m=a.months?.[monthIdx]; return m&&m.count&&m.overall!=='Attrite';});
-    const avTps = avgField(teamActive, monthIdx, 'tps');
-    const avAtt = avgField(teamActive, monthIdx, 'attendance');
-    const avQa  = avgField(teamActive, monthIdx, 'qa');
-    const avOv  = avgField(teamActive, monthIdx, 'overall');
+    const avTps=avgField(teamActive,monthIdx,'tps');
+    const avAtt=avgField(teamActive,monthIdx,'attendance');
+    const avQa =avgField(teamActive,monthIdx,'qa');
+    const avOv =avgField(teamActive,monthIdx,'overall');
     return `<div class="team-card">
       <div class="team-card-header">
         <span class="team-card-name">${tl.name}</span>
@@ -1764,10 +1694,10 @@ function buildTeamBreakdownCards(leads, monthIdx) {
 }
 
 function adminBreakdownSwitch(idx) {
-  adminBreakdownMonthIdx = parseInt(idx);
-  const leads = mgmtUsers.filter(u=>u.role==='teamlead');
-  const grid = document.getElementById('admin-team-breakdown-grid');
-  if (grid) grid.innerHTML = buildTeamBreakdownCards(leads, adminBreakdownMonthIdx);
+  adminBreakdownMonthIdx=parseInt(idx);
+  const leads=mgmtUsers.filter(u=>u.role==='teamlead');
+  const grid=document.getElementById('admin-team-breakdown-grid');
+  if (grid) grid.innerHTML=buildTeamBreakdownCards(leads,adminBreakdownMonthIdx);
 }
 
 // ── ADMIN ALL AGENTS ─────────────────────────────────────────────
@@ -1839,14 +1769,14 @@ function tlNav(page, el) {
   if (page==='overview') renderTlOverview();
   if (page==='scores')   renderTlScores();
   if (page==='lb') {
-    const myTeamEmails = allAgents.filter(a=>a.teamLeadEmail===currentUser.email).map(a=>a.email);
+    const myTeamEmails=allAgents.filter(a=>a.teamLeadEmail===currentUser.email).map(a=>a.email);
     renderLeaderboard('tl-content-area', myTeamEmails, '#378ADD', false);
   }
 }
 
 // ── TEAM LEAD OVERVIEW ───────────────────────────────────────────
 function renderTlOverview() {
-  const ca = document.getElementById('tl-content-area');
+  const ca=document.getElementById('tl-content-area');
   const myTeam=allAgents.filter(a=>a.teamLeadEmail===currentUser.email);
   const latestIdx=latestActiveIdxAcrossAgents(myTeam);
   const latestLabel=latestIdx>=0?(myTeam.find(a=>a.months?.[latestIdx])?.months[latestIdx]?.label||''):'—';
@@ -1856,8 +1786,7 @@ function renderTlOverview() {
   const avgAtt=avgField(active,latestIdx,'attendance');
   const avgQa =avgField(active,latestIdx,'qa');
   const sorted=[...active].sort((a,b)=>(parseInt(a.months[latestIdx]?.rank)||9999)-(parseInt(b.months[latestIdx]?.rank)||9999));
-
-  const canvasId = 'chart-tl-trend';
+  const canvasId='chart-tl-trend';
   ca.innerHTML=`
     <div class="page-section">
       <div class="page-header">
@@ -1904,11 +1833,8 @@ function renderTlOverview() {
             <thead><tr><th>Rank</th><th>Agent</th><th>TPS</th><th>Attendance</th><th>QA</th><th>Overall</th></tr></thead>
             <tbody>
               ${sorted.map(a=>{const m=a.months[latestIdx]; return `<tr>
-                <td>${rankBadgeHTML(m.rank)}</td>
-                <td><strong>${a.name}</strong></td>
-                <td>${fmtPct(m.tps)}</td>
-                <td>${fmtPct(m.attendance)}</td>
-                <td>${fmtPct(m.qa)}</td>
+                <td>${rankBadgeHTML(m.rank)}</td><td><strong>${a.name}</strong></td>
+                <td>${fmtPct(m.tps)}</td><td>${fmtPct(m.attendance)}</td><td>${fmtPct(m.qa)}</td>
                 <td>${scoreBarHTML(m.overall)}</td>
               </tr>`;}).join('')}
               ${myTeam.filter(a=>{const m=a.months?.[latestIdx]; return !m||!m.count||m.overall==='Attrite';}).map(a=>`
@@ -1919,19 +1845,17 @@ function renderTlOverview() {
         </div>
       </div>
     </div>`;
-
-  setTimeout(() => buildLineChart(canvasId, myTeam), 60);
+  setTimeout(()=>buildLineChart(canvasId,myTeam),60);
 }
 
 // ── TEAM LEAD SCORES ─────────────────────────────────────────────
 function renderTlScores() {
-  const ca = document.getElementById('tl-content-area');
+  const ca=document.getElementById('tl-content-area');
   const myTeam=allAgents.filter(a=>a.teamLeadEmail===currentUser.email);
   const months=myTeam[0]?.months||[];
   if (!months.length) { ca.innerHTML='<div class="no-data"><div class="nd-icon">📊</div>No team data available.</div>'; return; }
   if (tlMonthIdx===0) tlMonthIdx=latestActiveIdxAcrossAgents(myTeam);
-
-  const canvasId = 'chart-tl-scores';
+  const canvasId='chart-tl-scores';
   ca.innerHTML=`
     <div class="page-section">
       <div class="page-header">
@@ -1955,20 +1879,19 @@ function renderTlScores() {
         </div>
       </div>
     </div>`;
-
   renderTlMonthTabs(months, myTeam);
   renderTlTable(myTeam, tlMonthIdx);
-  setTimeout(() => buildLineChart(canvasId, myTeam), 60);
+  setTimeout(()=>buildLineChart(canvasId,myTeam),60);
 }
 
-function renderTlMonthTabs(months, team) {
+function renderTlMonthTabs(months) {
   const el=document.getElementById('tl-month-tabs'); if (!el) return;
   el.innerHTML=months.map((m,i)=>`<button class="month-tab${i===tlMonthIdx?' active':''}" onclick="tlMonthSwitch(${i})">${m.label}</button>`).join('');
 }
 function tlMonthSwitch(idx) {
   tlMonthIdx=idx;
   const myTeam=allAgents.filter(a=>a.teamLeadEmail===currentUser.email);
-  renderTlMonthTabs(myTeam[0]?.months||[], myTeam);
+  renderTlMonthTabs(myTeam[0]?.months||[]);
   renderTlTable(myTeam, idx);
 }
 function renderTlTable(team, monthIdx) {
@@ -1982,8 +1905,7 @@ function renderTlTable(team, monthIdx) {
     if (!m||!m.count) return `<tr><td>—</td><td>${a.name}</td><td colspan="5" style="color:var(--text3)">No data</td></tr>`;
     if (m.overall==='Attrite') return `<tr><td>—</td><td>${a.name}</td><td>${m.count}</td><td colspan="4"><span class="attrite-badge">Attrited</span></td></tr>`;
     return `<tr>
-      <td>${rankBadgeHTML(m.rank)}</td>
-      <td><strong>${a.name}</strong></td>
+      <td>${rankBadgeHTML(m.rank)}</td><td><strong>${a.name}</strong></td>
       <td style="font-family:var(--font-mono)">${m.count||'—'}</td>
       <td>${fmtPct(m.tps)}</td><td>${fmtPct(m.attendance)}</td><td>${fmtPct(m.qa)}</td>
       <td>${scoreBarHTML(m.overall)}</td>
@@ -1995,7 +1917,7 @@ function renderTlTable(team, monthIdx) {
 function startClocks() {
   function tick() {
     const ts=new Date().toLocaleTimeString('en-US',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
-    ['clock-agent','clock-admin','clock-tl'].forEach(id=>{const el=document.getElementById(id); if(el) el.textContent=ts;});
+    ['clock-agent','clock-admin','clock-tl'].forEach(id=>{const el=document.getElementById(id); if(el)el.textContent=ts;});
   }
   tick(); setInterval(tick,1000);
 }
@@ -2009,8 +1931,8 @@ function initParticles() {
   resize(); window.addEventListener('resize',resize);
   class Particle {
     constructor(){this.reset();}
-    reset(){ this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-.5)*.28;this.vy=(Math.random()-.5)*.28;this.life=Math.random();this.maxLife=.4+Math.random()*.6;this.size=Math.random()*1.4+.4;this.type=Math.random()<.72?'dot':'cross'; }
-    update(){ this.x+=this.vx;this.y+=this.vy;this.life+=.003;if(this.life>this.maxLife||this.x<0||this.x>W||this.y<0||this.y>H)this.reset(); }
+    reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-.5)*.28;this.vy=(Math.random()-.5)*.28;this.life=Math.random();this.maxLife=.4+Math.random()*.6;this.size=Math.random()*1.4+.4;this.type=Math.random()<.72?'dot':'cross';}
+    update(){this.x+=this.vx;this.y+=this.vy;this.life+=.003;if(this.life>this.maxLife||this.x<0||this.x>W||this.y<0||this.y>H)this.reset();}
     draw(){
       const alpha=Math.sin(this.life/this.maxLife*Math.PI)*.45;
       ctx.globalAlpha=alpha;ctx.fillStyle='#00ffe7';ctx.strokeStyle='#00ffe7';ctx.lineWidth=.5;
@@ -2035,12 +1957,12 @@ function initParticles() {
 
 // ── KEYBOARD ─────────────────────────────────────────────────────
 document.addEventListener('keydown',e=>{
-  if(e.key==='Enter'){
-    if(document.getElementById('s-login').classList.contains('active'))    doLogin();
-    if(document.getElementById('s-signup').classList.contains('active'))   doSignup();
-    if(document.getElementById('s-forgot').classList.contains('active'))   doForgot();
-    if(document.getElementById('s-otp').classList.contains('active'))      doVerifyOtp();
-    if(document.getElementById('s-newpass').classList.contains('active'))  doSetNewPassword();
+  if (e.key==='Enter') {
+    if (document.getElementById('s-login').classList.contains('active'))    doLogin();
+    if (document.getElementById('s-signup').classList.contains('active'))   doSignup();
+    if (document.getElementById('s-forgot').classList.contains('active'))   doForgot();
+    if (document.getElementById('s-otp').classList.contains('active'))      doVerifyOtp();
+    if (document.getElementById('s-newpass').classList.contains('active'))  doSetNewPassword();
   }
 });
 </script>
