@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>REAC Agent Hub</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Playfair+Display:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono:wght@400;500&family=Playfair+Display:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
 :root,
 [data-theme="futuristic"] {
@@ -491,7 +491,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
   </div>
 </div>
 
-<!-- OTP VERIFY (step 1: enter code only) -->
+<!-- OTP VERIFY -->
 <div id="s-otp" class="screen auth-screen">
   <div class="auth-bg-glow"></div>
   <div class="auth-logo">
@@ -520,7 +520,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
   </div>
 </div>
 
-<!-- NEW PASSWORD (step 2: after OTP verified — forgot flow only) -->
+<!-- NEW PASSWORD -->
 <div id="s-newpass" class="screen auth-screen">
   <div class="auth-bg-glow"></div>
   <div class="auth-logo">
@@ -759,10 +759,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
 // ─────────────────────────────────────────────────────────────────
-//  UPDATE THIS URL after re-deploying your Apps Script as a new
-//  deployment (Deploy → Manage Deployments → New Deployment).
-//  The old URL will still work if you only edited the script and
-//  created a new version of the SAME deployment.
+//  UPDATE THIS URL after re-deploying your Apps Script
 // ─────────────────────────────────────────────────────────────────
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbxrv2283FNav16UvHQ1uG58KtPwHJgG5Pndd3xnByyrUmMhgix5zqsRIpYAjBcOiljPyA/exec';
 
@@ -772,7 +769,7 @@ let mgmtUsers     = [];
 let pendingEmail  = '';
 let otpMode       = 'forgot'; // 'forgot' | 'signup'
 let _signupPass   = '';
-let _verifiedOtp  = '';       // stores verified OTP for the forgot flow step 2
+let _verifiedOtp  = '';
 let adminMonthIdx = 0;
 let tlMonthIdx    = 0;
 let adminBreakdownMonthIdx = 0;
@@ -888,16 +885,39 @@ function showErr(id, msg) { const el=document.getElementById(id); el.textContent
 function showOk(id, msg)  { const el=document.getElementById(id); el.textContent=msg; el.style.display='block'; }
 function toast(msg, ms=3500) { const t=document.getElementById('toast'); t.textContent='⬡ '+msg; t.style.opacity='1'; setTimeout(()=>t.style.opacity='0',ms); }
 
+// ── NETWORK HELPERS ──────────────────────────────────────────────
+// GAS GET: works fine for read operations
 async function gasGet(action, params={}) {
   const url = new URL(GAS_URL);
   url.searchParams.set('action', action);
-  Object.entries(params).forEach(([k,v]) => url.searchParams.set(k,v));
-  const r = await fetch(url.toString());
-  return r.json();
+  Object.entries(params).forEach(([k,v]) => url.searchParams.set(k, v));
+  const r = await fetch(url.toString(), { redirect: 'follow' });
+  if (!r.ok) throw new Error('Server returned ' + r.status);
+  const text = await r.text();
+  try { return JSON.parse(text); }
+  catch(e) { throw new Error('Invalid response from server. Please try again.'); }
 }
+
+// GAS POST: Google Apps Script does NOT support application/json with CORS.
+// We use URL-encoded form data which avoids the preflight and works reliably.
 async function gasPost(action, data={}) {
-  const r = await fetch(GAS_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ action, ...data }) });
-  return r.json();
+  const params = new URLSearchParams();
+  params.set('action', action);
+  // Flatten all data fields as top-level params so GAS doPost can read them
+  // We still JSON-encode complex values the backend expects via body
+  // Strategy: send as form-urlencoded with all fields stringified
+  Object.entries(data).forEach(([k,v]) => params.set(k, String(v)));
+
+  const r = await fetch(GAS_URL, {
+    method: 'POST',
+    redirect: 'follow',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: params.toString()
+  });
+  if (!r.ok) throw new Error('Server returned ' + r.status);
+  const text = await r.text();
+  try { return JSON.parse(text); }
+  catch(e) { throw new Error('Invalid response from server. Please try again.'); }
 }
 
 // ── AUTH ─────────────────────────────────────────────────────────
@@ -908,9 +928,16 @@ async function doLogin() {
   setBtnLoading('login-btn', true);
   try {
     const res = await gasGet('login', { email, password: pass });
-    if (res.success) { currentUser = res.user; sessionStorage.setItem('reac_user', JSON.stringify(currentUser)); await loadDashboard(); }
-    else { showErr('login-err', res.message || 'Invalid credentials.'); }
-  } catch(e) { showErr('login-err','Connection error. Please try again.'); }
+    if (res.success) {
+      currentUser = res.user;
+      sessionStorage.setItem('reac_user', JSON.stringify(currentUser));
+      await loadDashboard();
+    } else {
+      showErr('login-err', res.message || 'Invalid credentials.');
+    }
+  } catch(e) {
+    showErr('login-err', 'Connection error: ' + e.message);
+  }
   setBtnLoading('login-btn', false);
 }
 
@@ -918,22 +945,30 @@ async function doSignup() {
   const email = document.getElementById('signup-email').value.trim().toLowerCase();
   const pass  = document.getElementById('signup-pass').value;
   const pass2 = document.getElementById('signup-pass2').value;
-  if (!email||!pass||!pass2) { showErr('signup-err','All fields are required.'); return; }
-  if (pass.length < 8)       { showErr('signup-err','Password must be at least 8 characters.'); return; }
-  if (!/[A-Z]/.test(pass))   { showErr('signup-err','Password needs at least one uppercase letter.'); return; }
-  if (!/[0-9]/.test(pass))   { showErr('signup-err','Password needs at least one number.'); return; }
+  if (!email||!pass||!pass2)       { showErr('signup-err','All fields are required.'); return; }
+  if (pass.length < 8)             { showErr('signup-err','Password must be at least 8 characters.'); return; }
+  if (!/[A-Z]/.test(pass))         { showErr('signup-err','Password needs at least one uppercase letter.'); return; }
+  if (!/[0-9]/.test(pass))         { showErr('signup-err','Password needs at least one number.'); return; }
   if (!/[^A-Za-z0-9]/.test(pass)) { showErr('signup-err','Password needs at least one special character.'); return; }
-  if (pass !== pass2)        { showErr('signup-err','Passwords do not match.'); return; }
+  if (pass !== pass2)              { showErr('signup-err','Passwords do not match.'); return; }
   setBtnLoading('signup-btn', true);
   try {
     const check = await gasGet('checkEmail', { email });
     if (!check.exists)     { showErr('signup-err','Email not registered. Contact your admin.'); setBtnLoading('signup-btn',false); return; }
     if (check.hasPassword) { showErr('signup-err','Account already exists. Please sign in.'); setBtnLoading('signup-btn',false); return; }
-    pendingEmail = email; otpMode = 'signup'; _signupPass = pass;
+    pendingEmail = email;
+    otpMode = 'signup';
+    _signupPass = pass;
     const otpRes = await gasGet('sendOtp', { email });
-    if (otpRes.success) { setupOtpScreen(email); show('s-otp'); }
-    else { showErr('signup-err','Failed to send OTP. Try again.'); }
-  } catch(e) { showErr('signup-err','Connection error.'); }
+    if (otpRes.success) {
+      setupOtpScreen(email);
+      show('s-otp');
+    } else {
+      showErr('signup-err', otpRes.message || 'Failed to send OTP. Try again.');
+    }
+  } catch(e) {
+    showErr('signup-err', 'Connection error: ' + e.message);
+  }
   setBtnLoading('signup-btn', false);
 }
 
@@ -945,39 +980,50 @@ async function doForgot() {
     const check = await gasGet('checkEmail', { email });
     if (!check.exists) { showErr('forgot-err','Email not found.'); setBtnLoading('forgot-btn',false); return; }
     const otpRes = await gasGet('sendOtp', { email });
-    if (otpRes.success) { pendingEmail=email; otpMode='forgot'; setupOtpScreen(email); show('s-otp'); }
-    else { showErr('forgot-err','Failed to send OTP.'); }
-  } catch(e) { showErr('forgot-err','Connection error.'); }
+    if (otpRes.success) {
+      pendingEmail = email;
+      otpMode = 'forgot';
+      setupOtpScreen(email);
+      show('s-otp');
+    } else {
+      showErr('forgot-err', otpRes.message || 'Failed to send OTP.');
+    }
+  } catch(e) {
+    showErr('forgot-err', 'Connection error: ' + e.message);
+  }
   setBtnLoading('forgot-btn', false);
 }
 
 function setupOtpScreen(email) {
   clearOtpBoxes();
-  document.getElementById('otp-card-desc').textContent = `A 6-digit code was sent to ${email}. You can paste it directly into the first box.`;
+  document.getElementById('otp-card-desc').textContent =
+    `A 6-digit code was sent to ${email}. You can paste it directly into the first box.`;
 }
 
 async function doResendOtp() {
   if (!pendingEmail) return;
-  setBtnLoading('otp-btn', true);
+  setBtnLoading('otp-resend-btn', true);
   try {
     const res = await gasGet('sendOtp', { email: pendingEmail });
-    if (res.success) { showOk('otp-ok','New code sent! Check your email.'); clearOtpBoxes(); }
-    else { showErr('otp-err','Failed to resend. Try again.'); }
-  } catch(e) { showErr('otp-err','Connection error.'); }
-  setBtnLoading('otp-btn', false);
+    if (res.success) {
+      showOk('otp-ok','New code sent! Check your email.');
+      clearOtpBoxes();
+    } else {
+      showErr('otp-err', res.message || 'Failed to resend. Try again.');
+    }
+  } catch(e) {
+    showErr('otp-err', 'Connection error: ' + e.message);
+  }
+  setBtnLoading('otp-resend-btn', false);
 }
 
-// ── STEP 1: Verify OTP code ──────────────────────────────────────
-// Calls the new GET 'verifyOtp' action which checks the code WITHOUT
-// consuming it. For signup, immediately also writes the password via
-// POST 'verifyOtpAndSetPassword'. For forgot, saves the code and
-// moves to the new-password screen (step 2).
+// ── STEP 1: Verify OTP ───────────────────────────────────────────
 async function doVerifyOtp() {
   const code = getOtpValue();
   if (code.length < 6) { showErr('otp-err','Please enter all 6 digits.'); return; }
   setBtnLoading('otp-btn', true);
   try {
-    // Step 1: check the code is correct (does NOT consume the OTP)
+    // Use GET for verify (read-only check, no CORS issue)
     const verifyRes = await gasGet('verifyOtp', { email: pendingEmail, otp: code });
     if (!verifyRes.success) {
       showErr('otp-err', verifyRes.message || 'Invalid or expired OTP.');
@@ -986,24 +1032,24 @@ async function doVerifyOtp() {
     }
 
     if (otpMode === 'signup') {
-      // Signup flow: OTP confirmed — write the pre-collected password to the sheet
-      const finalRes = await gasPost('verifyOtpAndSetPassword', {
+      // Signup: OTP confirmed — set password via GET with all params
+      // We avoid POST entirely for GAS compatibility
+      const finalRes = await gasGet('verifyOtpAndSetPassword', {
         email: pendingEmail,
         otp: code,
         password: _signupPass
       });
       if (finalRes.success) {
-        _signupPass = ''; // clear sensitive data
+        _signupPass = '';
         show('s-login');
         setTimeout(() => showOk('login-ok', '✓ Account created! You can now sign in.'), 120);
       } else {
         showErr('otp-err', finalRes.message || 'Failed to create account. Please try again.');
       }
     } else {
-      // Forgot flow: OTP confirmed — save code and go to new-password screen
+      // Forgot: OTP confirmed — move to new-password screen
       _verifiedOtp = code;
       clearMsgs();
-      // Reset new-password fields
       const npEl  = document.getElementById('new-pass');
       const np2El = document.getElementById('new-pass2');
       if (npEl)  npEl.value  = '';
@@ -1016,12 +1062,13 @@ async function doVerifyOtp() {
       });
       show('s-newpass');
     }
-  } catch(e) { showErr('otp-err','Connection error.'); }
+  } catch(e) {
+    showErr('otp-err', 'Connection error: ' + e.message);
+  }
   setBtnLoading('otp-btn', false);
 }
 
-// ── STEP 2: Set new password (forgot flow only) ──────────────────
-// Uses the verified OTP stored in _verifiedOtp to write the new password.
+// ── STEP 2: Set new password (forgot flow) ───────────────────────
 async function doSetNewPassword() {
   const password = document.getElementById('new-pass').value;
   const p2       = document.getElementById('new-pass2').value;
@@ -1033,19 +1080,22 @@ async function doSetNewPassword() {
   if (!_verifiedOtp)                       { showErr('newpass-err','Session expired. Please start over.'); return; }
   setBtnLoading('newpass-btn', true);
   try {
-    const res = await gasPost('verifyOtpAndSetPassword', {
+    // Use GET to avoid CORS preflight issues with GAS
+    const res = await gasGet('verifyOtpAndSetPassword', {
       email: pendingEmail,
       otp: _verifiedOtp,
-      password
+      password: password
     });
     if (res.success) {
-      _verifiedOtp = ''; // clear stored OTP
+      _verifiedOtp = '';
       show('s-login');
       setTimeout(() => showOk('login-ok', '✓ Password updated! You can now sign in.'), 120);
     } else {
       showErr('newpass-err', res.message || 'Failed to update password. Please try again.');
     }
-  } catch(e) { showErr('newpass-err','Connection error.'); }
+  } catch(e) {
+    showErr('newpass-err', 'Connection error: ' + e.message);
+  }
   setBtnLoading('newpass-btn', false);
 }
 
@@ -1054,12 +1104,17 @@ function initOtpBoxes() {
   const boxes = Array.from({length:6}, (_,i) => document.getElementById('otp'+i));
   boxes.forEach((box, i) => {
     box.addEventListener('input', () => {
-      const val = box.value.replace(/\D/g,''); box.value = val ? val[val.length-1] : '';
+      const val = box.value.replace(/\D/g,'');
+      box.value = val ? val[val.length-1] : '';
       box.classList.toggle('filled', !!box.value);
       if (box.value && i<5) boxes[i+1].focus();
     });
     box.addEventListener('keydown', (e) => {
-      if (e.key==='Backspace') { if (box.value) { box.value=''; box.classList.remove('filled'); } else if (i>0) { boxes[i-1].value=''; boxes[i-1].classList.remove('filled'); boxes[i-1].focus(); } e.preventDefault(); }
+      if (e.key==='Backspace') {
+        if (box.value) { box.value=''; box.classList.remove('filled'); }
+        else if (i>0) { boxes[i-1].value=''; boxes[i-1].classList.remove('filled'); boxes[i-1].focus(); }
+        e.preventDefault();
+      }
       if (e.key==='ArrowLeft'  && i>0) { boxes[i-1].focus(); e.preventDefault(); }
       if (e.key==='ArrowRight' && i<5) { boxes[i+1].focus(); e.preventDefault(); }
     });
@@ -1074,37 +1129,72 @@ function initOtpBoxes() {
   });
 }
 function clearOtpBoxes() {
-  Array.from({length:6}, (_,i) => { const b=document.getElementById('otp'+i); b.value=''; b.classList.remove('filled'); });
-  document.getElementById('otp0').focus();
+  Array.from({length:6}, (_,i) => {
+    const b=document.getElementById('otp'+i);
+    b.value=''; b.classList.remove('filled');
+  });
+  setTimeout(() => document.getElementById('otp0').focus(), 50);
 }
-function getOtpValue() { return Array.from({length:6}, (_,i) => document.getElementById('otp'+i).value).join(''); }
+function getOtpValue() {
+  return Array.from({length:6}, (_,i) => document.getElementById('otp'+i).value).join('');
+}
 
 function setBtnLoading(id, on) {
   const btn = document.getElementById(id); if (!btn) return;
   btn.disabled = on;
   const sp = btn.querySelector('span');
+  if (!sp) return;
   if (on) { sp._orig=sp.innerHTML; sp.innerHTML='<span class="spinner-inline"></span> PROCESSING...'; }
-  else if (sp && sp._orig) { sp.innerHTML=sp._orig; }
+  else if (sp._orig) { sp.innerHTML=sp._orig; }
 }
 
-function doLogout() { currentUser = null; sessionStorage.removeItem('reac_user'); show('s-login'); }
+function doLogout() {
+  currentUser = null;
+  sessionStorage.removeItem('reac_user');
+  show('s-login');
+}
 
 async function loadDashboard() {
-  try { const res = await gasGet('getData'); allAgents = res.agents||[]; mgmtUsers = res.management||[]; }
-  catch(e) { allAgents=[]; mgmtUsers=[]; }
+  try {
+    const res = await gasGet('getData');
+    allAgents = res.agents||[];
+    mgmtUsers = res.management||[];
+  } catch(e) {
+    allAgents=[];
+    mgmtUsers=[];
+  }
   hideSplash();
   const role = (currentUser.role||'agent').toLowerCase();
   const name = currentUser.name||currentUser.email;
-  if (role==='admin') { setupAdminUI(name, role); show('s-admin'); renderAdminOverview(); }
-  else if (role==='teamlead') { setupTlUI(name); show('s-teamlead'); renderTlOverview(); }
-  else { setupAgentUI(name); show('s-agent'); renderAgentDash(); }
+  if (role==='admin') {
+    setupAdminUI(name, role); show('s-admin'); renderAdminOverview();
+  } else if (role==='teamlead') {
+    setupTlUI(name); show('s-teamlead'); renderTlOverview();
+  } else {
+    setupAgentUI(name); show('s-agent'); renderAgentDash();
+  }
 }
 
-function initials(name) { return (name||'?').split(/[\s,]+/).filter(Boolean).slice(0,2).map(p=>p[0].toUpperCase()).join(''); }
-function shortName(name) { const parts = name.split(','); return parts[parts.length-1].trim().split(' ').filter(Boolean)[0]||name; }
-function setupAgentUI(name) { document.getElementById('agent-sb-avatar').textContent=initials(name); document.getElementById('agent-sb-name').textContent=shortName(name); }
-function setupAdminUI(name, role) { document.getElementById('admin-sb-avatar').textContent=initials(name); document.getElementById('admin-sb-name').textContent=shortName(name); document.getElementById('admin-sb-role').textContent=role.toUpperCase(); }
-function setupTlUI(name) { document.getElementById('tl-sb-avatar').textContent=initials(name); document.getElementById('tl-sb-name').textContent=shortName(name); }
+function initials(name) {
+  return (name||'?').split(/[\s,]+/).filter(Boolean).slice(0,2).map(p=>p[0].toUpperCase()).join('');
+}
+function shortName(name) {
+  const parts = name.split(',');
+  return parts[parts.length-1].trim().split(' ').filter(Boolean)[0]||name;
+}
+function setupAgentUI(name) {
+  document.getElementById('agent-sb-avatar').textContent=initials(name);
+  document.getElementById('agent-sb-name').textContent=shortName(name);
+}
+function setupAdminUI(name, role) {
+  document.getElementById('admin-sb-avatar').textContent=initials(name);
+  document.getElementById('admin-sb-name').textContent=shortName(name);
+  document.getElementById('admin-sb-role').textContent=role.toUpperCase();
+}
+function setupTlUI(name) {
+  document.getElementById('tl-sb-avatar').textContent=initials(name);
+  document.getElementById('tl-sb-name').textContent=shortName(name);
+}
 
 function pct(val) {
   if (val===null||val===undefined||val===''||val==='Attrite') return null;
@@ -1277,7 +1367,8 @@ function buildBarChart(canvasId, agentList) {
 // ── METRIC TOGGLE BUTTONS ────────────────────────────────────────
 function metricTogglesHTML(canvasId) {
   const activeSet = getActiveMetrics(canvasId);
-  return `<div class="metric-toggles" id="toggles-${canvasId.replace(/[^a-zA-Z0-9]/g,'_')}">
+  const safeId = canvasId.replace(/[^a-zA-Z0-9]/g,'_');
+  return `<div class="metric-toggles" id="toggles-${safeId}">
     ${METRICS.map(m => `
       <button class="metric-toggle-btn ${activeSet.has(m.key)?'active':''}"
         style="${activeSet.has(m.key)?'color:'+m.color+';border-color:'+m.color:'color:var(--text3)'}"
@@ -1292,7 +1383,7 @@ function metricTogglesHTML(canvasId) {
 function toggleMetric(canvasId, key, btn) {
   const activeSet = getActiveMetrics(canvasId);
   if (activeSet.has(key)) {
-    if (activeSet.size === 1) return; // keep at least one visible
+    if (activeSet.size === 1) return;
     activeSet.delete(key);
   } else {
     activeSet.add(key);
@@ -1334,7 +1425,10 @@ function agentNav(page, el) {
 function renderAgentDash() {
   const agent = allAgents.find(a=>a.email===currentUser.email);
   const ca = document.getElementById('agent-content-area');
-  if (!agent) { ca.innerHTML='<div class="no-data"><div class="nd-icon">📊</div>No data found for your account. Contact your administrator.</div>'; return; }
+  if (!agent) {
+    ca.innerHTML='<div class="no-data"><div class="nd-icon">📊</div>No data found for your account. Contact your administrator.</div>';
+    return;
+  }
   const months=agent.months||[];
   const latestIdx=latestActiveMonthIdx(agent);
   const latest=latestIdx>=0?months[latestIdx]:null;
@@ -1455,7 +1549,8 @@ function renderAgentScores() {
             <tbody>
               ${months.slice().reverse().map(m=>{
                 const isAttrite=m.overall==='Attrite';
-                return `<tr${m.label===(agent.months[latestActiveMonthIdx(agent)]?.label)?' class="row-highlight"':''}>
+                const latestMLabel = agent.months[latestActiveMonthIdx(agent)]?.label;
+                return `<tr${m.label===latestMLabel?' class="row-highlight"':''}>
                   <td style="font-family:var(--font-mono);color:var(--neon)">${m.label}</td>
                   <td>${m.count||'—'}</td>
                   <td>${isAttrite?'—':fmtPct(m.tps)}</td>
