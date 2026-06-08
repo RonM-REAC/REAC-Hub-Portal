@@ -758,6 +758,12 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
+// ─────────────────────────────────────────────────────────────────
+//  UPDATE THIS URL after re-deploying your Apps Script as a new
+//  deployment (Deploy → Manage Deployments → New Deployment).
+//  The old URL will still work if you only edited the script and
+//  created a new version of the SAME deployment.
+// ─────────────────────────────────────────────────────────────────
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbw9YZDu--oRQ-ANhbk-16t-8D66IrAO_rQI7KZ1dpPgQUtIuzCiNUwH5pMZDgsJGqu45w/exec';
 
 let currentUser   = null;
@@ -766,14 +772,14 @@ let mgmtUsers     = [];
 let pendingEmail  = '';
 let otpMode       = 'forgot'; // 'forgot' | 'signup'
 let _signupPass   = '';
-let _verifiedOtp  = '';       // stores OTP after step-1 verification
+let _verifiedOtp  = '';       // stores verified OTP for the forgot flow step 2
 let adminMonthIdx = 0;
 let tlMonthIdx    = 0;
 let adminBreakdownMonthIdx = 0;
 let currentTheme  = localStorage.getItem('reac_theme') || 'futuristic';
 let chartInstances = {};
 
-// ── METRICS CONFIG ──
+// ── METRICS CONFIG ──────────────────────────────────────────────
 const METRICS = [
   { key:'tps',        label:'TPS',        color:'#378ADD' },
   { key:'attendance', label:'Attendance',  color:'#a78bfa' },
@@ -790,7 +796,7 @@ function getActiveMetrics(canvasId) {
   return chartMetricState[canvasId];
 }
 
-// ── THEME ──
+// ── THEME ────────────────────────────────────────────────────────
 function setTheme(theme) {
   currentTheme = theme;
   localStorage.setItem('reac_theme', theme);
@@ -804,7 +810,7 @@ function setTheme(theme) {
 }
 function applyStoredTheme() { setTheme(currentTheme); }
 
-// ── SIDEBAR ──
+// ── SIDEBAR ──────────────────────────────────────────────────────
 const sidebarState = { agent: true, admin: true, tl: true };
 function toggleSidebar(which) {
   const sidebar = document.getElementById('sidebar-' + which);
@@ -814,7 +820,7 @@ function toggleSidebar(which) {
   else        { sidebar.classList.remove('collapsed'); openBtn.classList.remove('visible'); sidebarState[which] = true; }
 }
 
-// ── PASSWORD VISIBILITY ──
+// ── PASSWORD VISIBILITY ──────────────────────────────────────────
 function togglePwd(inputId, btn) {
   const el = document.getElementById(inputId);
   const svg = btn.querySelector('.eye-icon');
@@ -827,7 +833,7 @@ function togglePwd(inputId, btn) {
   }
 }
 
-// ── PASSWORD RULES ──
+// ── PASSWORD RULES ───────────────────────────────────────────────
 function checkPassRules(prefix) {
   const inputId    = prefix === 'signup' ? 'signup-pass' : 'new-pass';
   const fillId     = prefix === 'signup' ? 'signup-strength-fill' : 'new-strength-fill';
@@ -853,7 +859,7 @@ function checkPassRules(prefix) {
   }
 }
 
-// ── INIT ──
+// ── INIT ─────────────────────────────────────────────────────────
 window.addEventListener('load', async () => {
   applyStoredTheme();
   initOtpBoxes();
@@ -894,7 +900,7 @@ async function gasPost(action, data={}) {
   return r.json();
 }
 
-// ── AUTH ──
+// ── AUTH ─────────────────────────────────────────────────────────
 async function doLogin() {
   const email = document.getElementById('login-email').value.trim().toLowerCase();
   const pass  = document.getElementById('login-pass').value;
@@ -961,18 +967,17 @@ async function doResendOtp() {
   setBtnLoading('otp-btn', false);
 }
 
-// ── STEP 1: Verify OTP code only ─────────────────────────────────
-// Backend: GET verifyOtp — checks & validates the OTP WITHOUT consuming it.
-// For signup: immediately also calls verifyOtpAndSetPassword (POST) with
-//   the pre-collected password, writing it to the sheet in one shot.
-// For forgot: just confirms the code, saves it to _verifiedOtp, and
-//   shows the new-password screen (step 2).
+// ── STEP 1: Verify OTP code ──────────────────────────────────────
+// Calls the new GET 'verifyOtp' action which checks the code WITHOUT
+// consuming it. For signup, immediately also writes the password via
+// POST 'verifyOtpAndSetPassword'. For forgot, saves the code and
+// moves to the new-password screen (step 2).
 async function doVerifyOtp() {
   const code = getOtpValue();
   if (code.length < 6) { showErr('otp-err','Please enter all 6 digits.'); return; }
   setBtnLoading('otp-btn', true);
   try {
-    // Step 1: verify code is correct (does NOT consume the OTP)
+    // Step 1: check the code is correct (does NOT consume the OTP)
     const verifyRes = await gasGet('verifyOtp', { email: pendingEmail, otp: code });
     if (!verifyRes.success) {
       showErr('otp-err', verifyRes.message || 'Invalid or expired OTP.');
@@ -981,16 +986,21 @@ async function doVerifyOtp() {
     }
 
     if (otpMode === 'signup') {
-      // Signup: OTP verified — now write the password to the sheet (consumes OTP)
-      const finalRes = await gasPost('verifyOtpAndSetPassword', { email: pendingEmail, otp: code, password: _signupPass });
+      // Signup flow: OTP confirmed — write the pre-collected password to the sheet
+      const finalRes = await gasPost('verifyOtpAndSetPassword', {
+        email: pendingEmail,
+        otp: code,
+        password: _signupPass
+      });
       if (finalRes.success) {
+        _signupPass = ''; // clear sensitive data
         show('s-login');
         setTimeout(() => showOk('login-ok', '✓ Account created! You can now sign in.'), 120);
       } else {
         showErr('otp-err', finalRes.message || 'Failed to create account. Please try again.');
       }
     } else {
-      // Forgot: OTP verified — save code & move to new-password screen
+      // Forgot flow: OTP confirmed — save code and go to new-password screen
       _verifiedOtp = code;
       clearMsgs();
       // Reset new-password fields
@@ -1010,7 +1020,7 @@ async function doVerifyOtp() {
   setBtnLoading('otp-btn', false);
 }
 
-// ── STEP 2: Set new password (forgot flow only) ───────────────────
+// ── STEP 2: Set new password (forgot flow only) ──────────────────
 // Uses the verified OTP stored in _verifiedOtp to write the new password.
 async function doSetNewPassword() {
   const password = document.getElementById('new-pass').value;
@@ -1023,7 +1033,11 @@ async function doSetNewPassword() {
   if (!_verifiedOtp)                       { showErr('newpass-err','Session expired. Please start over.'); return; }
   setBtnLoading('newpass-btn', true);
   try {
-    const res = await gasPost('verifyOtpAndSetPassword', { email: pendingEmail, otp: _verifiedOtp, password });
+    const res = await gasPost('verifyOtpAndSetPassword', {
+      email: pendingEmail,
+      otp: _verifiedOtp,
+      password
+    });
     if (res.success) {
       _verifiedOtp = ''; // clear stored OTP
       show('s-login');
@@ -1035,6 +1049,7 @@ async function doSetNewPassword() {
   setBtnLoading('newpass-btn', false);
 }
 
+// ── OTP BOX HELPERS ──────────────────────────────────────────────
 function initOtpBoxes() {
   const boxes = Array.from({length:6}, (_,i) => document.getElementById('otp'+i));
   boxes.forEach((box, i) => {
@@ -1133,7 +1148,7 @@ function latestActiveIdxAcrossAgents(agents) {
   return best;
 }
 
-// ── CHART: LINE (for agent dashboard and TL) ──────────────────────
+// ── CHART: LINE ──────────────────────────────────────────────────
 function buildLineChart(canvasId, agentList) {
   const canvas = document.getElementById(canvasId);
   if (!canvas) return;
@@ -1197,7 +1212,7 @@ function buildLineChart(canvasId, agentList) {
   });
 }
 
-// ── CHART: BAR (for admin team trend charts) ──────────────────────
+// ── CHART: BAR ───────────────────────────────────────────────────
 function buildBarChart(canvasId, agentList) {
   const canvas = document.getElementById(canvasId);
   if (!canvas) return;
@@ -1259,15 +1274,14 @@ function buildBarChart(canvasId, agentList) {
   });
 }
 
-// Metric toggle buttons HTML
+// ── METRIC TOGGLE BUTTONS ────────────────────────────────────────
 function metricTogglesHTML(canvasId) {
   const activeSet = getActiveMetrics(canvasId);
-  const safeId = canvasId.replace(/[^a-zA-Z0-9]/g,'_');
-  return `<div class="metric-toggles" id="toggles-${safeId}">
+  return `<div class="metric-toggles" id="toggles-${canvasId.replace(/[^a-zA-Z0-9]/g,'_')}">
     ${METRICS.map(m => `
       <button class="metric-toggle-btn ${activeSet.has(m.key)?'active':''}"
         style="${activeSet.has(m.key)?'color:'+m.color+';border-color:'+m.color:'color:var(--text3)'}"
-        onclick="toggleMetric('${canvasId}','${m.key}',this,'${canvasId.includes('admin')&&canvasId.includes('chart-admin')&&!canvasId.includes('overview')? 'bar':'auto'}')">
+        onclick="toggleMetric('${canvasId}','${m.key}',this)">
         <span class="metric-toggle-dot" style="background:${m.color};opacity:${activeSet.has(m.key)?1:0.3}"></span>
         ${m.label}
       </button>
@@ -1275,10 +1289,10 @@ function metricTogglesHTML(canvasId) {
   </div>`;
 }
 
-function toggleMetric(canvasId, key, btn, chartType) {
+function toggleMetric(canvasId, key, btn) {
   const activeSet = getActiveMetrics(canvasId);
   if (activeSet.has(key)) {
-    if (activeSet.size === 1) return;
+    if (activeSet.size === 1) return; // keep at least one visible
     activeSet.delete(key);
   } else {
     activeSet.add(key);
@@ -1306,7 +1320,7 @@ function toggleMetric(canvasId, key, btn, chartType) {
   }
 }
 
-// ── AGENT NAV ──
+// ── AGENT NAV ────────────────────────────────────────────────────
 function agentNav(page, el) {
   document.querySelectorAll('#s-agent .nav-item').forEach(n=>n.classList.remove('active'));
   el.classList.add('active');
@@ -1316,8 +1330,7 @@ function agentNav(page, el) {
   if (page==='scores') renderAgentScores();
 }
 
-// ── AGENT DASHBOARD ──
-// Chart moved BELOW the breakdown + activity panels, with controlled height
+// ── AGENT DASHBOARD ──────────────────────────────────────────────
 function renderAgentDash() {
   const agent = allAgents.find(a=>a.email===currentUser.email);
   const ca = document.getElementById('agent-content-area');
@@ -1342,8 +1355,6 @@ function renderAgentDash() {
         <h1>Welcome back, ${shortName(agent.name)}</h1>
         <p>Your real-time performance summary for the latest period.</p>
       </div>
-
-      <!-- Metric Cards -->
       <div class="metrics-grid">
         <div class="metric-card" style="--card-color:var(--neon)">
           <div class="metric-label">Overall Score</div>
@@ -1370,8 +1381,6 @@ function renderAgentDash() {
           <div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:${pct(latest?.qa)||0}%;background:var(--warn);color:var(--warn)"></div></div></div>
         </div>
       </div>
-
-      <!-- Breakdown + Activity side by side -->
       <div class="grid-3" style="margin-bottom:1.5rem">
         <div class="panel">
           <div class="panel-title">Score Breakdown — ${latest?latest.label:'N/A'}</div>
@@ -1405,8 +1414,6 @@ function renderAgentDash() {
           </ul>
         </div>
       </div>
-
-      <!-- Trend Chart — below the panels, compact height -->
       <div class="panel" style="margin-bottom:1.5rem">
         <div class="panel-title">My Performance Trend</div>
         ${metricTogglesHTML(canvasId)}
@@ -1414,26 +1421,20 @@ function renderAgentDash() {
           <canvas id="${canvasId}"></canvas>
         </div>
       </div>
-
     </div>`;
 
-  // Use line chart for agent, with a compact aspect ratio
   setTimeout(() => {
     const canvas = document.getElementById(canvasId);
     if (canvas) {
       canvas.style.maxHeight = '180px';
       buildLineChart(canvasId, [agent]);
-      // Override aspect ratio after build for compact view
       const chart = chartInstances[canvasId];
-      if (chart) {
-        chart.options.maintainAspectRatio = false;
-        chart.resize();
-      }
+      if (chart) { chart.options.maintainAspectRatio = false; chart.resize(); }
     }
   }, 60);
 }
 
-// ── AGENT SCORES ──
+// ── AGENT SCORES ─────────────────────────────────────────────────
 function renderAgentScores() {
   const agent = allAgents.find(a=>a.email===currentUser.email);
   const ca = document.getElementById('agent-content-area');
@@ -1471,7 +1472,7 @@ function renderAgentScores() {
     </div>`;
 }
 
-// ── SHARED LEADERBOARD ──
+// ── SHARED LEADERBOARD ───────────────────────────────────────────
 function renderLeaderboard(contentAreaId, highlightEmails, accent, isAdmin) {
   const ca = document.getElementById(contentAreaId);
   const latestIdx = latestActiveIdxAcrossAgents(allAgents);
@@ -1527,7 +1528,7 @@ function renderLeaderboard(contentAreaId, highlightEmails, accent, isAdmin) {
     </div>`;
 }
 
-// ── ADMIN NAV ──
+// ── ADMIN NAV ────────────────────────────────────────────────────
 function adminNav(page, el) {
   document.querySelectorAll('#s-admin .nav-item').forEach(n=>n.classList.remove('active'));
   el.classList.add('active');
@@ -1538,7 +1539,7 @@ function adminNav(page, el) {
   if (page==='lb')       renderLeaderboard('admin-content-area', [], 'var(--purple)', true);
 }
 
-// ── ADMIN OVERVIEW ──
+// ── ADMIN OVERVIEW ───────────────────────────────────────────────
 function renderAdminOverview() {
   const ca = document.getElementById('admin-content-area');
   const latestIdx = latestActiveIdxAcrossAgents(allAgents);
@@ -1586,9 +1587,7 @@ function renderAdminOverview() {
           <div class="metric-sub">${latestLabel}</div>
         </div>
       </div>
-
       ${leads.length?`
-      <!-- Team Breakdown -->
       <div class="panel" style="margin-bottom:1.5rem">
         <div class="panel-title-row">
           <div class="panel-title" style="color:var(--purple)">Team Breakdown</div>
@@ -1600,8 +1599,6 @@ function renderAdminOverview() {
           ${buildTeamBreakdownCards(leads, adminBreakdownMonthIdx)}
         </div>
       </div>
-
-      <!-- Team Trend Bar Charts (one per TL) -->
       <div class="panel" style="margin-bottom:1.5rem">
         <div class="panel-title" style="color:var(--purple)">Team Trend Charts</div>
         <div id="admin-trend-charts" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:1.25rem;align-items:start;">
@@ -1616,8 +1613,6 @@ function renderAdminOverview() {
         </div>
       </div>
       `:''}
-
-      <!-- Rankings table -->
       <div class="panel">
         <div class="panel-title" style="color:var(--purple)">Score Rankings — ${latestLabel}</div>
         <div style="overflow-x:auto">
@@ -1641,7 +1636,6 @@ function renderAdminOverview() {
       </div>
     </div>`;
 
-  // Build BAR charts for each TL team
   if (leads.length) {
     setTimeout(() => {
       leads.forEach(tl => {
@@ -1681,7 +1675,7 @@ function adminBreakdownSwitch(idx) {
   if (grid) grid.innerHTML = buildTeamBreakdownCards(leads, adminBreakdownMonthIdx);
 }
 
-// ── ADMIN ALL AGENTS ──
+// ── ADMIN ALL AGENTS ─────────────────────────────────────────────
 function renderAdminAgents() {
   const ca = document.getElementById('admin-content-area');
   const months = allAgents[0]?.months||[];
@@ -1741,7 +1735,7 @@ function renderAdminAgentsTable(monthIdx) {
 }
 function filterAdminTable() { renderAdminAgentsTable(adminMonthIdx); }
 
-// ── TEAM LEAD NAV ──
+// ── TEAM LEAD NAV ────────────────────────────────────────────────
 function tlNav(page, el) {
   document.querySelectorAll('#s-teamlead .nav-item').forEach(n=>n.classList.remove('active'));
   el.classList.add('active');
@@ -1755,7 +1749,7 @@ function tlNav(page, el) {
   }
 }
 
-// ── TEAM LEAD OVERVIEW ──
+// ── TEAM LEAD OVERVIEW ───────────────────────────────────────────
 function renderTlOverview() {
   const ca = document.getElementById('tl-content-area');
   const myTeam=allAgents.filter(a=>a.teamLeadEmail===currentUser.email);
@@ -1803,15 +1797,11 @@ function renderTlOverview() {
           <div class="metric-sub">${latestLabel}</div>
         </div>
       </div>
-
-      <!-- Team Trend Chart (line) -->
       <div class="panel" style="margin-bottom:1.5rem">
         <div class="panel-title" style="color:#378ADD">Team Performance Trend</div>
         ${metricTogglesHTML(canvasId)}
         <canvas id="${canvasId}" height="130"></canvas>
       </div>
-
-      <!-- Team Rankings -->
       <div class="panel">
         <div class="panel-title" style="color:#378ADD">Team Rankings — ${latestLabel}</div>
         <div style="overflow-x:auto">
@@ -1838,7 +1828,7 @@ function renderTlOverview() {
   setTimeout(() => buildLineChart(canvasId, myTeam), 60);
 }
 
-// ── TEAM LEAD SCORES ──
+// ── TEAM LEAD SCORES ─────────────────────────────────────────────
 function renderTlScores() {
   const ca = document.getElementById('tl-content-area');
   const myTeam=allAgents.filter(a=>a.teamLeadEmail===currentUser.email);
@@ -1854,14 +1844,11 @@ function renderTlScores() {
         <h1>Team Scores</h1>
         <p>Month-by-month breakdown — January through present.</p>
       </div>
-
-      <!-- Trend Line Chart -->
       <div class="panel" style="margin-bottom:1.5rem">
         <div class="panel-title" style="color:#378ADD">Team Trend — All Months</div>
         ${metricTogglesHTML(canvasId)}
         <canvas id="${canvasId}" height="130"></canvas>
       </div>
-
       <div class="panel">
         <div class="panel-title" style="color:#378ADD">Monthly Records</div>
         <div class="month-tabs" id="tl-month-tabs"></div>
@@ -1909,7 +1896,7 @@ function renderTlTable(team, monthIdx) {
   }).join('');
 }
 
-// ── CLOCKS ──
+// ── CLOCKS ───────────────────────────────────────────────────────
 function startClocks() {
   function tick() {
     const ts=new Date().toLocaleTimeString('en-US',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
@@ -1918,7 +1905,7 @@ function startClocks() {
   tick(); setInterval(tick,1000);
 }
 
-// ── PARTICLES ──
+// ── PARTICLES ────────────────────────────────────────────────────
 function initParticles() {
   const canvas=document.getElementById('bg-canvas');
   const ctx=canvas.getContext('2d');
@@ -1951,7 +1938,7 @@ function initParticles() {
   animate();
 }
 
-// ── KEYBOARD ──
+// ── KEYBOARD ─────────────────────────────────────────────────────
 document.addEventListener('keydown',e=>{
   if(e.key==='Enter'){
     if(document.getElementById('s-login').classList.contains('active'))    doLogin();
