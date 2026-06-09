@@ -189,13 +189,11 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
 .auth-footer button:hover { text-shadow: 0 0 12px rgba(0,255,231,0.7); }
 .auth-footer .sep { color: var(--text3); }
 
-/* OTP boxes */
 .otp-row { display: flex; gap: 10px; justify-content: center; margin: 1.4rem 0; }
 .otp-box { width: 52px; height: 60px; background: rgba(0,255,231,0.04); border: 1px solid var(--border); border-radius: 4px; color: var(--neon); font-family: var(--font-head); font-size: 22px; font-weight: 700; text-align: center; outline: none; transition: all 0.2s; caret-color: var(--neon); }
 .otp-box:focus { border-color: var(--neon); background: rgba(0,255,231,0.09); box-shadow: 0 0 20px rgba(0,255,231,0.2); }
 .otp-box.filled { border-color: rgba(0,255,231,0.6); background: rgba(0,255,231,0.07); }
 
-/* Password rules */
 .pass-rules { margin: 10px 0 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 5px 12px; }
 .pass-rule { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; display: flex; align-items: center; gap: 5px; transition: color 0.2s; color: var(--text3); }
 .pass-rule.ok   { color: var(--neon); }
@@ -204,7 +202,6 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
 .pass-strength { height: 3px; background: var(--border2); border-radius: 2px; margin: 8px 0 4px; overflow: hidden; }
 .pass-strength-fill { height: 100%; border-radius: 2px; transition: width 0.4s ease, background 0.4s ease; width: 0%; }
 
-/* App layout */
 .app-screen { flex-direction: row; }
 .app-layout { display: flex; width: 100%; height: 100%; }
 .sidebar { width: 228px; height: 100%; flex-shrink: 0; background: var(--sidebar-bg); border-right: 1px solid var(--sidebar-border); display: flex; flex-direction: column; position: relative; overflow: hidden; box-shadow: 4px 0 30px rgba(0,0,0,0.5); transition: width 0.32s cubic-bezier(0.4,0,0.2,1), min-width 0.32s cubic-bezier(0.4,0,0.2,1); min-width: 228px; }
@@ -403,7 +400,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
     <p>Performance Portal</p>
   </div>
   <div class="auth-card">
-    <div style="position:absolute;top:9px;right:12px;font-family:var(--font-mono);font-size:9px;color:var(--text3);letter-spacing:0.1em">SYS:AUTH v4.0</div>
+    <div style="position:absolute;top:9px;right:12px;font-family:var(--font-mono);font-size:9px;color:var(--text3);letter-spacing:0.1em">SYS:AUTH v5.0</div>
     <h2>Access Terminal</h2>
     <p class="auth-desc">Authenticate to enter the performance network</p>
     <div class="msg-box msg-error" id="login-err"></div>
@@ -757,15 +754,15 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
 // ─────────────────────────────────────────────────────────────────
-//  UPDATE THIS URL after re-deploying your Apps Script
+//  NEW DEPLOYMENT URL (v5.0)
 // ─────────────────────────────────────────────────────────────────
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbxrv2283FNav16UvHQ1uG58KtPwHJgG5Pndd3xnByyrUmMhgix5zqsRIpYAjBcOiljPyA/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzN9eMMcm-NZ1p781qArLpw7915d-0f-lYvvmgiQCy0Fv9g9sqiQX5E-xa-R0QeXKgBJQ/exec';
 
 let currentUser   = null;
 let allAgents     = [];
 let mgmtUsers     = [];
 let pendingEmail  = '';
-let otpMode       = 'forgot'; // 'forgot' | 'signup'
+let otpMode       = 'forgot';
 let _signupPass   = '';
 let _verifiedOtp  = '';
 let adminMonthIdx = 0;
@@ -774,7 +771,6 @@ let adminBreakdownMonthIdx = 0;
 let currentTheme  = localStorage.getItem('reac_theme') || 'futuristic';
 let chartInstances = {};
 
-// ── METRICS CONFIG ───────────────────────────────────────────────
 const METRICS = [
   { key:'tps',        label:'TPS',        color:'#378ADD' },
   { key:'attendance', label:'Attendance', color:'#a78bfa' },
@@ -832,12 +828,7 @@ function checkPassRules(prefix) {
   const fillId     = prefix === 'signup' ? 'signup-strength-fill' : 'new-strength-fill';
   const rulePrefix = prefix === 'signup' ? 'sr' : 'nr';
   const val = document.getElementById(inputId)?.value || '';
-  const rules = {
-    len: val.length >= 8,
-    up:  /[A-Z]/.test(val),
-    num: /[0-9]/.test(val),
-    sym: /[^A-Za-z0-9]/.test(val)
-  };
+  const rules = { len: val.length >= 8, up: /[A-Z]/.test(val), num: /[0-9]/.test(val), sym: /[^A-Za-z0-9]/.test(val) };
   Object.entries(rules).forEach(([k, ok]) => {
     const el = document.getElementById(`${rulePrefix}-${k}`);
     if (!el) return;
@@ -882,8 +873,6 @@ function showOk(id, msg)  { const el=document.getElementById(id); el.textContent
 function toast(msg, ms=3500) { const t=document.getElementById('toast'); t.textContent='⬡ '+msg; t.style.opacity='1'; setTimeout(()=>t.style.opacity='0',ms); }
 
 // ── NETWORK: GAS GET ─────────────────────────────────────────────
-// All calls use GET — avoids CORS preflight issues with Google Apps Script.
-// Special characters in passwords are URI-encoded automatically by URLSearchParams.
 async function gasGet(action, params={}) {
   const url = new URL(GAS_URL);
   url.searchParams.set('action', action);
@@ -934,12 +923,11 @@ async function doSignup() {
     if (!check.exists)     { showErr('signup-err','Email not registered. Contact your admin.'); setBtnLoading('signup-btn',false); return; }
     if (check.hasPassword) { showErr('signup-err','Account already exists. Please sign in.'); setBtnLoading('signup-btn',false); return; }
 
-    // Send OTP first, store password for later
     const otpRes = await gasGet('sendOtp', { email });
     if (otpRes.success) {
       pendingEmail = email;
       otpMode      = 'signup';
-      _signupPass  = pass; // held in memory until OTP confirmed
+      _signupPass  = pass;
       setupOtpScreen(email);
       show('s-otp');
     } else {
@@ -959,7 +947,6 @@ async function doForgot() {
   try {
     const check = await gasGet('checkEmail', { email });
     if (!check.exists) { showErr('forgot-err','Email not found in the system.'); setBtnLoading('forgot-btn',false); return; }
-
     const otpRes = await gasGet('sendOtp', { email });
     if (otpRes.success) {
       pendingEmail = email;
@@ -986,44 +973,24 @@ async function doResendOtp() {
   setBtnLoading('otp-resend-btn', true);
   try {
     const res = await gasGet('sendOtp', { email: pendingEmail });
-    if (res.success) {
-      showOk('otp-ok', 'New code sent! Check your inbox.');
-      clearOtpBoxes();
-    } else {
-      showErr('otp-err', res.message || 'Failed to resend. Try again.');
-    }
-  } catch(e) {
-    showErr('otp-err', 'Connection error: ' + e.message);
-  }
+    if (res.success) { showOk('otp-ok', 'New code sent! Check your inbox.'); clearOtpBoxes(); }
+    else { showErr('otp-err', res.message || 'Failed to resend. Try again.'); }
+  } catch(e) { showErr('otp-err', 'Connection error: ' + e.message); }
   setBtnLoading('otp-resend-btn', false);
 }
 
-// ── AUTH: VERIFY OTP (Step 1) ────────────────────────────────────
-// For FORGOT: confirms code → advances to password screen
-// For SIGNUP: confirms code → calls verifyOtpAndSetPassword directly
+// ── AUTH: VERIFY OTP ─────────────────────────────────────────────
 async function doVerifyOtp() {
   const code = getOtpValue();
   if (code.length < 6) { showErr('otp-err','Please enter all 6 digits.'); return; }
-
   setBtnLoading('otp-btn', true);
   try {
-    // Step 1: Lightweight check — does NOT consume the OTP
     const verifyRes = await gasGet('verifyOtp', { email: pendingEmail, otp: code });
-    if (!verifyRes.success) {
-      showErr('otp-err', verifyRes.message || 'Invalid or expired OTP. Please try again.');
-      setBtnLoading('otp-btn', false);
-      return;
-    }
+    if (!verifyRes.success) { showErr('otp-err', verifyRes.message || 'Invalid or expired OTP.'); setBtnLoading('otp-btn', false); return; }
 
-    // OTP confirmed ✓
     if (otpMode === 'signup') {
-      // Step 2 (signup): set password immediately — consumes the OTP
-      const finalRes = await gasGet('verifyOtpAndSetPassword', {
-        email:    pendingEmail,
-        otp:      code,
-        password: _signupPass
-      });
-      _signupPass = ''; // always clear from memory
+      const finalRes = await gasGet('verifyOtpAndSetPassword', { email: pendingEmail, otp: code, password: _signupPass });
+      _signupPass = '';
       if (finalRes.success) {
         toast('Account created successfully!');
         show('s-login');
@@ -1031,11 +998,8 @@ async function doVerifyOtp() {
       } else {
         showErr('otp-err', finalRes.message || 'Failed to create account. Please try again.');
       }
-
     } else {
-      // Step 2 (forgot): advance to new-password screen, carry the code
       _verifiedOtp = code;
-      // Reset password form
       const npEl  = document.getElementById('new-pass');
       const np2El = document.getElementById('new-pass2');
       if (npEl)  npEl.value  = '';
@@ -1048,18 +1012,14 @@ async function doVerifyOtp() {
       });
       show('s-newpass');
     }
-
-  } catch(e) {
-    showErr('otp-err', 'Connection error: ' + e.message);
-  }
+  } catch(e) { showErr('otp-err', 'Connection error: ' + e.message); }
   setBtnLoading('otp-btn', false);
 }
 
-// ── AUTH: SET NEW PASSWORD (Step 2, forgot flow) ─────────────────
+// ── AUTH: SET NEW PASSWORD ────────────────────────────────────────
 async function doSetNewPassword() {
   const password = document.getElementById('new-pass').value;
   const p2       = document.getElementById('new-pass2').value;
-
   if (!password || password.length < 8)   { showErr('newpass-err','Password must be at least 8 characters.'); return; }
   if (!/[A-Z]/.test(password))            { showErr('newpass-err','Password needs at least one uppercase letter.'); return; }
   if (!/[0-9]/.test(password))            { showErr('newpass-err','Password needs at least one number.'); return; }
@@ -1069,31 +1029,21 @@ async function doSetNewPassword() {
 
   setBtnLoading('newpass-btn', true);
   try {
-    // This call consumes the OTP and writes the new password to the sheet
-    const res = await gasGet('verifyOtpAndSetPassword', {
-      email:    pendingEmail,
-      otp:      _verifiedOtp,
-      password: password
-    });
-
+    const res = await gasGet('verifyOtpAndSetPassword', { email: pendingEmail, otp: _verifiedOtp, password });
     if (res.success) {
-      _verifiedOtp = '';  // clear session
+      _verifiedOtp = '';
       pendingEmail = '';
       toast('Password updated successfully!');
       show('s-login');
       setTimeout(() => showOk('login-ok', '✓ Password updated! You can now sign in.'), 200);
     } else {
-      // If OTP was consumed (session expired between screens), guide user to restart
       showErr('newpass-err', res.message || 'Failed to update password. Please try again.');
-      // If session truly expired, offer a path forward
       if (res.message && res.message.toLowerCase().includes('expired')) {
         _verifiedOtp = '';
         setTimeout(() => show('s-forgot'), 3000);
       }
     }
-  } catch(e) {
-    showErr('newpass-err', 'Connection error: ' + e.message);
-  }
+  } catch(e) { showErr('newpass-err', 'Connection error: ' + e.message); }
   setBtnLoading('newpass-btn', false);
 }
 
@@ -1562,7 +1512,7 @@ function adminNav(page, el) {
   document.getElementById('admin-topbar-title').textContent=titles[page]||page;
   if (page==='overview') renderAdminOverview();
   if (page==='agents')   renderAdminAgents();
-  if (page==='lb')       renderLeaderboard('admin-content-area',[],  'var(--purple)', true);
+  if (page==='lb')       renderLeaderboard('admin-content-area',[],'var(--purple)',true);
 }
 
 // ── ADMIN OVERVIEW ───────────────────────────────────────────────
@@ -1575,7 +1525,7 @@ function renderAdminOverview() {
   const avgTps  = latestIdx>=0?avgField(active,latestIdx,'tps'):null;
   const avgQa   = latestIdx>=0?avgField(active,latestIdx,'qa'):null;
   const avgAtt  = latestIdx>=0?avgField(active,latestIdx,'attendance'):null;
-  const leads   = mgmtUsers.filter(u=>u.role==='teamlead');
+  const leads   = mgmtUsers.filter(u=>u.role==='team lead'||u.role==='teamlead');
   const allMonths = allAgents[0]?.months||[];
   if (adminBreakdownMonthIdx===0 && latestIdx>0) adminBreakdownMonthIdx=latestIdx;
 
@@ -1695,7 +1645,7 @@ function buildTeamBreakdownCards(leads, monthIdx) {
 
 function adminBreakdownSwitch(idx) {
   adminBreakdownMonthIdx=parseInt(idx);
-  const leads=mgmtUsers.filter(u=>u.role==='teamlead');
+  const leads=mgmtUsers.filter(u=>u.role==='team lead'||u.role==='teamlead');
   const grid=document.getElementById('admin-team-breakdown-grid');
   if (grid) grid.innerHTML=buildTeamBreakdownCards(leads,adminBreakdownMonthIdx);
 }
