@@ -39,6 +39,7 @@
   --input-radius: 2px;
   --btn-radius: 2px;
   --auth-card-bg: rgba(8,15,26,0.92);
+  --online-green: #00ff88;
 }
 
 [data-theme="clean"] {
@@ -72,6 +73,7 @@
   --input-radius: 8px;
   --btn-radius: 8px;
   --auth-card-bg: #ffffff;
+  --online-green: #059669;
 }
 
 [data-theme="clean"] body { background: var(--bg); }
@@ -108,14 +110,8 @@
 [data-theme="clean"] .otp-box:focus { border-color: var(--neon); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); background: #ffffff; }
 [data-theme="clean"] .team-card { background: #ffffff; border-color: #e2e8f0; }
 [data-theme="clean"] .team-card:hover { box-shadow: 0 4px 20px rgba(37,99,235,0.1); border-color: rgba(37,99,235,0.25); }
-[data-theme="clean"] .profile-banner { background: #ffffff; border-color: #e2e8f0; }
-[data-theme="clean"] .profile-banner::before { display: none; }
-[data-theme="clean"] .tab-btn.active { color: var(--neon); border-bottom-color: var(--neon); }
 [data-theme="clean"] .month-tab.active { background: #eff6ff; color: var(--neon); border-color: var(--neon); box-shadow: none; }
 [data-theme="clean"] #toast { background: #fff; border-color: var(--neon); box-shadow: 0 4px 20px rgba(37,99,235,0.15); }
-[data-theme="clean"] .badge-green { color: #059669; border-color: rgba(5,150,105,0.3); background: rgba(5,150,105,0.07); }
-[data-theme="clean"] .badge-amber { color: var(--warn); border-color: rgba(217,119,6,0.3); background: rgba(217,119,6,0.07); }
-[data-theme="clean"] .badge-red { color: var(--danger); border-color: rgba(220,38,38,0.3); background: rgba(220,38,38,0.07); }
 [data-theme="clean"] .sbar-fill.good { background: linear-gradient(90deg,#059669,#10b981); }
 [data-theme="clean"] .sbar-fill.ok { background: linear-gradient(90deg,#2563eb,#60a5fa); }
 [data-theme="clean"] .sbar-fill.warn { background: linear-gradient(90deg,#d97706,#fbbf24); }
@@ -123,13 +119,18 @@
 [data-theme="clean"] .auth-bg-glow { display: none; }
 [data-theme="clean"] .ctrl-input { background: #f8fafc; border-color: #e2e8f0; color: var(--text); }
 [data-theme="clean"] .ctrl-input:focus { border-color: var(--neon); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
-[data-theme="clean"] .ctrl-select { background: #f8fafc; border-color: #e2e8f0; }
-[data-theme="clean"] .btn-ctrl:hover { box-shadow: 0 2px 8px rgba(37,99,235,0.15); }
 [data-theme="clean"] .page-tag { background: #eff6ff; }
 [data-theme="clean"] .s-logo-icon { box-shadow: none; background: #eff6ff; }
 [data-theme="clean"] .month-select-ctrl { background: #f8fafc; border-color: #e2e8f0; }
 [data-theme="clean"] .pass-rule.ok { color: #059669; }
 [data-theme="clean"] .pass-rule.fail { color: #94a3b8; }
+[data-theme="clean"] .top5-widget { background: rgba(255,255,255,0.97); border-color: #e2e8f0; box-shadow: 0 8px 32px rgba(37,99,235,0.12); }
+[data-theme="clean"] .top5-header { background: linear-gradient(135deg,#2563eb,#7c3aed); }
+[data-theme="clean"] .top5-row { border-bottom-color: #f1f5f9; }
+[data-theme="clean"] .top5-row:hover { background: #f8fafc; }
+[data-theme="clean"] .online-panel { background: #ffffff; border-color: #e2e8f0; }
+[data-theme="clean"] .online-agent-pill { background: rgba(5,150,105,0.07); border-color: rgba(5,150,105,0.2); }
+[data-theme="clean"] .online-dot-pulse { background: #059669; box-shadow: 0 0 0 0 rgba(5,150,105,0.4); }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { width: 100%; height: 100%; overflow: hidden; }
@@ -372,6 +373,221 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
 
 [data-theme="clean"] .team-card { background:#ffffff; border-color:#e2e8f0; }
 [data-theme="clean"] .team-card:hover { box-shadow:0 4px 20px rgba(37,99,235,0.1); border-color:rgba(37,99,235,0.25); }
+
+/* ─── ONLINE PRESENCE PANEL ───────────────────────────────────── */
+.online-panel {
+  background: rgba(8,15,26,0.8);
+  border: 1px solid var(--border2);
+  border-radius: var(--card-radius);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  transition: background 0.4s ease, border-color 0.4s ease;
+}
+.online-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.online-panel-title {
+  font-family: var(--font-head);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.online-count-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  letter-spacing: 0.08em;
+}
+.online-agents-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 36px;
+  align-items: center;
+}
+.online-agent-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px 5px 8px;
+  border-radius: 20px;
+  background: rgba(0,255,136,0.07);
+  border: 1px solid rgba(0,255,136,0.22);
+  font-size: 12px;
+  color: var(--text);
+  font-family: var(--font-body);
+  animation: pillFadeIn 0.4s ease;
+  transition: all 0.3s;
+}
+.online-agent-pill:hover { background: rgba(0,255,136,0.13); }
+@keyframes pillFadeIn { from{opacity:0;transform:scale(0.85)} to{opacity:1;transform:scale(1)} }
+.online-dot-pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--online-green);
+  box-shadow: 0 0 0 0 rgba(0,255,136,0.4);
+  animation: pulse-ring 1.8s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(0,255,136,0.5); }
+  60%  { box-shadow: 0 0 0 5px rgba(0,255,136,0); }
+  100% { box-shadow: 0 0 0 0 rgba(0,255,136,0); }
+}
+.online-pill-name { font-size: 12px; letter-spacing: 0.03em; }
+.online-pill-team { font-size: 10px; color: var(--text3); font-family: var(--font-mono); margin-left: 2px; }
+.online-empty { font-size: 12px; color: var(--text3); font-family: var(--font-mono); letter-spacing: 0.08em; }
+.online-last-refresh { font-family: var(--font-mono); font-size: 9px; color: var(--text3); letter-spacing: 0.1em; }
+
+/* ─── TOP 5 FLOATING WIDGET ───────────────────────────────────── */
+.top5-widget {
+  position: fixed;
+  z-index: 500;
+  width: 240px;
+  background: rgba(5,10,18,0.96);
+  border: 1px solid rgba(0,255,231,0.25);
+  border-radius: 8px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6), 0 0 30px rgba(0,255,231,0.08);
+  backdrop-filter: blur(20px);
+  user-select: none;
+  display: none;
+  bottom: 20px;
+  right: 20px;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+.top5-widget.visible { display: block; }
+.top5-widget.dragging { box-shadow: 0 16px 60px rgba(0,0,0,0.8), 0 0 40px rgba(0,255,231,0.18); cursor: grabbing; }
+.top5-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 12px;
+  background: linear-gradient(135deg, rgba(0,255,231,0.12), rgba(167,139,250,0.12));
+  border-bottom: 1px solid rgba(0,255,231,0.15);
+  cursor: grab;
+}
+.top5-header:active { cursor: grabbing; }
+.top5-title {
+  font-family: var(--font-head);
+  font-size: 9px;
+  color: var(--neon);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.top5-title-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--neon);
+  box-shadow: 0 0 6px var(--neon);
+  animation: blink 1.5s infinite;
+}
+.top5-header-right { display: flex; align-items: center; gap: 6px; }
+.top5-refresh-time { font-family: var(--font-mono); font-size: 8px; color: var(--text3); letter-spacing: 0.08em; }
+.top5-close {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,77,109,0.35);
+  background: rgba(255,77,109,0.1);
+  color: var(--danger);
+  font-size: 10px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+  line-height: 1;
+}
+.top5-close:hover { background: rgba(255,77,109,0.3); border-color: var(--danger); }
+.top5-body { padding: 8px 0; }
+.top5-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px;
+  border-bottom: 1px solid rgba(0,255,231,0.04);
+  transition: all 0.3s;
+  position: relative;
+}
+.top5-row:last-child { border-bottom: none; }
+.top5-row.changed { animation: rowFlash 0.8s ease; }
+@keyframes rowFlash {
+  0%  { background: rgba(0,255,231,0.18); }
+  100%{ background: transparent; }
+}
+.top5-pos {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.top5-pos.p1 { background:rgba(255,215,0,0.15); border:1px solid rgba(255,215,0,0.5); color:var(--gold); box-shadow:0 0 8px rgba(255,215,0,0.25); }
+.top5-pos.p2 { background:rgba(192,192,192,0.1); border:1px solid rgba(192,192,192,0.35); color:var(--silver); }
+.top5-pos.p3 { background:rgba(205,127,50,0.1);  border:1px solid rgba(205,127,50,0.35); color:var(--bronze); }
+.top5-pos.p4, .top5-pos.p5 { background:rgba(55,138,221,0.07); border:1px solid rgba(55,138,221,0.2); color:#378ADD; }
+.top5-agent-info { flex: 1; min-width: 0; }
+.top5-agent-name {
+  font-size: 12px;
+  color: var(--text);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.03em;
+}
+.top5-agent-tl { font-family: var(--font-mono); font-size: 9px; color: var(--text3); letter-spacing: 0.06em; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.top5-medal { font-size: 14px; flex-shrink: 0; }
+.top5-footer {
+  padding: 6px 12px;
+  border-top: 1px solid rgba(0,255,231,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(0,0,0,0.2);
+}
+.top5-footer-label { font-family: var(--font-mono); font-size: 8px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; }
+.top5-period { font-family: var(--font-mono); font-size: 8px; color: var(--neon); letter-spacing: 0.08em; }
+
+/* Toggle button for top5 widget */
+.top5-toggle-btn {
+  position: fixed;
+  z-index: 499;
+  bottom: 22px;
+  right: 270px;
+  background: var(--bg3);
+  border: 1px solid var(--neon);
+  border-radius: 6px;
+  color: var(--neon);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  padding: 6px 10px;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s;
+  box-shadow: 0 0 14px rgba(0,255,231,0.15);
+}
+.top5-toggle-btn.visible { display: flex; }
+.top5-toggle-btn:hover { background: rgba(0,255,231,0.12); }
+.top5-toggle-btn svg { width: 11px; height: 11px; stroke: currentColor; }
 </style>
 </head>
 <body>
@@ -400,7 +616,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
     <p>Performance Portal</p>
   </div>
   <div class="auth-card">
-    <div style="position:absolute;top:9px;right:12px;font-family:var(--font-mono);font-size:9px;color:var(--text3);letter-spacing:0.1em">SYS:AUTH v5.1</div>
+    <div style="position:absolute;top:9px;right:12px;font-family:var(--font-mono);font-size:9px;color:var(--text3);letter-spacing:0.1em">SYS:AUTH v5.2</div>
     <h2>Access Terminal</h2>
     <p class="auth-desc">REAC Call Center Services</p>
     <div class="msg-box msg-error" id="login-err"></div>
@@ -749,14 +965,53 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
   </div>
 </div>
 
+<!-- TOP 5 FLOATING WIDGET (shared for admin + TL) -->
+<div class="top5-widget" id="top5-widget">
+  <div class="top5-header" id="top5-drag-handle">
+    <div class="top5-title">
+      <span class="top5-title-dot"></span>
+      LIVE TOP 5
+    </div>
+    <div class="top5-header-right">
+      <span class="top5-refresh-time" id="top5-refresh-label">—</span>
+      <button class="top5-close" onclick="hideTop5Widget()" title="Hide">✕</button>
+    </div>
+  </div>
+  <div class="top5-body" id="top5-body">
+    <div style="padding:16px 12px;text-align:center;font-family:var(--font-mono);font-size:10px;color:var(--text3)">Loading...</div>
+  </div>
+  <div class="top5-footer">
+    <span class="top5-footer-label">Placements only · No scores shown</span>
+    <span class="top5-period" id="top5-period-label">—</span>
+  </div>
+</div>
+
+<!-- Toggle button to re-show widget if hidden -->
+<button class="top5-toggle-btn" id="top5-show-btn" onclick="showTop5Widget()">
+  <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6l4-4 4 4"/><path d="M12 2v10"/><path d="M4 20h16"/><path d="M4 14l4 3h8l4-3"/></svg>
+  TOP 5
+</button>
+
 <div id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
 // ─────────────────────────────────────────────────────────────────
-//  DEPLOYMENT URL — update this if you redeploy the GAS web app
+//  DEPLOYMENT URL
 // ─────────────────────────────────────────────────────────────────
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbxNIFSZlp6veXZBpNAebVXBs6vwF5vB_4nJkojlg5EV0mv6g7BouR7CkqclAal4xJjy_A/exec';
+
+// ─────────────────────────────────────────────────────────────────
+//  PRESENCE CONFIG
+//  Heartbeat every 25s; agents are "online" if seen within 45s.
+//  Admins/TLs poll presence every 20s.
+//  Top 5 widget polls backend every 60s for rank changes.
+// ─────────────────────────────────────────────────────────────────
+const PRESENCE_KEY        = 'reac_presence';   // localStorage key
+const HEARTBEAT_INTERVAL  = 25000;             // ms
+const PRESENCE_TTL        = 45000;             // ms — online window
+const PRESENCE_POLL_MS    = 20000;             // admin/TL poll rate
+const TOP5_REFRESH_MS     = 60000;             // top 5 poll rate
 
 let currentUser   = null;
 let allAgents     = [];
@@ -771,15 +1026,19 @@ let adminBreakdownMonthIdx = 0;
 let currentTheme  = localStorage.getItem('reac_theme') || 'futuristic';
 let chartInstances = {};
 
+// Presence & top5 timers
+let heartbeatTimer   = null;
+let presencePollTimer = null;
+let top5PollTimer    = null;
+let top5PrevData     = [];   // track rank changes
+
 const METRICS = [
   { key:'tps',        label:'TPS',        color:'#378ADD' },
   { key:'attendance', label:'Attendance', color:'#a78bfa' },
   { key:'qa',         label:'QA',         color:'#ffb547' },
   { key:'overall',    label:'Overall',    color:'#00ffe7' }
 ];
-
 let chartMetricState = {};
-
 function getActiveMetrics(canvasId) {
   if (!chartMetricState[canvasId]) chartMetricState[canvasId] = new Set(METRICS.map(m=>m.key));
   return chartMetricState[canvasId];
@@ -843,6 +1102,279 @@ function checkPassRules(prefix) {
   }
 }
 
+// ═════════════════════════════════════════════════════════════════
+//  PRESENCE SYSTEM
+//  Uses localStorage so all open tabs on the same browser share state.
+//  Each logged-in user writes { email, name, role, ts } every 25s.
+//  Admin/TL reads all entries and filters by TTL.
+// ═════════════════════════════════════════════════════════════════
+function presenceWrite(user) {
+  if (!user) return;
+  try {
+    const all = presenceReadAll();
+    all[user.email] = {
+      email: user.email,
+      name:  user.name  || user.email,
+      role:  user.role  || 'agent',
+      ts:    Date.now()
+    };
+    localStorage.setItem(PRESENCE_KEY, JSON.stringify(all));
+  } catch(e) {}
+}
+
+function presenceRemove(email) {
+  try {
+    const all = presenceReadAll();
+    delete all[email];
+    localStorage.setItem(PRESENCE_KEY, JSON.stringify(all));
+  } catch(e) {}
+}
+
+function presenceReadAll() {
+  try {
+    const raw = localStorage.getItem(PRESENCE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch(e) { return {}; }
+}
+
+function presenceGetOnline() {
+  const now = Date.now();
+  const all = presenceReadAll();
+  return Object.values(all).filter(u => (now - u.ts) < PRESENCE_TTL);
+}
+
+function startHeartbeat(user) {
+  if (heartbeatTimer) clearInterval(heartbeatTimer);
+  presenceWrite(user);
+  heartbeatTimer = setInterval(() => presenceWrite(user), HEARTBEAT_INTERVAL);
+}
+
+function stopHeartbeat() {
+  if (heartbeatTimer) clearInterval(heartbeatTimer);
+  heartbeatTimer = null;
+  if (currentUser) presenceRemove(currentUser.email);
+}
+
+// ── ONLINE PANEL HTML (for Admin & TL overviews) ─────────────────
+function buildOnlinePanelHTML(accentColor, tlFilter) {
+  return `
+    <div class="online-panel" id="online-presence-panel">
+      <div class="online-panel-header">
+        <div class="online-panel-title" style="color:${accentColor}">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${accentColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Agents Online Now
+          <span class="online-count-badge" id="online-count-badge" style="background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.3);color:var(--online-green)">0 online</span>
+        </div>
+        <span class="online-last-refresh" id="online-refresh-ts">Updated just now</span>
+      </div>
+      <div class="online-agents-wrap" id="online-agents-wrap">
+        <span class="online-empty">No agents currently online</span>
+      </div>
+    </div>`;
+}
+
+function refreshOnlinePanel(tlFilter) {
+  const wrap  = document.getElementById('online-agents-wrap');
+  const badge = document.getElementById('online-count-badge');
+  const tsEl  = document.getElementById('online-refresh-ts');
+  if (!wrap) return;
+
+  let online = presenceGetOnline().filter(u => u.role === 'agent');
+
+  // TL filter: only show agents on this TL's team
+  if (tlFilter) {
+    const myTeamEmails = new Set(allAgents.filter(a => a.teamLeadEmail === tlFilter).map(a => a.email));
+    online = online.filter(u => myTeamEmails.has(u.email));
+  }
+
+  if (badge) badge.textContent = online.length + ' online';
+  if (tsEl)  tsEl.textContent  = 'Updated ' + new Date().toLocaleTimeString('en-US',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
+
+  if (!online.length) {
+    wrap.innerHTML = '<span class="online-empty">No agents currently online</span>';
+    return;
+  }
+
+  wrap.innerHTML = online.map(u => {
+    const agent = allAgents.find(a => a.email === u.email);
+    const tl    = agent ? mgmtUsers.find(m => m.email === agent.teamLeadEmail) : null;
+    const displayName = agent ? agent.name.split(',').pop().trim().split(' ')[0] + ' ' + (agent.name.split(',')[0]||'').trim() : u.name;
+    return `<div class="online-agent-pill">
+      <span class="online-dot-pulse"></span>
+      <span class="online-pill-name">${displayName || u.name}</span>
+      ${tl ? `<span class="online-pill-team">${tl.name.split(',').pop().trim().split(' ')[0]}</span>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function startPresencePoll(tlFilter) {
+  if (presencePollTimer) clearInterval(presencePollTimer);
+  refreshOnlinePanel(tlFilter);
+  presencePollTimer = setInterval(() => refreshOnlinePanel(tlFilter), PRESENCE_POLL_MS);
+}
+
+function stopPresencePoll() {
+  if (presencePollTimer) clearInterval(presencePollTimer);
+  presencePollTimer = null;
+}
+
+// ═════════════════════════════════════════════════════════════════
+//  TOP 5 WIDGET
+// ═════════════════════════════════════════════════════════════════
+function getTop5Data() {
+  const latestIdx = latestActiveIdxAcrossAgents(allAgents);
+  if (latestIdx < 0) return { rows: [], label: '—' };
+  const label  = allAgents.find(a=>a.months?.[latestIdx])?.months[latestIdx]?.label || '—';
+  const active = allAgents.filter(a=>{const m=a.months?.[latestIdx]; return m&&m.count&&m.overall!=='Attrite';});
+  const sorted = [...active].sort((a,b)=>(parseInt(a.months[latestIdx]?.rank)||9999)-(parseInt(b.months[latestIdx]?.rank)||9999));
+  return { rows: sorted.slice(0,5), label, latestIdx };
+}
+
+const MEDALS = ['🥇','🥈','🥉','',''];
+const POS_CLS = ['p1','p2','p3','p4','p5'];
+
+function renderTop5Body(rows, latestIdx, prevRows) {
+  const body = document.getElementById('top5-body');
+  if (!body) return;
+  if (!rows.length) {
+    body.innerHTML = '<div style="padding:16px 12px;text-align:center;font-family:var(--font-mono);font-size:10px;color:var(--text3)">No data available</div>';
+    return;
+  }
+  const prevEmailOrder = prevRows.map(r => r.email);
+  body.innerHTML = rows.map((a, i) => {
+    const prevPos = prevEmailOrder.indexOf(a.email);
+    const changed = prevPos !== -1 && prevPos !== i;
+    const tl      = mgmtUsers.find(u => u.email === a.teamLeadEmail);
+    const firstName = a.name.split(',').pop().trim().split(' ').filter(Boolean)[0] || a.name;
+    const lastName  = a.name.split(',')[0]?.trim() || '';
+    const displayName = lastName ? `${firstName} ${lastName}` : firstName;
+    return `<div class="top5-row${changed?' changed':''}">
+      <div class="top5-pos ${POS_CLS[i]}">${i+1}</div>
+      <div class="top5-agent-info">
+        <div class="top5-agent-name">${displayName}</div>
+        <div class="top5-agent-tl">${tl ? tl.name.split(',').pop().trim().split(' ')[0] : '—'}</div>
+      </div>
+      <div class="top5-medal">${MEDALS[i]}</div>
+    </div>`;
+  }).join('');
+}
+
+function refreshTop5(force) {
+  const { rows, label, latestIdx } = getTop5Data();
+  const prevRows = top5PrevData;
+
+  // Check if anything changed (or forced)
+  const currEmails = rows.map(r=>r.email).join(',');
+  const prevEmails = prevRows.map(r=>r.email).join(',');
+  const changed    = force || currEmails !== prevEmails;
+
+  if (changed) {
+    renderTop5Body(rows, latestIdx, prevRows);
+    top5PrevData = rows;
+  }
+
+  const timeEl = document.getElementById('top5-refresh-label');
+  const periodEl = document.getElementById('top5-period-label');
+  if (timeEl) timeEl.textContent = new Date().toLocaleTimeString('en-US',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  if (periodEl) periodEl.textContent = label;
+}
+
+async function top5BackendRefresh() {
+  // Re-fetch backend data to detect rank changes
+  try {
+    const res = await gasGet('getData');
+    const newAgents = res.agents || [];
+    if (newAgents.length) {
+      allAgents = newAgents;
+      mgmtUsers = res.management || mgmtUsers;
+      refreshTop5(false);
+      // Also refresh the online panel in case TL filtering needs new agent list
+      const role = (currentUser?.role||'').toLowerCase();
+      if (role === 'teamlead') refreshOnlinePanel(currentUser.email);
+      else if (role === 'admin') refreshOnlinePanel(null);
+    }
+  } catch(e) {
+    console.warn('Top5 refresh failed:', e.message);
+  }
+}
+
+function startTop5Poll() {
+  if (top5PollTimer) clearInterval(top5PollTimer);
+  refreshTop5(true);
+  top5PollTimer = setInterval(top5BackendRefresh, TOP5_REFRESH_MS);
+}
+
+function stopTop5Poll() {
+  if (top5PollTimer) clearInterval(top5PollTimer);
+  top5PollTimer = null;
+}
+
+function showTop5Widget() {
+  document.getElementById('top5-widget').classList.add('visible');
+  document.getElementById('top5-show-btn').classList.remove('visible');
+  refreshTop5(true);
+}
+
+function hideTop5Widget() {
+  document.getElementById('top5-widget').classList.remove('visible');
+  document.getElementById('top5-show-btn').classList.add('visible');
+}
+
+// ── DRAG TO MOVE WIDGET ──────────────────────────────────────────
+(function initTop5Drag() {
+  const widget = document.getElementById('top5-widget');
+  const handle = document.getElementById('top5-drag-handle');
+  let isDragging = false, startX, startY, startRight, startBottom;
+
+  handle.addEventListener('mousedown', e => {
+    isDragging = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    const rect = widget.getBoundingClientRect();
+    startRight  = window.innerWidth  - rect.right;
+    startBottom = window.innerHeight - rect.bottom;
+    widget.classList.add('dragging');
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    const newRight  = Math.max(0, Math.min(window.innerWidth  - 240, startRight  - dx));
+    const newBottom = Math.max(0, Math.min(window.innerHeight - 100, startBottom - dy));
+    widget.style.right  = newRight  + 'px';
+    widget.style.bottom = newBottom + 'px';
+    widget.style.left   = 'auto';
+    widget.style.top    = 'auto';
+  });
+
+  document.addEventListener('mouseup', () => {
+    isDragging = false;
+    widget.classList.remove('dragging');
+  });
+
+  // Touch support
+  handle.addEventListener('touchstart', e => {
+    const t = e.touches[0];
+    startX = t.clientX; startY = t.clientY;
+    const rect = widget.getBoundingClientRect();
+    startRight  = window.innerWidth  - rect.right;
+    startBottom = window.innerHeight - rect.bottom;
+    isDragging = true;
+  }, { passive: true });
+  document.addEventListener('touchmove', e => {
+    if (!isDragging) return;
+    const t = e.touches[0];
+    const dx = t.clientX - startX, dy = t.clientY - startY;
+    const newRight  = Math.max(0, Math.min(window.innerWidth  - 240, startRight  - dx));
+    const newBottom = Math.max(0, Math.min(window.innerHeight - 100, startBottom - dy));
+    widget.style.right  = newRight  + 'px';
+    widget.style.bottom = newBottom + 'px';
+  }, { passive: true });
+  document.addEventListener('touchend', () => { isDragging = false; });
+})();
+
 // ── INIT ─────────────────────────────────────────────────────────
 window.addEventListener('load', async () => {
   applyStoredTheme();
@@ -854,6 +1386,13 @@ window.addEventListener('load', async () => {
     try { currentUser = JSON.parse(saved); await loadDashboard(); }
     catch(e) { hideSplash(); show('s-login'); }
   } else { hideSplash(); show('s-login'); }
+});
+
+// Clean up heartbeat when tab closes
+window.addEventListener('beforeunload', () => {
+  stopHeartbeat();
+  stopPresencePoll();
+  stopTop5Poll();
 });
 
 function hideSplash() {
@@ -916,26 +1455,17 @@ async function doSignup() {
   if (!/[0-9]/.test(pass))         { showErr('signup-err','Password needs at least one number.'); return; }
   if (!/[^A-Za-z0-9]/.test(pass)) { showErr('signup-err','Password needs at least one special character.'); return; }
   if (pass !== pass2)              { showErr('signup-err','Passwords do not match.'); return; }
-
   setBtnLoading('signup-btn', true);
   try {
     const check = await gasGet('checkEmail', { email });
     if (!check.exists)     { showErr('signup-err','Email not registered. Contact your admin.'); setBtnLoading('signup-btn',false); return; }
     if (check.hasPassword) { showErr('signup-err','Account already exists. Please sign in.'); setBtnLoading('signup-btn',false); return; }
-
     const otpRes = await gasGet('sendOtp', { email });
     if (otpRes.success) {
-      pendingEmail = email;
-      otpMode      = 'signup';
-      _signupPass  = pass;
-      setupOtpScreen(email);
-      show('s-otp');
-    } else {
-      showErr('signup-err', otpRes.message || 'Failed to send OTP. Try again.');
-    }
-  } catch(e) {
-    showErr('signup-err', 'Connection error: ' + e.message);
-  }
+      pendingEmail = email; otpMode = 'signup'; _signupPass = pass;
+      setupOtpScreen(email); show('s-otp');
+    } else { showErr('signup-err', otpRes.message || 'Failed to send OTP. Try again.'); }
+  } catch(e) { showErr('signup-err', 'Connection error: ' + e.message); }
   setBtnLoading('signup-btn', false);
 }
 
@@ -949,23 +1479,16 @@ async function doForgot() {
     if (!check.exists) { showErr('forgot-err','Email not found in the system.'); setBtnLoading('forgot-btn',false); return; }
     const otpRes = await gasGet('sendOtp', { email });
     if (otpRes.success) {
-      pendingEmail = email;
-      otpMode      = 'forgot';
-      setupOtpScreen(email);
-      show('s-otp');
-    } else {
-      showErr('forgot-err', otpRes.message || 'Failed to send OTP. Try again.');
-    }
-  } catch(e) {
-    showErr('forgot-err', 'Connection error: ' + e.message);
-  }
+      pendingEmail = email; otpMode = 'forgot';
+      setupOtpScreen(email); show('s-otp');
+    } else { showErr('forgot-err', otpRes.message || 'Failed to send OTP. Try again.'); }
+  } catch(e) { showErr('forgot-err', 'Connection error: ' + e.message); }
   setBtnLoading('forgot-btn', false);
 }
 
 function setupOtpScreen(email) {
   clearOtpBoxes();
-  document.getElementById('otp-card-desc').textContent =
-    `A 6-digit code was sent to ${email}. You can paste it directly into the first box.`;
+  document.getElementById('otp-card-desc').textContent = `A 6-digit code was sent to ${email}. You can paste it directly into the first box.`;
 }
 
 async function doResendOtp() {
@@ -979,7 +1502,6 @@ async function doResendOtp() {
   setBtnLoading('otp-resend-btn', false);
 }
 
-// ── AUTH: VERIFY OTP ─────────────────────────────────────────────
 async function doVerifyOtp() {
   const code = getOtpValue();
   if (code.length < 6) { showErr('otp-err','Please enter all 6 digits.'); return; }
@@ -987,23 +1509,14 @@ async function doVerifyOtp() {
   try {
     const verifyRes = await gasGet('verifyOtp', { email: pendingEmail, otp: code });
     if (!verifyRes.success) { showErr('otp-err', verifyRes.message || 'Invalid or expired OTP.'); setBtnLoading('otp-btn', false); return; }
-
     if (otpMode === 'signup') {
       const finalRes = await gasGet('verifyOtpAndSetPassword', { email: pendingEmail, otp: code, password: _signupPass });
       _signupPass = '';
-      if (finalRes.success) {
-        toast('Account created successfully!');
-        show('s-login');
-        setTimeout(() => showOk('login-ok', '✓ Account created! You can now sign in.'), 200);
-      } else {
-        showErr('otp-err', finalRes.message || 'Failed to create account. Please try again.');
-      }
+      if (finalRes.success) { toast('Account created successfully!'); show('s-login'); setTimeout(() => showOk('login-ok', '✓ Account created! You can now sign in.'), 200); }
+      else { showErr('otp-err', finalRes.message || 'Failed to create account. Please try again.'); }
     } else {
       _verifiedOtp = code;
-      const npEl  = document.getElementById('new-pass');
-      const np2El = document.getElementById('new-pass2');
-      if (npEl)  npEl.value  = '';
-      if (np2El) np2El.value = '';
+      ['new-pass','new-pass2'].forEach(id=>{const el=document.getElementById(id); if(el)el.value='';});
       const sfill = document.getElementById('new-strength-fill');
       if (sfill) sfill.style.width = '0%';
       ['nr-len','nr-up','nr-num','nr-sym'].forEach(id => {
@@ -1016,7 +1529,6 @@ async function doVerifyOtp() {
   setBtnLoading('otp-btn', false);
 }
 
-// ── AUTH: SET NEW PASSWORD ────────────────────────────────────────
 async function doSetNewPassword() {
   const password = document.getElementById('new-pass').value;
   const p2       = document.getElementById('new-pass2').value;
@@ -1026,28 +1538,21 @@ async function doSetNewPassword() {
   if (!/[^A-Za-z0-9]/.test(password))    { showErr('newpass-err','Password needs at least one special character.'); return; }
   if (password !== p2)                    { showErr('newpass-err','Passwords do not match.'); return; }
   if (!_verifiedOtp || !pendingEmail)     { showErr('newpass-err','Session expired. Please start over from Forgot Password.'); return; }
-
   setBtnLoading('newpass-btn', true);
   try {
     const res = await gasGet('verifyOtpAndSetPassword', { email: pendingEmail, otp: _verifiedOtp, password });
     if (res.success) {
-      _verifiedOtp = '';
-      pendingEmail = '';
-      toast('Password updated successfully!');
-      show('s-login');
+      _verifiedOtp = ''; pendingEmail = '';
+      toast('Password updated successfully!'); show('s-login');
       setTimeout(() => showOk('login-ok', '✓ Password updated! You can now sign in.'), 200);
     } else {
       showErr('newpass-err', res.message || 'Failed to update password. Please try again.');
-      if (res.message && res.message.toLowerCase().includes('expired')) {
-        _verifiedOtp = '';
-        setTimeout(() => show('s-forgot'), 3000);
-      }
+      if (res.message && res.message.toLowerCase().includes('expired')) { _verifiedOtp = ''; setTimeout(() => show('s-forgot'), 3000); }
     }
   } catch(e) { showErr('newpass-err', 'Connection error: ' + e.message); }
   setBtnLoading('newpass-btn', false);
 }
 
-// ── OTP BOX HELPERS ──────────────────────────────────────────────
 function initOtpBoxes() {
   const boxes = Array.from({length:6}, (_,i) => document.getElementById('otp'+i));
   boxes.forEach((box, i) => {
@@ -1094,6 +1599,12 @@ function setBtnLoading(id, on) {
 }
 
 function doLogout() {
+  stopHeartbeat();
+  stopPresencePoll();
+  stopTop5Poll();
+  // Hide widget
+  document.getElementById('top5-widget').classList.remove('visible');
+  document.getElementById('top5-show-btn').classList.remove('visible');
   currentUser  = null;
   _verifiedOtp = '';
   _signupPass  = '';
@@ -1116,12 +1627,33 @@ async function loadDashboard() {
   hideSplash();
   const role = (currentUser.role || 'agent').toLowerCase();
   const name = currentUser.name || currentUser.email;
+
+  // Start heartbeat for all users (including admins/TLs — so they show as "logged in")
+  startHeartbeat(currentUser);
+
   if (role === 'admin') {
-    setupAdminUI(name, role); show('s-admin'); renderAdminOverview();
+    setupAdminUI(name, role);
+    show('s-admin');
+    renderAdminOverview();
+    // Admin gets top5 + presence
+    showTop5Widget();
+    startTop5Poll();
+    startPresencePoll(null);
   } else if (role === 'teamlead') {
-    setupTlUI(name); show('s-teamlead'); renderTlOverview();
+    setupTlUI(name);
+    show('s-teamlead');
+    renderTlOverview();
+    // TL gets top5 + presence (filtered to own team)
+    showTop5Widget();
+    startTop5Poll();
+    startPresencePoll(currentUser.email);
   } else {
-    setupAgentUI(name); show('s-agent'); renderAgentDash();
+    setupAgentUI(name);
+    show('s-agent');
+    renderAgentDash();
+    // Agents don't see widget
+    document.getElementById('top5-widget').classList.remove('visible');
+    document.getElementById('top5-show-btn').classList.remove('visible');
   }
 }
 
@@ -1536,6 +2068,9 @@ function renderAdminOverview() {
         <h1>Team Overview</h1>
         <p>Aggregate performance metrics across all agents for <strong style="color:var(--purple)">${latestLabel}</strong>.</p>
       </div>
+
+      ${buildOnlinePanelHTML('var(--purple)', null)}
+
       <div class="metrics-grid-5">
         <div class="metric-card" style="--card-color:var(--purple)">
           <div class="metric-label">Total Agents</div>
@@ -1611,6 +2146,9 @@ function renderAdminOverview() {
         </div>
       </div>
     </div>`;
+
+  // Re-attach online panel polling after DOM rebuild
+  startPresencePoll(null);
 
   if (leads.length) {
     setTimeout(()=>{
@@ -1744,6 +2282,9 @@ function renderTlOverview() {
         <h1>Team Overview</h1>
         <p>Performance summary for your team — ${myTeam.length} agents, ${active.length} active this period.</p>
       </div>
+
+      ${buildOnlinePanelHTML('#378ADD', currentUser.email)}
+
       <div class="metrics-grid-5">
         <div class="metric-card" style="--card-color:#378ADD">
           <div class="metric-label">Team Members</div>
@@ -1795,6 +2336,9 @@ function renderTlOverview() {
         </div>
       </div>
     </div>`;
+
+  // Re-attach online panel after DOM rebuild
+  startPresencePoll(currentUser.email);
   setTimeout(()=>buildLineChart(canvasId,myTeam),60);
 }
 
